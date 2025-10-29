@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Odontología Integral - Pedir Cita</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/png" href="../img/Teeth.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="../css/pedircita.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="appointment-page">
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="logo-container">
+      <h2 class="logo"><i class="fas fa-tooth"></i> <span>Odontología</span></h2>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="TheHome.html">
+        <i class="fas fa-home"></i>
+        <span>Inicio</span>
+      </a>
+      <a href="pedircita.html" class="active">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Pedir una cita</span>
+      </a>
+      <a href="Tratamientos.html">
+        <i class="fas fa-teeth"></i>
+        <span>Tratamientos</span>
+      </a>
+      <a href="clinicas.html">
+        <i class="fas fa-clinic-medical"></i>
+        <span>Clínicas</span>
+      </a>
+      <a href="Blog.html">
+        <i class="fas fa-blog"></i>
+        <span>Blog</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="page-content">
+      <div class="page-header animate__animated animate__fadeIn">
+        <h1 class="page-title">Solicitud de Cita</h1>
+        <p class="page-description">Complete el siguiente formulario para agendar su cita</p>
+      </div>
+
+      <!-- CORREGIDO: Agregado id al formulario -->
+      <form class="appointment-form" id="appointment-form">
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fas fa-user-circle"></i> Datos Personales
+          </h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre" class="form-label">Nombre Completo</label>
+              <div class="input-with-icon">
+                <i class="fas fa-user"></i>
+                <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ingrese su nombre completo" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email" class="form-label">Correo Electrónico</label>
+              <div class="input-with-icon">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" name="email" class="form-control" placeholder="correo@ejemplo.com" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <div class="input-with-icon">
+                <i class="fas fa-phone"></i>
+                <input type="tel" id="telefono" name="telefono" class="form-control" placeholder="+57 300 123 4567" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+              <div class="input-with-icon">
+                <i class="far fa-calendar-alt"></i>
+                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="form-control" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fas fa-calendar-check"></i> Detalles de la Cita
+          </h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tratamiento" class="form-label">Tipo de Tratamiento</label>
+              <div class="select-wrapper">
+                <i class="fas fa-teeth"></i>
+                <select id="tratamiento" name="tratamiento" class="form-control" required>
+                  <option value="">Seleccione un tratamiento</option>
+                  <option value="limpieza">Limpieza Dental</option>
+                  <option value="blanqueamiento">Blanqueamiento Dental</option>
+                  <option value="ortodoncia">Ortodoncia</option>
+                  <option value="implantes">Implantes Dentales</option>
+                  <option value="carillas">Carillas Dentales</option>
+                  <option value="endodoncia">Endodoncia</option>
+                  <option value="periodoncia">Periodoncia</option>
+                  <option value="cirugia">Cirugía Oral</option>
+                  <option value="otros">Otros</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="doctor" class="form-label">Odontólogo Preferido (Opcional)</label>
+              <div class="select-wrapper">
+                <i class="fas fa-user-md"></i>
+                <select id="doctor" name="doctor" class="form-control">
+                  <option value="">Cualquier odontólogo disponible</option>
+                  <option value="dr1">Dra. María González</option>
+                  <option value="dr2">Dr. Carlos Rodríguez</option>
+                  <option value="dr3">Dra. Laura Martínez</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fecha_cita" class="form-label">Fecha de la Cita</label>
+              <div class="input-with-icon">
+                <i class="far fa-calendar"></i>
+                <input type="date" id="fecha_cita" name="fecha_cita" class="form-control" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="hora_cita" class="form-label">Hora de la Cita</label>
+              <div class="input-with-icon">
+                <i class="far fa-clock"></i>
+                <input type="time" id="hora_cita" name="hora_cita" class="form-control" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fas fa-comment-medical"></i> Información Adicional
+          </h3>
+          <div class="form-group">
+            <label for="comentarios" class="form-label">Comentarios o Notas</label>
+            <textarea id="comentarios" name="comentarios" class="form-control" rows="4" placeholder="Por favor, indique cualquier información adicional que considere relevante para su cita."></textarea>
+          </div>
+
+          <!-- CORREGIDO: Nombres únicos para cada radio button -->
+          <div class="form-group checkbox-group">
+            <input type="radio" id="emergencia" name="tipo_visita" value="emergencia">
+            <label for="emergencia"> Es una emergencia dental</label>
+          </div>
+          
+          <div class="form-group checkbox-group">
+            <input type="radio" id="primera_visita" name="tipo_visita" value="primera_visita">
+            <label for="primera_visita"> Es mi primera visita</label>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <input type="radio" id="consulta_regular" name="tipo_visita" value="regular">
+            <label for="consulta_regular"> Consulta regular</label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submit-button">
+            <i class="fas fa-calendar-check"></i> Confirmar Cita
+          </button>
+          <button type="reset" class="btn btn-outline">
+            <i class="fas fa-undo"></i> Limpiar Formulario
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+  
+  <script src="../js/pedircita.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/menu.js"></script>
+</body>
+</html>

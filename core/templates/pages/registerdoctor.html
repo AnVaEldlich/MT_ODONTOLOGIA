@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Odontológico</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/png" href="../img/Teeth.png">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/registerdoctor.css">
+    <script src="../js/registerdoctor.js"></script>
+    <script src="../js/TheHome.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="title">
+            <h1>Registro para <span class="highlight">Odontólogos</span></h1>
+        </div>
+
+        <div id="confirmation-message" class="confirmation-message">
+            ¡El formulario se ha enviado correctamente!
+        </div>
+
+        <form id="odontologo-form">
+            <!-- Sección 1: Información Personal y de Contacto -->
+            <div class="section">
+                <h2 class="section-title">Información Personal y de Contacto</h2>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="nombre" class="form-label">Nombre Completo <span class="required">*</span></label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Ej. Dr. Juan Pérez" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="identificacion" class="form-label">Identificación <span class="required">*</span></label>
+                        <input type="text" id="identificacion" name="identificacion" placeholder="Ej. 123456789" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+                        <input type="date" id="fechaNacimiento" name="fechaNacimiento" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Correo Laboral <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" placeholder="Ej. juan.perez@consultorio.com" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono" class="form-label">Teléfono Móvil <span class="required">*</span></label>
+                        <input type="tel" id="telefono" name="telefono" placeholder="Ej. 3001234567" required class="form-input">
+                    </div>
+                </div>
+                <div class="grid grid-full">
+                    <div class="form-group">
+                        <label for="direccion" class="form-label">Dirección de Consultorio <span class="required">*</span></label>
+                        <input type="text" id="direccion" name="direccion" placeholder="Ej. Carrera 10 #20-30, Medellín" required class="form-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección 2: Información Profesional -->
+            <div class="section">
+                <h2 class="section-title">Información Profesional</h2>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="registroProfesional" class="form-label">Número de Registro Profesional <span class="required">*</span></label>
+                        <input type="text" id="registroProfesional" name="registroProfesional" placeholder="Ej. 12345" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="organismo" class="form-label">Organismo que expidió la licencia</label>
+                        <input type="text" id="organismo" name="organismo" placeholder="Ej. Colegio Odontológico Colombiano" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="experiencia" class="form-label">Años de Experiencia</label>
+                        <input type="number" id="experiencia" name="experiencia" placeholder="Ej. 10" min="0" max="50" class="form-input">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Especialidad(es):</label>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="general" name="especialidad[]" value="Odontología General">
+                            <label for="general">Odontología General</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="endodoncia" name="especialidad[]" value="Endodoncia">
+                            <label for="endodoncia">Endodoncia</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ortodoncia" name="especialidad[]" value="Ortodoncia">
+                            <label for="ortodoncia">Ortodoncia</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="periodoncia" name="especialidad[]" value="Periodoncia">
+                            <label for="periodoncia">Periodoncia</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="rehabilitacion" name="especialidad[]" value="Rehabilitación Oral">
+                            <label for="rehabilitacion">Rehabilitación Oral</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cirugia" name="especialidad[]" value="Cirugía Maxilofacial">
+                            <label for="cirugia">Cirugía Maxilofacial</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="odontopediatria" name="especialidad[]" value="Odontopediatría">
+                            <label for="odontopediatria">Odontopediatría</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección 3: Información Tributaria y Legal -->
+            <div class="section">
+                <h2 class="section-title">Información Tributaria y Legal</h2>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="nit" class="form-label">Número de Identificación Tributaria (NIT) <span class="required">*</span></label>
+                        <input type="text" id="nit" name="nit" placeholder="Ej. 900123456-1" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="razonSocial" class="form-label">Razón Social (si aplica)</label>
+                        <input type="text" id="razonSocial" name="razonSocial" placeholder="Ej. Consultorio Odontológico ABC S.A.S" class="form-input">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Régimen Tributario <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="simplificado" name="regimen" value="Simplificado" required>
+                            <label for="simplificado">Simplificado</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="comun" name="regimen" value="Común" required>
+                            <label for="comun">Común</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-full">
+                    <div class="form-group">
+                        <label for="direccionFacturacion" class="form-label">Dirección de Facturación</label>
+                        <input type="text" id="direccionFacturacion" name="direccionFacturacion" placeholder="Ej. Carrera 15 #25-40, Bogotá" class="form-input">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección 4: Información Adicional -->
+            <div class="section">
+                <h2 class="section-title">Información Adicional</h2>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="asociaciones" class="form-label">Pertenencia a Sociedades/Asociaciones</label>
+                        <input type="text" id="asociaciones" name="asociaciones" placeholder="Ej. Sociedad Colombiana de Ortodoncia" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="web" class="form-label">Página web o perfil profesional</label>
+                        <input type="url" id="web" name="web" placeholder="Ej. https://www.linkedin.com/in/juanperez" class="form-input">
+                    </div>
+                </div>
+                <div class="grid grid-full">
+                    <div class="form-group">
+                        <label for="comoSeEntero" class="form-label">¿Cómo se enteró de nosotros?</label>
+                        <textarea id="comoSeEntero" name="comoSeEntero" placeholder="Compártenos cómo llegaste hasta nosotros..." class="form-input form-textarea"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-button" id="submit-button">
+                Registrarme
+            </button>
+
+            <div class="login-link">
+                <p>¿Ya tienes una cuenta? <a href="./TheHome.html">Iniciar Sesión</a></p>
+            </div>
+        </form>
+    </div>
+
+
+</body>
+</html>
