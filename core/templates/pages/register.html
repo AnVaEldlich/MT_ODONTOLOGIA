@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,8 +8,8 @@
     <link rel="icon" type="image/png" href="../img/Teeth.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/register.css">
-    <script src="../js/register.js"></script>
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+    <script src="{% static 'js/register.js' %}"></script>
 </head>
 <body>
     <div class="form-container">
@@ -171,7 +172,7 @@
         </form>
 
         <div class="login-link">
-            <p>¿Ya tienes una cuenta? <a href="./TheHome.html">Iniciar Sesión</a></p>
+            <p>¿Ya tienes una cuenta? <a href="{% url 'login' %}">Iniciar Sesión</a></p>
         </div>
     </div>
 

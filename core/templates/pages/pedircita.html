@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 
@@ -20,23 +21,23 @@
       <h2 class="logo"><i class="fas fa-tooth"></i> <span>Odontología</span></h2>
     </div>
     <nav class="sidebar-nav">
-      <a href="TheHome.html">
+      <a href="{% url 'TheHome' %}">
         <i class="fas fa-home"></i>
         <span>Inicio</span>
       </a>
-      <a href="pedircita.html" class="active">
+      <a href="{% url 'pedircita' %}" class="active">
         <i class="fas fa-calendar-alt"></i>
         <span>Pedir una cita</span>
       </a>
-      <a href="Tratamientos.html">
+      <a href="{% url 'Tratamientos' %}">
         <i class="fas fa-teeth"></i>
         <span>Tratamientos</span>
       </a>
-      <a href="clinicas.html">
+      <a href="{% url 'clinicas' %}">
         <i class="fas fa-clinic-medical"></i>
         <span>Clínicas</span>
       </a>
-      <a href="Blog.html">
+      <a href="{% url 'Blog' %}">
         <i class="fas fa-blog"></i>
         <span>Blog</span>
       </a>
@@ -190,8 +191,8 @@
     </div>
   </main>
   
-  <script src="../js/pedircita.js"></script>
-  <script src="../js/main.js"></script>
-  <script src="../js/menu.js"></script>
+  <script src="{% static 'js/pedircita.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+  <script src="{% static 'js/menu.js' %}"></script>
 </body>
 </html>

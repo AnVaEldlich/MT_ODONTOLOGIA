@@ -81,18 +81,20 @@ function setupFormListeners(userType) {
     }
 }
 
-// Configurar navegación del logo
-function setupLogoNavigation() {
-    const logo = document.querySelector('.logo');
-    if (logo) {
-        logo.addEventListener('click', function() {
-            const currentPage = window.location.pathname.split('/').pop();
-            if (currentPage !== 'index.html' && currentPage !== '') {
-                window.location.href = '../index.html';
-            }
-        });
-    }
-}
+// // Configurar navegación del logo
+// function setupLogoNavigation() {
+//     const logo = document.querySelector('.logo');
+//     if (logo) {
+//         logo.addEventListener('click', function() {
+//             const currentPage = window.location.pathname.split('/').pop();
+//             if (currentPage !== 'index.html' && currentPage !== '') {
+//                window.location.href = '';
+//             }
+//         });
+//     }
+// }
+
+
 
 // Configurar navegación del sidebar
 function setupSidebarNavigation() {

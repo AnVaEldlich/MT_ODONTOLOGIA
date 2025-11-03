@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 
@@ -5,8 +6,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Odontología Integral - Iniciar Sesión</title>
-  <link rel="stylesheet" href="../css/style.css">
-  <link rel="icon" type="image/png" href="../img/Teeth.png">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'img/Teeth.png' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -195,6 +196,7 @@
   </style>
 </head>
 
+
 <body class="home">
     <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
@@ -202,23 +204,23 @@
       <h2 class="logo"><i class="fas fa-tooth"></i> <span>Odontología</span></h2>
     </div>
     <nav class="sidebar-nav">
-      <a href="TheHome.html">
+      <a href="{% url 'home' %}">
         <i class="fas fa-home"></i>
         <span>Inicio</span>
       </a>
-      <a href="pedircita.html">
+      <a href="{% url 'pedircita' %}">
         <i class="fas fa-calendar-alt"></i>
         <span>Pedir una cita</span>
       </a>
-      <a href="Tratamientos.html">
+      <a href="{% url 'Tratamientos' %}">
         <i class="fas fa-teeth"></i>
         <span>Tratamientos</span>
       </a>  
-      <a href="clinicas.html">
+      <a href="{% url 'clinicas' %}">
         <i class="fas fa-clinic-medical"></i>
         <span>Clínicas</span>
       </a>
-      <a href="Blog.html">
+      <a href="{% url 'Blog' %}">
         <i class="fas fa-blog"></i>
         <span>Blog</span>
       </a>
@@ -314,7 +316,7 @@
 
             <div class="register">
                 <p>¿Todavía no tienes una cuenta?
-                <a href="register.html">Quiero registrarme</a></p>
+                <a href="{% url 'register' %}">Quiero registrarme</a></p>
             </div>
         </form>
          </div>
@@ -376,7 +378,7 @@
 
             <div class="register">
                 <p>¿Eres un profesional nuevo?
-                <a href="registerdoctor.html">Registrarse como odontólogo</a></p>
+                <a href="{% url 'registerdoctor' %}">Registrarse como odontólogo</a></p>
             </div>
         </form>
          </div>
@@ -385,8 +387,25 @@
 </div>
 
 </main>
-<script src="../js/main.js"></script>
-<script src="../js/menu.js"></script>
-<script src="../js/TheHome.js"></script>
+
+<script>
+  function setupLogoNavigation() {
+      const logo = document.querySelector('.logo');
+      if (logo) {
+          logo.addEventListener('click', function() {
+              const currentPage = window.location.pathname;
+              if (currentPage !== '{% url "home" %}') {
+                  window.location.href = '{% url "home" %}';
+              }
+          });
+      }
+  }
+  
+setupLogoNavigation();
+</script>
+
+<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'js/menu.js' %}"></script>
+<script src="{% static 'js/TheHome.js' %}"></script>
 </body>
 </html>
