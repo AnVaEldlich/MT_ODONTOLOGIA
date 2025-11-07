@@ -841,27 +841,11 @@ body.home .form-container {
   color: #4a90e2;
 }
 
-/* Iconos para las pestañas */
-.tab-icon {
-  width: 20px;
-  height: 20px;
+/* .doctor-icon {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+} */
 
-.tab-icon i {
-  font-size: 24px;
-  line-height: 1;
-  color: currentColor;
-}
-
-.doctor-icon {
-  position: relative;
-}
-
-.doctor-icon::after {
+/* .doctor-icon::after {
   content: "+";
   position: absolute;
   top: -5px;
@@ -869,7 +853,7 @@ body.home .form-container {
   color: currentColor;
   font-size: 12px;
   font-weight: bold;
-}
+} */
 
 
 .form-container {

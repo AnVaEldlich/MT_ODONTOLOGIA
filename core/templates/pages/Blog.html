@@ -1,15 +1,16 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blog - Odontología Integral</title>
-  <link rel="stylesheet" href="../css/style.css">
-  <link rel="icon" type="image/png" href="../img/Teeth.png">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'img/Teeth.png' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/blog.css">
+  <link rel="stylesheet" href="{% static 'css/blog.css' %}">
 </head>
 
 <body class="blog-page">
@@ -19,23 +20,23 @@
       <h2 class="logo"><i class="fas fa-tooth"></i> <span>Odontología</span></h2>
     </div>
     <nav class="sidebar-nav">
-      <a href="TheHome.html">
+      <a href="{% url 'login' %}">
         <i class="fas fa-home"></i>
         <span>Inicio</span>
       </a>
-      <a href="pedircita.html">
+      <a href="{% url 'pedircita' %}">
         <i class="fas fa-calendar-alt"></i>
         <span>Pedir una cita</span>
       </a>
-      <a href="Tratamientos.html">
+      <a href="{% url 'Tratamientos' %}">
         <i class="fas fa-teeth"></i>
         <span>Tratamientos</span>
       </a>
-      <a href="clinicas.html">
+      <a href="{% url 'clinicas' %}">
         <i class="fas fa-clinic-medical"></i>
         <span>Clínicas</span>
       </a>
-      <a href="Blog.html" class="active">
+      <a href="{% url 'Blog' %}" class="active">
         <i class="fas fa-blog"></i>
         <span>Blog</span>
       </a>
@@ -160,7 +161,7 @@
           <div class="conclusion-section">
             <h3>Tu Sonrisa, Nuestra Pasión</h3>
             <p>Cuidar tu salud bucal es invertir en tu bienestar general. Una sonrisa saludable no solo mejora tu apariencia, sino que también contribuye a tu salud integral y confianza personal. No olvides la importancia de la prevención y consulta siempre a profesionales calificados para obtener los mejores resultados.</p>
-            <a href="pedircita.html" class="cta-button">
+            <a href="{% url 'pedircita' %}" class="cta-button">
               <i class="fas fa-calendar-check"></i> Agenda tu Cita Ahora
             </a>
           </div>
@@ -183,8 +184,8 @@
     
     setupLogoNavigation();
   </script>
-  <script src="../js/blog.js"></script>
-  <script src="../js/main.js"></script>
-  <script src="../js/menu.js"></script>
+  <script src="{% static 'js/blog.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+  <script src="{% static 'js/menu.js' %}"></script>
 </body>
 </html>
