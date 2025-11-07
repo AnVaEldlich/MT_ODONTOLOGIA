@@ -305,6 +305,21 @@
       </section>
     </div>
   </main>
+  <script>
+    function setupLogoNavigation() {
+      const logo = document.querySelector('.logo');
+      if (logo) {
+          logo.addEventListener('click', function() {
+              const currentPage = window.location.pathname;
+              if (currentPage !== '{% url "home" %}') {
+                  window.location.href = '{% url "home" %}';
+              }
+          });
+      }
+    }
+    
+    setupLogoNavigation();
+  </script>
   <script src="../js/clinicas.js"></script>
   <script src="../js/menu.js"></script>
   <script src="../js/main.js"></script>

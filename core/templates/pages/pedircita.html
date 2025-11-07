@@ -6,10 +6,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Odontología Integral - Pedir Cita</title>
-  <link rel="stylesheet" href="../css/style.css">
-  <link rel="icon" type="image/png" href="../img/Teeth.png">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'img/Teeth.png' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-  <link rel="stylesheet" href="../css/pedircita.css">
+  <link rel="stylesheet" href="{% static 'css/pedircita.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -21,7 +21,7 @@
       <h2 class="logo"><i class="fas fa-tooth"></i> <span>Odontología</span></h2>
     </div>
     <nav class="sidebar-nav">
-      <a href="{% url 'TheHome' %}">
+      <a href="{% url 'login' %}">
         <i class="fas fa-home"></i>
         <span>Inicio</span>
       </a>
@@ -191,6 +191,21 @@
     </div>
   </main>
   
+  <script>
+    function setupLogoNavigation() {
+      const logo = document.querySelector('.logo');
+      if (logo) {
+          logo.addEventListener('click', function() {
+              const currentPage = window.location.pathname;
+              if (currentPage !== '{% url "home" %}') {
+                  window.location.href = '{% url "home" %}';
+              }
+          });
+      }
+    }
+    
+    setupLogoNavigation();
+  </script>
   <script src="{% static 'js/pedircita.js' %}"></script>
   <script src="{% static 'js/main.js' %}"></script>
   <script src="{% static 'js/menu.js' %}"></script>

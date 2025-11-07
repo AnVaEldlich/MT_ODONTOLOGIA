@@ -26,7 +26,12 @@
       opacity: 0;
       transform: translateY(20px);
     }
-    
+
+    #title-doctor {
+      color: #4CAF50;
+    }
+
+
     .form-wrapper.active {
       display: block;
       opacity: 1;
@@ -193,18 +198,32 @@
     .register a:hover {
       text-decoration: underline;
     }
+
+      /* Cambia solo el título cuando el modo es doctor */
+
+    .tab-button.active #icon-doctor,
+    .tab-button.active #sub-title-doctor {
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+
+    .title-doctor .tab-button.active {
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+    }
   </style>
 </head>
 
 
 <body class="home">
-    <!-- Sidebar -->
+    Sidebar
   <div class="sidebar" id="sidebar">
     <div class="logo-container">
       <h2 class="logo"><i class="fas fa-tooth"></i> <span>Odontología</span></h2>
     </div>
     <nav class="sidebar-nav">
-      <a href="{% url 'home' %}">
+      <a href="{% url 'login' %}">
         <i class="fas fa-home"></i>
         <span>Inicio</span>
       </a>
@@ -240,9 +259,9 @@
         </button>
         <button type="button" class="tab-button" data-tab="doctor">
           <div class="tab-icon">
-            <i class="fas fa-user-md"></i>
+            <i id="icon-doctor" class="fas fa-user-md"></i>
           </div>
-          <span>Soy Odontólogo</span>
+          <span id="sub-title-doctor">Soy Odontólogo</span>
         </button>
     </div>
 
@@ -257,7 +276,6 @@
             <div class="form-group">
                 <div class="input-with-icon">
                     <span class="input-icon">
-                      <i class="fas fa-envelope"></i>
                     </span>
                     <input 
                         type="email" 
@@ -278,7 +296,6 @@
             <div class="form-group">
                 <div class="input-with-icon">
                     <span class="input-icon">
-                      <i class="fas fa-lock"></i>
                     </span>
                     <input 
                         type="password" 
@@ -323,13 +340,11 @@
 
          <!-- FORMULARIO PARA DOCTORES -->
          <div class="form-wrapper hidden" id="doctor-form-wrapper">
-           <h2 class="form-title">Acceso Profesional</h2>
-           
+           <h2 class="form-title" id="title-doctor">Acceso Profesional</h2>
            <form id="doctor-login-form" class="login-form" novalidate>
             <div class="form-group">
                 <div class="input-with-icon">
                     <span class="input-icon">
-                      <i class="fas fa-envelope"></i>
                     </span>
                     <input 
                         type="email" 
@@ -350,7 +365,6 @@
             <div class="form-group">
                 <div class="input-with-icon">
                     <span class="input-icon">
-                      <i class="fas fa-id-card"></i>
                     </span>
                     <input 
                         type="password" 

@@ -94,8 +94,6 @@ function setupFormListeners(userType) {
 //     }
 // }
 
-
-
 // Configurar navegación del sidebar
 function setupSidebarNavigation() {
     const navLinks = document.querySelectorAll('.sidebar-nav a');

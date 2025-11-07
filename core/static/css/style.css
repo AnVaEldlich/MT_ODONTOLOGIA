@@ -845,21 +845,16 @@ body.home .form-container {
 .tab-icon {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
-  border: 2px solid currentColor;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.tab-icon::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 8px;
-  height: 8px;
-  background: currentColor;
-  border-radius: 50%;
+.tab-icon i {
+  font-size: 24px;
+  line-height: 1;
+  color: currentColor;
 }
 
 .doctor-icon {
@@ -871,15 +866,8 @@ body.home .form-container {
   position: absolute;
   top: -5px;
   right: -5px;
-  width: 12px;
-  height: 12px;
-  background: currentColor;
-  color: white;
-  border-radius: 50%;
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: currentColor;
+  font-size: 12px;
   font-weight: bold;
 }
 
