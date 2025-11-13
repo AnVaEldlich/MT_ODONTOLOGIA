@@ -24,7 +24,7 @@
                   <li><a href="#servicios">Servicios</a></li>
                   <li><a href="#clinicas">Clínicas</a></li>
                   <li><a href="{% url 'register' %}">Regístrate</a></li>
-                  <li><a href="#tratamientos">Tratamientos</a></li>
+                  <li><a href="{% url 'Tratamientos' %}">Tratamientos</a></li>
               </ul>
           </nav>
           <a href="#pedircita" class="cta-header">Agendar Cita</a>
@@ -46,11 +46,11 @@
               <p class="hero-subtitle">Odontología integral con la más alta tecnología y el cuidado humano que mereces. Transformamos sonrisas, cambiamos vidas.</p>
               
               <div class="hero-buttons">
-                  <a href="#pedircita" class="btn-primary">
+                  <a href="{% url 'pedircita' %}" class="btn-primary">
                       <i class="fas fa-calendar-alt" style="margin-right: 0.5rem;"></i>
                       Reservar Cita Ahora
                   </a>
-                  <a href="#tratamientos" class="btn-secondary">
+                  <a href="{% url 'Tratamientos' %}" class="btn-secondary">
                       <i class="fas fa-teeth" style="margin-right: 0.5rem;"></i>
                       Ver Tratamientos
                   </a>
