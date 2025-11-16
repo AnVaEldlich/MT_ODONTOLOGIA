@@ -169,3 +169,47 @@ https://templatemo.com/tm-593-personal-shape
                 document.body.style.overflow = 'auto';
             }
         });
+
+        // Menu de especialistas
+
+        (function(){
+            const root = document.getElementById('dd1');
+            const btn = root.querySelector('.dd-toggle');
+            const menu = root.querySelector('.menu');
+            const items = Array.from(root.querySelectorAll('.menu-item'));
+
+
+            function open(){ menu.classList.add('show'); btn.setAttribute('aria-expanded','true'); document.addEventListener('click', outsideClick); document.addEventListener('keydown', onKeyDown); }
+            function close(){ menu.classList.remove('show'); btn.setAttribute('aria-expanded','false'); document.removeEventListener('click', outsideClick); document.removeEventListener('keydown', onKeyDown); }
+            function toggle(){ if(menu.classList.contains('show')) close(); else open(); }
+
+
+            function outsideClick(e){ if(!root.contains(e.target)) close(); }
+
+
+            function onKeyDown(e){
+                if(e.key === 'Escape'){ close(); btn.focus(); }
+                if(e.key === 'ArrowDown'){ e.preventDefault(); if(!menu.classList.contains('show')) open(); items[0].focus(); }
+        }
+
+
+        btn.addEventListener('click',(e)=>{ e.stopPropagation(); toggle(); });
+        btn.addEventListener('keydown',(e)=>{
+            if(e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); items[0].focus(); }
+        });
+
+
+        // make menu items focusable
+        items.forEach(it => { it.setAttribute('tabindex','0');
+            it.addEventListener('keydown', (e)=>{
+                const idx = items.indexOf(e.currentTarget);
+                if(e.key === 'ArrowDown'){ e.preventDefault(); const next = items[idx+1] || items[0]; next.focus(); }
+                if(e.key === 'ArrowUp'){ e.preventDefault(); const prev = items[idx-1] || items[items.length-1]; prev.focus(); }
+                if(e.key === 'Enter' || e.key === ' '){ e.currentTarget.click(); }
+            });
+        });
+     })();
+
+    //     document.querySelector(".logo").addEventListener("click", function() {
+    //     window.location.href = "/";
+    // });

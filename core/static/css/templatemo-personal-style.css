@@ -25,6 +25,18 @@ https://templatemo.com/tm-593-personal-shape
             overflow: hidden;
         }
 
+        .logo {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: var(--gradient-elegant);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
         .footer::before {
             content: '';
             position: absolute;
@@ -185,17 +197,6 @@ https://templatemo.com/tm-593-personal-shape
             align-items: center;
         }
 
-        .logo {
-            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
-            font-size: 1.75rem;
-            font-weight: 700;
-            background: var(--gradient-elegant);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-        }
-
         .nav-links {
             display: flex;
             list-style: none;
@@ -345,6 +346,117 @@ https://templatemo.com/tm-593-personal-shape
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
             animation: float 25s ease-in-out infinite;
             opacity: 0.7;
+        }
+
+        /* Menu para especialistas */
+
+        .dropdown {
+        position: relative;
+        display: inline-block;
+        }
+
+        .dd-toggle {
+        display:inline-flex;
+        align-items:center;
+        gap:0.6rem;
+        padding:8px 12px;
+        border-radius:8px;
+        background:var(--green);
+        color:var(--white);
+        cursor:pointer;
+        border:none;
+        box-shadow:var(--shadow);
+        font-weight:600;
+        font-size:14px;
+        line-height:1;
+        min-width:180px;
+        justify-content:space-between;
+        }
+
+        .dd-toggle:focus{
+            outline:3px solid rgba(21,179,122,0.18)
+        }
+
+        .dd-label{
+            flex:1;
+            text-align:left;
+        }
+
+        .chev{
+            width:18px;
+            height:18px;
+            border-left:2px solid rgba(255,255,255,0.9);
+            border-bottom:2px solid rgba(255,255,255,0.9);
+            transform:rotate(-45deg);
+            margin-left:6px;
+            opacity:0.95;
+        }
+
+
+        .menu {
+        position:absolute;
+        right:0;top:calc(100% + 10px);
+        background:var(--white);
+        border-radius:8px;
+        min-width:220px;
+        padding:8px 0;
+        box-shadow:var(--shadow);
+        z-index:30;
+        display:none;
+        border:1px solid rgba(10,10,10,0.06);
+        }
+
+        .menu.show{
+            display:block
+        }
+
+        .menu-item{
+
+        display:block;padding:10px 16px;
+        font-size:14px;
+        color:#0b2b26;
+        text-decoration:none;cursor:pointer;
+        white-space:nowrap;
+        text-align:center;
+
+        }
+
+        .menu-item:hover{
+            background:#f6f8f7;
+        }
+
+
+        /* small caret notch like screenshot */
+        .menu::before{
+
+        content:'';
+        position:absolute;
+        right:18px;
+        top:-7px;
+        width:12px;
+        height:12px;
+        background:var(--white);
+        transform:rotate(45deg);
+        box-shadow: -1px -1px 0 rgba(0,0,0,0.02);
+
+        }
+
+
+        /* simple responsive */
+        @media (max-width:420px){
+        .dd-toggle{min-width:150px;font-size:13px}
+        .menu{min-width:180px}
+        }
+
+        /* End menu especialistas */
+
+        :root{
+        --white: #fff;
+        --green: #15b37a; /* background color */
+        --green-dark: #0da569;
+        --white: #fff;
+        --shadow: 0 6px 20px rgba(7, 22, 26, 0.15);
+        font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
         }
 
         .hero::after {
@@ -656,7 +768,7 @@ https://templatemo.com/tm-593-personal-shape
         .about-image {
             width: 100%;
             height: 500px;
-            background: url('/static/images/smiling-girl-computer-desktop.jpg') center/cover;
+            background: url('/static/images/About.jpg') center/cover;
             border-radius: 30px;
             position: relative;
             overflow: hidden;
@@ -775,27 +887,27 @@ https://templatemo.com/tm-593-personal-shape
         }
 
         .portfolio-item:nth-child(1) .portfolio-image {
-            background-image: url('/static/images/working-business-women.jpg');
+            background-image: url('/static/images/Ordotodoncia.jpg');
         }
 
         .portfolio-item:nth-child(2) .portfolio-image {
-            background-image: url('/static/images/computer-desk-stickers.jpg');
+            background-image: url('/static/images/Endodoncia.jpg');
         }
 
         .portfolio-item:nth-child(3) .portfolio-image {
-            background-image: url('/static/images/curved-display-pinky-girl.jpg');
+            background-image: url('/static/images/Implante.jpg');
         }
 
         .portfolio-item:nth-child(4) .portfolio-image {
-            background-image: url('/static/images/dashboard-interfaces-transparent-displays.jpg');
+            background-image: url('/static/images/Blanqueamiento.jpg');
         }
 
         .portfolio-item:nth-child(5) .portfolio-image {
-            background-image: url('/static/images/marketing-strategy-women.jpg');
+            background-image: url('/static/images/Estetica.jpg');
         }
 
         .portfolio-item:nth-child(6) .portfolio-image {
-            background-image: url('/static/images/portfolio-website-girl.jpg');
+            background-image: url('/static/images/Limpieza.jpg');
         }
 
         .portfolio-image::before {

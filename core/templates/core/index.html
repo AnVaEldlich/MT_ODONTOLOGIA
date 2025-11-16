@@ -1,48 +1,5 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DentiPlus - Tu Sonrisa Perfecta</title>
-    <link href="{% static 'css/templatemo-personal-style.css' %}" rel="stylesheet">
-
-<!--
-
-TemplateMo 593 personal shape
-
-https://templatemo.com/tm-593-personal-shape
-
--->
-</head>
-<body>
-    <!-- Navigation -->
-    <nav id="navbar">
-        <div class="nav-container">
-            <div class="logo"> DentiPlus </div>
-            <ul class="nav-links">
-                <li><a href="#home">Inicio</a></li>
-                <li><a href="#about">Sobre</a></li>
-                <li><a href="#portfolio">Tratamientos</a></li>
-                <li><a href="#contact">Contacta nos</a></li>
-            </ul>
-            <div class="mobile-menu-toggle" id="mobileMenuToggle">
-                <div class="hamburger"></div>
-                <div class="hamburger"></div>
-                <div class="hamburger"></div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <ul class="mobile-nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">Sobre</a></li>
-            <li><a href="#portfolio">Tratamientos</a></li>
-            <li><a href="#contact">Contacta nos</a></li>
-        </ul>
-    </div>
+{% extends 'core/base.html' %}
+{% block content %}
 
     <!-- Hero Section -->
     <section id="home" class="hero">
@@ -58,31 +15,30 @@ https://templatemo.com/tm-593-personal-shape
             <div class="hero-subtitle">DentiPlus</div>
             <h1>Tu Sonrisa Perfecta Nos Inspira</h1>
             <p class="subtitle">Odontología integral con la más alta tecnología y el cuidado humano que mereces. Transformamos sonrisas, cambiamos vidas.</p>
-            <a href="#contact" class="cta-button">Iniciar Sesión</a>
-            <a href="#portfolio" class="cta-button secondary">Agendar Cita</a>
+            <a href="{% url 'login' %}" class="cta-button">Iniciar Sesión</a>
         </div>
         <div class="scroll-indicator" onclick="document.getElementById('about').scrollIntoView()"></div>
     </section>
 
-    
     <!-- About Section -->
+
     <section id="about" class="about">
         <div class="container">
-            <h2 class="section-title fade-in">Sobre Nosotros</h2>
+            <h2 class="section-title fade-in">Sobre Nosotros - DentiPlus</h2>
             <div class="about-content">
                 <div class="about-image slide-in-left"></div>
                 <div class="about-text slide-in-right">
-                    <h3>Passionate about creating meaningful digital experiences</h3>
-                    <p>With over 5 years of experience in digital design, I specialize in creating user-centered solutions that bridge the gap between functionality and aesthetics. My approach combines strategic thinking with creative execution to deliver impactful results.</p>
-                    <p>I believe that great design is not just about how it looks, but how it works and how it makes people feel. Every project is an opportunity to solve problems and create connections that matter.</p>
-                    <p>When I'm not designing, you'll find me exploring new technologies, sketching ideas, or seeking inspiration in nature and architecture.</p>
+                    <h3>Nos apasiona transformar sonrisas y mejorar la salud bucal de nuestros pacientes.</h3>
+                    <p>Somos un equipo de profesionales altamente calificados, dedicados a brindar servicios odontológicos integrales con un enfoque centrado en el bienestar, la comodidad y la satisfacción de quienes confían en nosotros.</p>
+                    <p>Nuestra misión es ofrecer tratamientos odontológicos de vanguardia, utilizando tecnología avanzada y técnicas innovadoras para garantizar resultados excepcionales. Desde limpiezas y blanqueamientos hasta ortodoncia, implantes y odontología estética, cada procedimiento se realiza con precisión, cuidado y un trato humano que marca la diferencia. </p>
+                    <p>En DentiPlus, creemos que una sonrisa saludable es el reflejo de una vida plena y feliz. Por eso, nos comprometemos a acompañarte en cada paso de tu cuidado dental, brindándote un ambiente cálido, seguro y profesional.</p>
                     <div class="skills">
-                        <span class="skill-tag">UI/UX Design</span>
-                        <span class="skill-tag">Web Development</span>
-                        <span class="skill-tag">Brand Identity</span>
-                        <span class="skill-tag">Motion Graphics</span>
-                        <span class="skill-tag">Prototyping</span>
-                        <span class="skill-tag">Design Systems</span>
+                        <span class="skill-tag">Blanqueamientos</span>
+                        <span class="skill-tag">Ortodoncia</span>
+                        <span class="skill-tag">Implantes</span>
+                        <span class="skill-tag">Odontología Estética</span>
+                        <span class="skill-tag">Limpiezas</span>
+                        <span class="skill-tag">Cuidado Dental</span>
                     </div>
                 </div>
             </div>
@@ -90,85 +46,80 @@ https://templatemo.com/tm-593-personal-shape
     </section>
 
     <!-- Portfolio Section -->
+
     <section id="portfolio" class="portfolio">
         <div class="container">
-            <h2 class="section-title fade-in">Featured Work</h2>
+            <h2 class="section-title fade-in">Tratamientos</h2>
             <div class="portfolio-grid">
                 <div class="portfolio-item">
                     <div class="portfolio-image"></div>
                     <div class="portfolio-content">
-                        <h4>E-commerce Platform</h4>
-                        <p>A modern, responsive e-commerce solution with focus on user experience and conversion optimization. Built with scalability and performance in mind.</p>
-                        <div class="portfolio-tech">
-                            <span class="tech-tag">React</span>
-                            <span class="tech-tag">Node.js</span>
-                            <span class="tech-tag">MongoDB</span>
-                            <span class="tech-tag">Stripe</span>
+                        <h4>Ortodoncia</h4>
+                        <p>Tratamientos de ortodoncia personalizados para corregir la alineación dental y mejorar la estética facial, utilizando brackets tradicionales y alineadores transparentes.</p>
+                        <div class="portfolio-tech">                            
+                            <span class="tech-tag">Brackets</span>
+                            <span class="tech-tag">Alineadores</span>
+                            <span class="tech-tag">Invisalign</span>
                         </div>
                     </div>
                 </div>
                 <div class="portfolio-item">
                     <div class="portfolio-image"></div>
                     <div class="portfolio-content">
-                        <h4>Brand Identity System</h4>
-                        <p>Complete visual identity redesign for a tech startup, including logo, guidelines, and digital assets. Creating a cohesive brand experience across all touchpoints.</p>
+                        <h4>Endodoncia</h4>
+                        <p>Tratamientos de conducto para salvar dientes dañados o infectados, utilizando técnicas avanzadas para garantizar la comodidad y el éxito del procedimiento.</p>
                         <div class="portfolio-tech">
-                            <span class="tech-tag">Illustrator</span>
-                            <span class="tech-tag">Photoshop</span>
-                            <span class="tech-tag">Figma</span>
-                            <span class="tech-tag">After Effects</span>
+                            <span class="tech-tag">Microscopio Dental</span>
+                            <span class="tech-tag">Instrumentos Rotatorios</span>
+                            <span class="tech-tag">Obturación Termoplástica</span>
+                        </div>
+                        </div>
+                    </div>
+                <div class="portfolio-item">
+                    <div class="portfolio-image"></div>
+                    <div class="portfolio-content">
+                        <h4>Implantes Dentales</h4>
+                        <p>Soluciones permanentes para reemplazar dientes perdidos con implantes de titanio de alta calidad, restaurando funcionalidad y estética natural.</p>
+                        <div class="portfolio-tech">
+                            <span class="tech-tag">Cirugía Guiada</span>
+                            <span class="tech-tag">Coronas Personalizadas</span>
+                            <span class="tech-tag">Oseointegración</span>
                         </div>
                     </div>
                 </div>
                 <div class="portfolio-item">
                     <div class="portfolio-image"></div>
                     <div class="portfolio-content">
-                        <h4>Mobile App Design</h4>
-                        <p>Intuitive mobile app interface for a fitness tracking application with focus on accessibility and user engagement through gamification.</p>
+                        <h4>Blanqueamiento Dental</h4>
+                        <p>Tratamientos de blanqueamiento profesional para aclarar el tono de tus dientes de manera segura y efectiva, logrando una sonrisa más brillante y radiante.</p>
                         <div class="portfolio-tech">
-                            <span class="tech-tag">Figma</span>
-                            <span class="tech-tag">Principle</span>
-                            <span class="tech-tag">React Native</span>
-                            <span class="tech-tag">Lottie</span>
+                            <span class="tech-tag">Gel Blanqueador</span>
+                            <span class="tech-tag">Peróxido de Hidrógeno</span>
+                            <span class="tech-tag">Sesiones Rápidas</span>
                         </div>
                     </div>
                 </div>
                 <div class="portfolio-item">
                     <div class="portfolio-image"></div>
                     <div class="portfolio-content">
-                        <h4>Dashboard Interface</h4>
-                        <p>Clean and functional dashboard design for data analytics platform with complex information architecture and real-time data visualization.</p>
+                        <h4>Odontología Estética</h4>
+                        <p>Diseño de sonrisa integral con carillas de porcelana, resinas estéticas y contorneado dental para lograr la sonrisa perfecta que siempre has deseado.</p>
                         <div class="portfolio-tech">
-                            <span class="tech-tag">Vue.js</span>
-                            <span class="tech-tag">D3.js</span>
-                            <span class="tech-tag">SCSS</span>
-                            <span class="tech-tag">Chart.js</span>
+                            <span class="tech-tag">Carillas de Porcelana</span>
+                            <span class="tech-tag">Resinas Compuestas</span>
+                            <span class="tech-tag">Estética Dental</span>
                         </div>
                     </div>
                 </div>
                 <div class="portfolio-item">
                     <div class="portfolio-image"></div>
                     <div class="portfolio-content">
-                        <h4>Marketing Website</h4>
-                        <p>Modern marketing website with interactive animations and optimized conversion funnels. Built for maximum performance and SEO.</p>
+                        <h4>Limpieza y Prevención</h4>
+                        <p>Profilaxis dental profesional, eliminación de sarro y placa bacteriana, aplicación de flúor y sellantes para mantener tu sonrisa saludable y prevenir enfermedades.</p>
                         <div class="portfolio-tech">
-                            <span class="tech-tag">Next.js</span>
-                            <span class="tech-tag">Framer Motion</span>
-                            <span class="tech-tag">Tailwind CSS</span>
-                            <span class="tech-tag">Vercel</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <div class="portfolio-image"></div>
-                    <div class="portfolio-content">
-                        <h4>Creative Portfolio</h4>
-                        <p>Artistic portfolio website featuring immersive galleries, smooth transitions, and creative storytelling for a digital artist.</p>
-                        <div class="portfolio-tech">
-                            <span class="tech-tag">React</span>
-                            <span class="tech-tag">Three.js</span>
-                            <span class="tech-tag">GSAP</span>
-                            <span class="tech-tag">WebGL</span>
+                            <span class="tech-tag">Ultrasonido</span>
+                            <span class="tech-tag">Profilaxis</span>
+                            <span class="tech-tag">Control Periodontal</span>
                         </div>
                     </div>
                 </div>
@@ -177,6 +128,7 @@ https://templatemo.com/tm-593-personal-shape
     </section>
 
     <!-- Contact Section -->
+     
     <section id="contact" class="contact">
         <div class="contact-floating-shapes">
             <div class="contact-shape contact-shape-1"></div>
@@ -188,51 +140,31 @@ https://templatemo.com/tm-593-personal-shape
         </div>
         <div class="container">
             <div class="contact-content">
-                <h2 class="section-title fade-in">Let's Work Together</h2>
-                <p class="fade-in">Ready to bring your vision to life? Let's discuss how we can create something amazing together. I'm always excited to take on new challenges and collaborate on innovative projects.</p>
+                <h2 class="section-title fade-in">Agenda Tu Cita</h2>
+                <p class="fade-in">¿Listo para transformar tu sonrisa? Contáctanos y descubre cómo podemos ayudarte a lograr la salud dental que mereces. Estamos aquí para escucharte y diseñar el tratamiento perfecto para ti.</p>
                 <form class="contact-form fade-in">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" id="name" name="name" placeholder="Your full name" required>
+                            <label for="name">Nombre Completo</label>
+                            <input type="text" id="name" name="name" placeholder="Tu nombre completo" required>
                         </div>
                         <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                            <label for="email">Correo Electrónico</label>
+                            <input type="email" id="email" name="email" placeholder="tu.correo@ejemplo.com" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" placeholder="What's this about?" required>
+                        <label for="subject">Tratamiento de Interés</label>
+                        <input type="text" id="subject" name="subject" placeholder="¿Qué tratamiento te interesa?" required>
                     </div>
                     <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" rows="6" placeholder="Tell me about your project..." required></textarea>
+                        <label for="message">Mensaje</label>
+                        <textarea id="message" name="message" rows="6" placeholder="Cuéntanos sobre tu situación dental o consulta..." required></textarea>
                     </div>
-                    <button type="submit" class="submit-btn">Send Message</button>
+                    <button type="submit" class="submit-btn">Enviar Mensaje</button>
                 </form>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-left">
-                    <p>&copy; 2025 Personal Shape. All rights reserved.</p>
-                </div>
-                <div class="footer-right">
-                    <a href="#privacy">Privacy Policy</a>
-                    <a href="#terms">Terms of Use</a>
-                    <a href="#sitemap">Sitemap</a>
-                    <a href="https://templatemo.com" target="_blank" rel="noopener nofollow">Provided by TemplateMo</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-<script src="{% static 'js/templatemo-personal-javascripts.js' %}"></script>
-
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,268 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'accounts/css/register.css' %}">
+    <title>DentiPlus - Registro de Paciente</title>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">
+            <h1>Denti<span>Plus</span></h1>
+        </div>
+
+        <div class="welcome-text">
+            <h2>Registro de Paciente</h2>
+            <p>Completa tu información para comenzar tu camino hacia una sonrisa perfecta</p>
+        </div>
+
+        <div class="progress-steps">
+            <div class="step active" data-step="1">
+                <div class="step-circle">1</div>
+                <div class="step-label">Información Personal</div>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-circle">2</div>
+                <div class="step-label">Contacto</div>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-circle">3</div>
+                <div class="step-label">Historia Médica</div>
+            </div>
+        </div>
+
+        <div class="form-section active" id="section1">
+            <h3 class="section-title">Información Personal</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">Nombres <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="firstName" placeholder="Tus nombres" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Apellidos <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="lastName" placeholder="Tus apellidos" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="idType">Tipo de Identificación <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <select id="idType" required>
+                            <option value="">Seleccionar</option>
+                            <option value="cc">Cédula de Ciudadanía</option>
+                            <option value="ce">Cédula de Extranjería</option>
+                            <option value="ti">Tarjeta de Identidad</option>
+                            <option value="pasaporte">Pasaporte</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="idNumber">Número de Identificación <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="idNumber" placeholder="Número de documento" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="birthDate">Fecha de Nacimiento <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="date" id="birthDate" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">Género <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <select id="gender" required>
+                            <option value="">Seleccionar</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="otro">Otro</option>
+                            <option value="prefiero-no-decir">Prefiero no decir</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn btn-next" onclick="nextSection()">Siguiente</button>
+            </div>
+        </div>
+
+        <div class="form-section" id="section2">
+            <h3 class="section-title">Información de Contacto</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email">Correo Electrónico <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="email" id="email" placeholder="tu@email.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Teléfono/Celular <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="phone" placeholder="+57 300 123 4567" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="address">Dirección <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <input type="text" id="address" placeholder="Calle, número, apartamento" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="city">Ciudad <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="city" placeholder="Tu ciudad" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="department">Departamento <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <select id="department" required>
+                            <option value="">Seleccionar</option>
+                            <option value="antioquia">Antioquia</option>
+                            <option value="bogota">Bogotá D.C.</option>
+                            <option value="valle">Valle del Cauca</option>
+                            <option value="cundinamarca">Cundinamarca</option>
+                            <option value="atlantico">Atlántico</option>
+                            <option value="tolima">Tolima</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="emergencyContact">Contacto de Emergencia</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="emergencyContact" placeholder="Nombre completo">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="emergencyPhone">Teléfono de Emergencia</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="emergencyPhone" placeholder="+57 300 123 4567">
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn btn-prev" onclick="prevSection()">Anterior</button>
+                <button type="button" class="btn btn-next" onclick="nextSection()">Siguiente</button>
+            </div>
+        </div>
+
+        <div class="form-section" id="section3">
+            <h3 class="section-title">Historia Médica y Dental</h3>
+            
+            <div class="form-group">
+                <label for="eps">EPS o Seguro Médico</label>
+                <div class="input-wrapper">
+                    <input type="text" id="eps" placeholder="Nombre de tu EPS">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>¿Padeces alguna de las siguientes condiciones?</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="diabetes">
+                        <label for="diabetes">Diabetes</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hipertension">
+                        <label for="hipertension">Hipertensión</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="cardiopatia">
+                        <label for="cardiopatia">Problemas cardíacos</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="alergias">
+                        <label for="alergias">Alergias a medicamentos</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="embarazo">
+                        <label for="embarazo">Embarazo o lactancia</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ninguna">
+                        <label for="ninguna">Ninguna de las anteriores</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="medications">¿Tomas algún medicamento actualmente?</label>
+                <div class="input-wrapper">
+                    <textarea id="medications" placeholder="Especifica los medicamentos y dosis..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="dentalHistory">Historia Dental (tratamientos previos, problemas actuales)</label>
+                <div class="input-wrapper">
+                    <textarea id="dentalHistory" placeholder="Describe tu historial dental..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Crear Contraseña <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" placeholder="Mínimo 8 caracteres" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar Contraseña <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <input type="password" id="confirmPassword" placeholder="Repite tu contraseña" required>
+                </div>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">Acepto los <a href="#">términos y condiciones</a> y la <a href="#">política de privacidad</a></label>
+            </div>
+
+            <p class="terms">
+                Al registrarte, autorizas a DentiPlus para el tratamiento de tus datos personales de acuerdo con la Ley 1581 de 2012.
+            </p>
+
+            <div class="button-group">
+                <button type="button" class="btn btn-prev" onclick="prevSection()">Anterior</button>
+                <button type="button" class="btn btn-submit" onclick="submitForm()">Completar Registro</button>
+            </div>
+        </div>
+
+        <div class="login-link">
+            ¿Ya tienes cuenta? <a href="#" onclick="alert('Ir a inicio de sesión'); return false;">Inicia sesión aquí</a>
+        </div>
+    </div>
+
+    <script src="{% static 'accounts/js/register.js' %}"></script>
+</body>
+</html>
+
