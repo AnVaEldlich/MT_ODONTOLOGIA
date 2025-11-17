@@ -1,5 +1,88 @@
+
 {% extends 'core/base.html' %}
+
+{% load static %}
 {% block content %}
+
+    <link rel="stylesheet" href="{% static 'accounts/css/registro_pro.css' %}">
+
+
+
+    <div class="container">
+
+        <h1>Crear una cuenta gratuita</h1>
+        <div class="cards-container">
+            <!-- Tarjeta de Paciente -->
+            <div class="card" onclick="selectOption('paciente')">
+                <div class="icon-container">
+                    <svg class="icon patient-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="60" r="35" fill="#ffeaa7"/>
+                        <path d="M100 105 C70 105, 50 125, 50 155 L50 180 C50 185, 55 190, 60 190 L140 190 C145 190, 150 185, 150 180 L150 155 C150 125, 130 105, 100 105Z" fill="#00d4aa"/>
+                        <circle cx="100" cy="50" r="25" fill="#2d3436"/>
+                        <path d="M85 55 Q100 65, 115 55" stroke="#2d3436" stroke-width="3" fill="none"/>
+                        <circle cx="90" cy="48" r="3" fill="#2d3436"/>
+                        <circle cx="110" cy="48" r="3" fill="#2d3436"/>
+                        <rect x="85" y="120" width="10" height="20" rx="5" fill="#fab1a0"/>
+                        <path d="M75 140 L85 160" stroke="#fab1a0" stroke-width="8" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h2 class="card-title">Soy paciente</h2>
+                <p class="card-description">Comparte información básica con tu especialista antes de la visita</p>
+            </div>
+
+            <!-- Tarjeta de Especialista -->
+            <div class="card" onclick="selectOption('especialista')">
+                <div class="icon-container">
+                    <svg class="icon doctor-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="60" r="35" fill="#ffeaa7"/>
+                        <path d="M100 105 C70 105, 50 125, 50 155 L50 180 C50 185, 55 190, 60 190 L140 190 C145 190, 150 185, 150 180 L150 155 C150 125, 130 105, 100 105Z" fill="white"/>
+                        <circle cx="100" cy="50" r="25" fill="#2d3436"/>
+                        <circle cx="90" cy="48" r="3" fill="#2d3436"/>
+                        <circle cx="110" cy="48" r="3" fill="#2d3436"/>
+                        <path d="M90 58 Q100 63, 110 58" stroke="#2d3436" stroke-width="2" fill="none"/>
+                        <path d="M70 120 Q100 130, 130 120" stroke="#00a896" stroke-width="15" stroke-linecap="round" fill="none"/>
+                        <circle cx="130" cy="140" r="15" fill="white" stroke="#00a896" stroke-width="3"/>
+                        <circle cx="130" cy="140" r="8" fill="#00a896"/>
+                    </svg>
+                </div>
+                <h2 class="card-title">Soy especialista</h2>
+                <p class="card-description">Consigue que tus pacientes te conozcan, confíen en ti y reserven contigo.</p>
+            </div>
+
+            <!-- Tarjeta de Gerente de Clínica -->
+            <div class="card" onclick="selectOption('gerente')">
+                <div class="icon-container">
+                    <svg class="icon clinic-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="60" y="60" width="80" height="100" fill="white" stroke="#007a6e" stroke-width="4"/>
+                        <rect x="70" y="50" width="60" height="15" fill="#007a6e"/>
+                        <polygon points="100,35 70,50 130,50" fill="#2d5f5a"/>
+                        <rect x="75" y="80" width="15" height="15" fill="#a8dadc"/>
+                        <rect x="95" y="80" width="15" height="15" fill="#a8dadc"/>
+                        <rect x="115" y="80" width="15" height="15" fill="#a8dadc"/>
+                        <rect x="75" y="100" width="15" height="15" fill="#a8dadc"/>
+                        <rect x="95" y="100" width="15" height="15" fill="#a8dadc"/>
+                        <rect x="115" y="100" width="15" height="15" fill="#a8dadc"/>
+                        <rect x="85" y="130" width="30" height="30" fill="#007a6e"/>
+                        <rect x="97" y="135" width="6" height="20" fill="white"/>
+                        <rect x="90" y="142" width="20" height="6" fill="white"/>
+                        <ellipse cx="150" cy="80" rx="12" ry="20" fill="#27ae60"/>
+                        <ellipse cx="160" cy="90" rx="15" ry="25" fill="#2ecc71"/>
+                    </svg>
+                </div>
+                <h2 class="card-title">Soy gerente de una clínica</h2>
+                <p class="card-description">Da mayor visibilidad a tu clínica con un perfil propio.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectOption(tipo) {
+            alert('Has seleccionado: ' + tipo);
+            // Aquí puedes agregar la lógica para redirigir o continuar con el proceso de registro
+        }
+    </script>
+</body>
+</html>
 
 
 

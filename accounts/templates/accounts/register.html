@@ -9,8 +9,8 @@
 </head>
 <body>
     <div class="register-container">
-        <div class="logo">
-            <h1>Denti<span>Plus</span></h1>
+    <div class="logo" onclick="window.location.href='{% url "home" %}'">       
+        <h1>Denti<span>Plus</span></h1>
         </div>
 
         <div class="welcome-text">
@@ -258,7 +258,7 @@
         </div>
 
         <div class="login-link">
-            ¿Ya tienes cuenta? <a href="#" onclick="alert('Ir a inicio de sesión'); return false;">Inicia sesión aquí</a>
+            ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a>
         </div>
     </div>
 

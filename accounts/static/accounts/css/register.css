@@ -65,6 +65,7 @@
         .logo {
             text-align: center;
             margin-bottom: 25px;
+            cursor: pointer;
         }
 
         .logo h1 {
