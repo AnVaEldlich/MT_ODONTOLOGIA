@@ -13,3 +13,6 @@ def register(request):
 def registro_pro(request):
 
     return render(request, 'accounts/registro_pro.html')
+
+def registerprofesional(request):
+    return render(request, 'accounts/registerprofesional.html')

@@ -1,0 +1,162 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+
+   
+   <link rel="stylesheet" href="{% static 'accounts/css/registerprofesional.css' %}">
+    <div class="container">
+        <div class="header">
+            <h1>Crea tu perfil profesional gratuito en Doctoralia</h1>
+            <p>Más de 1.5 millones de pacientes visitan nuestra plataforma cada mes. Aparece en las búsquedas y atrae a los pacientes adecuados, sin costo.</p>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <form id="professionalForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">Nombre(s)</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Apellidos</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="specialty">Especialidad</label>
+                            <select id="specialty" name="specialty" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="medicina-general">Medicina General</option>
+                                <option value="cardiologia">Cardiología</option>
+                                <option value="dermatologia">Dermatología</option>
+                                <option value="pediatria">Pediatría</option>
+                                <option value="ginecologia">Ginecología</option>
+                                <option value="psiquiatria">Psiquiatría</option>
+                                <option value="neurologia">Neurología</option>
+                                <option value="odontologia">Odontología</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Ubicación de tu consulta</label>
+                            <input type="text" id="location" name="location" placeholder="Introduzca la ciudad." required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Número de teléfono móvil</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+57" required>
+                        <div class="help-text">Necesitamos tu teléfono para configurar tu cuenta. No se mostrará en tu perfil.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                        <div class="help-text">Necesitamos tu email para configurar tu cuenta. No se mostrará en tu perfil.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <div class="password-field">
+                            <input type="password" id="password" name="password" required>
+                            <span class="password-toggle" onclick="togglePassword()">👁</span>
+                        </div>
+                    </div>
+
+                    <div class="terms">
+                        Al registrarte, confirmas que estás de acuerdo con nuestros <a href="#">términos y condiciones</a> y que entiendes nuestra <a href="#">política de privacidad</a>.
+                    </div>
+
+                    <button type="submit" class="submit-btn">Crear una cuenta de especialista</button>
+                </form>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-header">
+                    <div class="preview-icon">🔍</div>
+                </div>
+
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <div class="profile-name">Tu nombre</div>
+                    <div class="profile-specialty">Tu especialidad • Tu ciudad</div>
+                    <div class="profile-rating">★ ★ ★ ★ ★</div>
+                </div>
+
+                <div class="profile-details">
+                    <div class="detail-item">
+                        <span>📍</span>
+                        <div class="detail-placeholder"></div>
+                    </div>
+                    <div class="detail-item">
+                        <span>📅</span>
+                        <div class="detail-placeholder"></div>
+                    </div>
+                    <div class="detail-item">
+                        <span>💵</span>
+                        <div class="detail-placeholder"></div>
+                    </div>
+                </div>
+
+                <div class="map-placeholder"></div>
+
+                <div class="info-placeholder">
+                    <div class="info-line" style="width: 100%;"></div>
+                    <div class="info-line" style="width: 85%;"></div>
+                    <div class="info-line" style="width: 95%;"></div>
+                    <div class="info-line" style="width: 70%;"></div>
+                </div>
+
+                <!-- SECCIÓN EDITABLE PARA TU SVG -->
+                <div class="svg-container">
+                    <div class="svg-placeholder">
+                        <!-- COLOCA TU CÓDIGO SVG AQUÍ -->
+                        <p>📝 Espacio para tu SVG personalizado</p>
+                        <p style="margin-top: 10px; font-size: 12px;">Reemplaza este contenido con tu código SVG</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+
+        document.getElementById('professionalForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Formulario enviado correctamente!');
+        });
+
+        // Actualizar vista previa en tiempo real
+        document.getElementById('firstName').addEventListener('input', updatePreview);
+        document.getElementById('lastName').addEventListener('input', updatePreview);
+        document.getElementById('specialty').addEventListener('change', updatePreview);
+        document.getElementById('location').addEventListener('input', updatePreview);
+
+        function updatePreview() {
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const specialty = document.getElementById('specialty').selectedOptions[0]?.text || 'Tu especialidad';
+            const location = document.getElementById('location').value || 'Tu ciudad';
+
+            document.querySelector('.profile-name').textContent = 
+                (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Tu nombre';
+            document.querySelector('.profile-specialty').textContent = 
+                `${specialty} • ${location}`;
+        }
+    </script>
+
+{% endblock %}

@@ -6,23 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}DentiPlus{% endblock %}</title>
     <link href="{% static 'css/templatemo-personal-style.css' %}" rel="stylesheet">
-
 </head>
 
 <body>
 
     <!-- Navigation -->
+
     <nav id="navbar">
         <div class="nav-container">
-            <div class="logo"> DentiPlus </div>
+            <div class="logo" {% if request.path != '/' %} onclick="window.location.href='/';"{% endif %}> DentiPlus </div>
+
             <ul class="nav-links">
-                <li><a href="{% if request.path != '/' %}/{% else %}#home{% endif %}">Inicio</a></li>
-                <li><a href="#about">Sobre</a></li>
-                <li><a href="#portfolio">Tratamientos</a></li>
-                <li><a href="#contact">Agendar cita</a></li>
+            
+            {% if request.path == '/' %}
+
+                <li class="{% if request.path == '/' %}active{% endif %}">
+                    <a href="{% if request.path != '/' %}/{% else %}#home{% endif %}">Inicio</a>
+                </li>
+                <li class="{% if request.path == '/'%}active{% endif %}">
+                    <a href="#about">Sobre</a>
+                </li>
+                <li class="{% if request.path == '/'%}active{% endif %}">
+                    <a href="#portfolio">Tratamientos</a>
+                </li>
+                <li class="{% if request.path == '/'%}active{% endif %}">
+                    <a href="#contact">Agendar cita</a>
+                </li>
 
                 <!-- Dropdown especialistas -->
+
                 <div class="dropdown" id="dd1">
+
                     <button class="dd-toggle" id="dd1_btn" aria-haspopup="true" aria-expanded="false">
                         <span class="dd-label">¿Eres un especialista?</span>
                         <span class="chev" aria-hidden="true"></span>
@@ -32,18 +46,35 @@
                         <a class="menu-item" role="menuitem" href="#">Soluciones para profesionales</a>
                     </div>
                 </div>
+            {% endif %}
+
+
+
+            {% if request.path ==  '/accounts/registro_pro/' %}
+
+            <li>
+                <p>¿Ya tienes una cuenta?</p>
+                <a href="{% url 'login' %}" style="color: cornflowerblue;">Iniciar Sesion</a>          
+            </li>
+
+
+            {% endif %}
+
 
             </ul>
-
+            {% if request.path == '/' %}
             <div class="mobile-menu-toggle" id="mobileMenuToggle">
                 <div class="hamburger"></div>
                 <div class="hamburger"></div>
                 <div class="hamburger"></div>
             </div>
+            {% endif %}
         </div>
     </nav>
 
     <!-- Mobile Menu -->
+
+    {% if request.path == '/' %}
     <div class="mobile-menu" id="mobileMenu">
         <ul class="mobile-nav-links">
             <li><a href="#home">Inicio</a></li>
@@ -52,30 +83,15 @@
             <li><a href="#contact">Agendar cita</a></li>
         </ul>
     </div>
+    {% endif %}
 
     <!-- CONTENIDO QUE CAMBIA EN CADA PÁGINA -->
+
     <main>
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-left">
-                    <p>&copy; 2025 DentiPlus. Todos los derechos reservados.</p>
-                </div>
-
-                <div class="footer-right">
-                    <a href="#privacy">Política de Privacidad</a>
-                    <a href="#terms">Términos de Uso</a>
-                    <a href="#sitemap">Mapa del Sitio</a>
-                    <a href="https://templatemo.com" target="_blank" rel="noopener nofollow">Provided by TemplateMo</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
+ 
 <script src="{% static 'js/templatemo-personal-javascripts.js' %}"></script>
 
 </body>
