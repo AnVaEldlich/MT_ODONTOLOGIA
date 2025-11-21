@@ -5,7 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}DentiPlus{% endblock %}</title>
-    <link href="{% static 'css/templatemo-personal-style.css' %}" rel="stylesheet">
+
+
+    <link href="{% static 'css/templatemo-personal-style.css' %}" rel="stylesheet"> 
+    {% block extra_css %}
+    
+    {% endblock %}
+
 </head>
 
 <body>
@@ -53,8 +59,11 @@
             {% if request.path ==  '/accounts/registro_pro/' %}
 
             <li>
+                
                 <p>¿Ya tienes una cuenta?</p>
-                <a href="{% url 'login' %}" style="color: cornflowerblue;">Iniciar Sesion</a>          
+
+                <a href="{% url 'login' %}" style="color: cornflowerblue;">Iniciar Sesion</a>     
+
             </li>
 
 
@@ -62,12 +71,15 @@
 
 
             </ul>
+
             {% if request.path == '/' %}
+
             <div class="mobile-menu-toggle" id="mobileMenuToggle">
                 <div class="hamburger"></div>
                 <div class="hamburger"></div>
                 <div class="hamburger"></div>
             </div>
+
             {% endif %}
         </div>
     </nav>
@@ -88,7 +100,9 @@
     <!-- CONTENIDO QUE CAMBIA EN CADA PÁGINA -->
 
     <main>
-        {% block content %}{% endblock %}
+        {% block content %}
+        
+        {% endblock %}
     </main>
 
  
