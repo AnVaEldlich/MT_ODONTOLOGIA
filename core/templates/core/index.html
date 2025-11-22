@@ -1,6 +1,10 @@
 {% extends 'core/base.html' %}
+{% load static %}
 {% block content %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/templatemo-personal-style.css' %}">
+{% endblock %}
     <!-- Hero Section -->
     
     <section id="home" class="hero">
@@ -186,3 +190,7 @@
     </footer>
 
 {% endblock %}
+
+    {% block extra_js %}
+    <script src="{% static 'js/templatemo-personal-javascripts.js' %}"></script>
+    {% endblock %}
