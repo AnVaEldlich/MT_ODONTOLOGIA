@@ -9,6 +9,9 @@ https://templatemo.com/tm-593-personal-shape
 @charset "utf-8";
 /* CSS Document */
 
+
+    
+
         * {
             margin: 0;
             padding: 0;
@@ -149,6 +152,8 @@ https://templatemo.com/tm-593-personal-shape
             --glass-border: rgba(255, 255, 255, 0.2);
         }
 
+        
+
         body {
             font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
             line-height: 1.7;
@@ -182,108 +187,6 @@ https://templatemo.com/tm-593-personal-shape
             animation: float 25s ease-in-out infinite;
             opacity: 0.7;
         }
-
-        /* Menu para especialistas */
-
-        .dropdown {
-        position: relative;
-        display: inline-block;
-        }
-
-        .dd-toggle {
-        display:inline-flex;
-        align-items:center;
-        gap:0.6rem;
-        padding:8px 12px;
-        border-radius:8px;
-        background:var(--green);
-        color:var(--white);
-        cursor:pointer;
-        border:none;
-        box-shadow:var(--shadow);
-        font-weight:600;
-        font-size:14px;
-        line-height:1;
-        min-width:180px;
-        justify-content:space-between;
-        }
-
-        .dd-toggle:focus{
-            outline:3px solid rgba(21,179,122,0.18)
-        }
-
-        .dd-label{
-            flex:1;
-            text-align:left;
-        }
-
-        .chev{
-            width:18px;
-            height:18px;
-            border-left:2px solid rgba(255,255,255,0.9);
-            border-bottom:2px solid rgba(255,255,255,0.9);
-            transform:rotate(-45deg);
-            margin-left:6px;
-            opacity:0.95;
-        }
-
-
-        .menu {
-        position:absolute;
-        right:0;top:calc(100% + 10px);
-        background:var(--white);
-        border-radius:8px;
-        min-width:220px;
-        padding:8px 0;
-        box-shadow:var(--shadow);
-        z-index:30;
-        display:none;
-        border:1px solid rgba(10,10,10,0.06);
-        }
-
-        .menu.show{
-            display:block
-        }
-
-        .menu-item{
-
-        display:block;padding:10px 16px;
-        font-size:14px;
-        color:#0b2b26;
-        text-decoration:none;cursor:pointer;
-        white-space:nowrap;
-        text-align:center;
-
-        }
-
-        .menu-item:hover{
-            background:#f6f8f7;
-        }
-
-
-        /* small caret notch like screenshot */
-        .menu::before{
-
-        content:'';
-        position:absolute;
-        right:18px;
-        top:-7px;
-        width:12px;
-        height:12px;
-        background:var(--white);
-        transform:rotate(45deg);
-        box-shadow: -1px -1px 0 rgba(0,0,0,0.02);
-
-        }
-
-
-        /* simple responsive */
-        @media (max-width:420px){
-        .dd-toggle{min-width:150px;font-size:13px}
-        .menu{min-width:180px}
-        }
-
-        /* End menu especialistas */
 
         :root{
         --white: #fff;
