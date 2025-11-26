@@ -1,0 +1,362 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Centro Médico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .form-section {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefits-section {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #1a202c;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        h2 {
+            font-size: 24px;
+            color: #1a202c;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #4a5568;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        label .required {
+            color: #e53e3e;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        input[type="text"]::placeholder {
+            color: #a0aec0;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23718096' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px 24px;
+            background: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background: #2c5282;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #4a5568;
+        }
+
+        .back-link a {
+            color: #3182ce;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .field-note {
+            font-size: 13px;
+            color: #718096;
+            margin-top: 16px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: #f7fafc;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .benefit-item:hover {
+            background: #edf2f7;
+            transform: translateX(4px);
+        }
+
+        .benefit-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 20px;
+        }
+
+        .icon-users {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        .icon-gem {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .icon-check {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .benefit-text {
+            flex: 1;
+        }
+
+        .benefit-text strong {
+            color: #2d3748;
+            font-size: 15px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .benefit-text span {
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        @media (max-width: 968px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .form-section,
+            .benefits-section {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Form Section -->
+        <div class="form-section">
+            <h1>Regístrese como centro médico</h1>
+            
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="clinicName">
+                        Nombre de la clínica/centro <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="clinicName" 
+                        name="clinicName" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="specialists">
+                        ¿Cuántos especialistas trabajan en el centro? <span class="required">*</span>
+                    </label>
+                    <select id="specialists" name="specialists" required>
+                        <option value="">--- Elegir ---</option>
+                        <option value="1-5">1-5 especialistas</option>
+                        <option value="6-10">6-10 especialistas</option>
+                        <option value="11-20">11-20 especialistas</option>
+                        <option value="21-50">21-50 especialistas</option>
+                        <option value="51+">Más de 50 especialistas</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="city">
+                        Ciudad <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="city" 
+                        name="city" 
+                        placeholder="Introducir la ciudad"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    Registrarme de forma gratuita
+                </button>
+
+                <div class="back-link">
+                    ¿No eres profesional de la salud? <a href="{% url 'registro_pro' %}">Volver</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Benefits Section -->
+        <div class="benefits-section">
+            <h2>Impulse el prestigio de su centro</h2>
+            <p class="subtitle">Notará los resultados mes a mes</p>
+
+            <div class="benefit-item">
+                <div class="benefit-icon icon-users">👥</div>
+                <div class="benefit-text">
+                    <strong>Llegue a 1 millón de pacientes al mes</strong>
+                </div>
+            </div>
+
+            <div class="benefit-item">
+                <div class="benefit-icon icon-gem">💎</div>
+                <div class="benefit-text">
+                    <strong>Sitúe a sus doctores en la plataforma de salud líder en todo el mundo</strong>
+                </div>
+            </div>
+
+            <div class="benefit-item">
+                <div class="benefit-icon icon-check">✓</div>
+                <div class="benefit-text">
+                    <strong>Reduzca el ausentismo de pacientes</strong>
+                    <span>hasta en un 85%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                clinicName: document.getElementById('clinicName').value,
+                specialists: document.getElementById('specialists').value,
+                city: document.getElementById('city').value
+            };
+
+            console.log('Datos del formulario:', formData);
+            alert('Formulario enviado correctamente. Revisa la consola para ver los datos.');
+            
+            // Aquí puedes agregar tu lógica para enviar a Django
+            // fetch('/tu-endpoint/', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         'X-CSRFToken': getCookie('csrftoken')
+            //     },
+            //     body: JSON.stringify(formData)
+            // });
+        });
+
+        // Función auxiliar para obtener el CSRF token de Django
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

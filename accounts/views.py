@@ -16,3 +16,6 @@ def registro_pro(request):
 
 def registerprofesional(request):
     return render(request, 'accounts/registerprofesional.html')
+
+def formclinic(request):
+    return render(request, 'accounts/formclinic.html')
