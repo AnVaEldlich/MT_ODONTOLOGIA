@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password
 from .models import Paciente
 
@@ -46,12 +46,10 @@ def register(request):
             password = make_password(request.POST.get("password")),
         )
 
-        return render(request, 'accounts/register.html', {
-            "success": "Paciente registrado correctamente"
-        })
-
+        return redirect('login')
+        
     return render(request, 'accounts/register.html')
-    
+
 def registro_pro(request):
 
     return render(request, 'accounts/registro_pro.html')
