@@ -8,8 +8,10 @@
     <title>DentiPlus - Registro de Paciente</title>
 </head>
 <body>
+    <form id="registrationForm" method="POST" action="{% url 'register' %}">
+        {% csrf_token %}
     <div class="register-container">
-    <div class="logo" onclick="window.location.href='{% url "home" %}'">       
+    <div class="logo" onclick="window.location.href='{% url 'home' %}'">       
         <h1>Denti<span>Plus</span></h1>
         </div>
 
@@ -40,14 +42,14 @@
                 <div class="form-group">
                     <label for="firstName">Nombres <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <input type="text" id="firstName" placeholder="Tus nombres" required>
+                        <input type="text" id="firstName" name="first_name" placeholder="Tus nombres" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="lastName">Apellidos <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <input type="text" id="lastName" placeholder="Tus apellidos" required>
+                        <input type="text" id="lastName" name="last_name" placeholder="Tus apellidos" required>
                     </div>
                 </div>
             </div>
@@ -56,7 +58,7 @@
                 <div class="form-group">
                     <label for="idType">Tipo de Identificación <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <select id="idType" required>
+                        <select id="idType" name="id_type" required>
                             <option value="">Seleccionar</option>
                             <option value="cc">Cédula de Ciudadanía</option>
                             <option value="ce">Cédula de Extranjería</option>
@@ -69,7 +71,7 @@
                 <div class="form-group">
                     <label for="idNumber">Número de Identificación <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <input type="text" id="idNumber" placeholder="Número de documento" required>
+                        <input type="text" id="idNumber" name="id_number" placeholder="Número de documento" required>
                     </div>
                 </div>
             </div>
@@ -78,14 +80,14 @@
                 <div class="form-group">
                     <label for="birthDate">Fecha de Nacimiento <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <input type="date" id="birthDate" required>
+                        <input type="date" id="birthDate" name="birth_date" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="gender">Género <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <select id="gender" required>
+                        <select id="gender" name="gender" required>
                             <option value="">Seleccionar</option>
                             <option value="masculino">Masculino</option>
                             <option value="femenino">Femenino</option>
@@ -108,14 +110,14 @@
                 <div class="form-group">
                     <label for="email">Correo Electrónico <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <input type="email" id="email" placeholder="tu@email.com" required>
+                        <input type="email" id="email" name="email" placeholder="tu@email.com" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="phone">Teléfono/Celular <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <input type="tel" id="phone" placeholder="+57 300 123 4567" required>
+                        <input type="tel" id="phone" name="phone" placeholder="+57 300 123 4567" required>
                     </div>
                 </div>
             </div>
@@ -123,7 +125,7 @@
             <div class="form-group full-width">
                 <label for="address">Dirección <span class="required">*</span></label>
                 <div class="input-wrapper">
-                    <input type="text" id="address" placeholder="Calle, número, apartamento" required>
+                    <input type="text" id="address" name="address" placeholder="Calle, número, apartamento" required>
                 </div>
             </div>
 
@@ -131,14 +133,14 @@
                 <div class="form-group">
                     <label for="city">Ciudad <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <input type="text" id="city" placeholder="Tu ciudad" required>
+                        <input type="text" id="city" name="city" placeholder="Tu ciudad" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="department">Departamento <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <select id="department" required>
+                        <select id="department" name="department" required>
                             <option value="">Seleccionar</option>
                             <option value="antioquia">Antioquia</option>
                             <option value="bogota">Bogotá D.C.</option>
@@ -156,14 +158,14 @@
                 <div class="form-group">
                     <label for="emergencyContact">Contacto de Emergencia</label>
                     <div class="input-wrapper">
-                        <input type="text" id="emergencyContact" placeholder="Nombre completo">
+                        <input type="text" id="emergencyContact" name="emergency_contact" placeholder="Nombre completo">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="emergencyPhone">Teléfono de Emergencia</label>
                     <div class="input-wrapper">
-                        <input type="tel" id="emergencyPhone" placeholder="+57 300 123 4567">
+                        <input type="tel" id="emergencyPhone" name="emergency_phone" placeholder="+57 300 123 4567">
                     </div>
                 </div>
             </div>
@@ -180,7 +182,7 @@
             <div class="form-group">
                 <label for="eps">EPS o Seguro Médico</label>
                 <div class="input-wrapper">
-                    <input type="text" id="eps" placeholder="Nombre de tu EPS">
+                    <input type="text" id="eps" name="eps" placeholder="Nombre de tu EPS">
                 </div>
             </div>
 
@@ -188,27 +190,27 @@
                 <label>¿Padeces alguna de las siguientes condiciones?</label>
                 <div class="checkbox-group">
                     <div class="checkbox-item">
-                        <input type="checkbox" id="diabetes">
+                        <input type="checkbox" id="diabetes" name="conditions[]" value="diabetes">
                         <label for="diabetes">Diabetes</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="hipertension">
+                        <input type="checkbox" id="hipertension" name="conditions[]" value="hipertension">
                         <label for="hipertension">Hipertensión</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="cardiopatia">
+                        <input type="checkbox" id="cardiopatia" name="conditions[]" value="cardiopatia">
                         <label for="cardiopatia">Problemas cardíacos</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="alergias">
+                        <input type="checkbox" id="alergias" name="conditions[]" value="alergias">
                         <label for="alergias">Alergias a medicamentos</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="embarazo">
+                        <input type="checkbox" id="embarazo" name="conditions[]" value="embarazo">
                         <label for="embarazo">Embarazo o lactancia</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="ninguna">
+                        <input type="checkbox" id="ninguna" name="conditions[]" value="ninguna">
                         <label for="ninguna">Ninguna de las anteriores</label>
                     </div>
                 </div>
@@ -217,33 +219,33 @@
             <div class="form-group">
                 <label for="medications">¿Tomas algún medicamento actualmente?</label>
                 <div class="input-wrapper">
-                    <textarea id="medications" placeholder="Especifica los medicamentos y dosis..."></textarea>
+                    <textarea id="medications" name="medications" placeholder="Especifica los medicamentos y dosis..."></textarea>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="dentalHistory">Historia Dental (tratamientos previos, problemas actuales)</label>
                 <div class="input-wrapper">
-                    <textarea id="dentalHistory" placeholder="Describe tu historial dental..."></textarea>
+                    <textarea id="dentalHistory" name="dental_history" placeholder="Describe tu historial dental..."></textarea>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="password">Crear Contraseña <span class="required">*</span></label>
                 <div class="input-wrapper">
-                    <input type="password" id="password" placeholder="Mínimo 8 caracteres" required>
+                    <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres" required>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="confirmPassword">Confirmar Contraseña <span class="required">*</span></label>
                 <div class="input-wrapper">
-                    <input type="password" id="confirmPassword" placeholder="Repite tu contraseña" required>
+                    <input type="password" id="confirmPassword" name="confirm_password" placeholder="Repite tu contraseña" required>
                 </div>
             </div>
 
             <div class="checkbox-item">
-                <input type="checkbox" id="terms" required>
+                <input type="checkbox" id="terms" name="terms" required>
                 <label for="terms">Acepto los <a href="#">términos y condiciones</a> y la <a href="#">política de privacidad</a></label>
             </div>
 
@@ -253,7 +255,8 @@
 
             <div class="button-group">
                 <button type="button" class="btn btn-prev" onclick="prevSection()">Anterior</button>
-                <button type="button" class="btn btn-submit" onclick="submitForm()">Completar Registro</button>
+                <button type="submit" class="btn btn-submit">Completar Registro</button>
+
             </div>
         </div>
 
@@ -261,8 +264,7 @@
             ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a>
         </div>
     </div>
-
+    </form>
     <script src="{% static 'accounts/js/register.js' %}"></script>
 </body>
 </html>
-
