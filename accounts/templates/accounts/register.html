@@ -117,7 +117,7 @@
                 <div class="form-group">
                     <label for="phone">Teléfono/Celular <span class="required">*</span></label>
                     <div class="input-wrapper">
-                        <input type="tel" id="phone" name="phone" placeholder="+57 300 123 4567" required>
+                        <input type="tel"  oninput="this.value = this.value.replace(/[^0-9+ ]/g, '')" id="phone" name="phone" placeholder="300 123 4567" required>
                     </div>
                 </div>
             </div>
@@ -158,14 +158,14 @@
                 <div class="form-group">
                     <label for="emergencyContact">Contacto de Emergencia</label>
                     <div class="input-wrapper">
-                        <input type="text" id="emergencyContact" name="emergency_contact" placeholder="Nombre completo">
+                        <input type="text" oninput="this.value = this.value.replace(/[^A-Za-záéíóúÁÉÍÓÚñÑ ]/g, '')"  id="emergencyContact" name="emergency_contact" placeholder="Nombre completo" required>
                     </div>
                 </div>
-
+                
                 <div class="form-group">
                     <label for="emergencyPhone">Teléfono de Emergencia</label>
                     <div class="input-wrapper">
-                        <input type="tel" id="emergencyPhone" name="emergency_phone" placeholder="+57 300 123 4567">
+                        <input type="tel"  oninput="this.value = this.value.replace(/[^0-9+ ]/g, '')" id="emergencyPhone" name="emergency_phone" placeholder="+57 300 123 4567">
                     </div>
                 </div>
             </div>
