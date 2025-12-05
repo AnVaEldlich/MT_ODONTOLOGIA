@@ -24,28 +24,76 @@
         <form method="post" id="registerForm" class="form-content">
           {% csrf_token %}
           
+          <!-- Mensajes de error -->
+          {% if messages %}
+            <div class="messages">
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+          
           <!-- Nombre y Apellidos -->
           <div class="grid-2">
             <div class="form-group">
               <label class="form-label">Nombre(s) *</label>
               <input
                 type="text"
-                name="nombre"
-                id="nombre"
+                name="first_name"
+                id="first_name"
                 required
                 class="form-input"
                 placeholder="Ej: María José"
+                value="{{ form.first_name.value|default:'' }}"
               />
+              {% if form.first_name.errors %}
+                <span class="error-text">{{ form.first_name.errors.0 }}</span>
+              {% endif %}
             </div>
             <div class="form-group">
               <label class="form-label">Apellidos *</label>
               <input
                 type="text"
-                name="apellidos"
-                id="apellidos"
+                name="last_name"
+                id="last_name"
                 required
                 class="form-input"
                 placeholder="Ej: González Pérez"
+                value="{{ form.last_name.value|default:'' }}"
+              />
+              {% if form.last_name.errors %}
+                <span class="error-text">{{ form.last_name.errors.0 }}</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Identificación -->
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Tipo de Identificación *</label>
+              <div class="select-wrapper">
+                <select name="id_type" id="id_type" required class="form-input">
+                  <option value="">Selecciona tipo</option>
+                  <option value="CC">Cédula de Ciudadanía</option>
+                  <option value="CE">Cédula de Extranjería</option>
+                  <option value="PAS">Pasaporte</option>
+                  <option value="TI">Tarjeta de Identidad</option>
+                </select>
+                <span class="select-icon">▼</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Número de Identificación *</label>
+              <input
+                type="text"
+                name="id_number"
+                id="id_number"
+                required
+                class="form-input"
+                placeholder="Ej: 1234567890"
+                value="{{ form.id_number.value|default:'' }}"
               />
             </div>
           </div>
@@ -78,7 +126,8 @@
                 id="ubicacion"
                 required
                 class="form-input"
-                placeholder="Introduce la ciudad"
+                placeholder="Ej: Ibagué, Tolima"
+                value="{{ form.ubicacion.value|default:'' }}"
               />
             </div>
           </div>
@@ -87,8 +136,8 @@
           <div class="form-group">
             <label class="form-label">Número de teléfono móvil *</label>
             <div class="phone-input">
-              <select name="codigo_pais" class="phone-code">
-                <option value="+57">+57</option>
+              <select name="codigo_pais" id="codigo_pais" class="phone-code">
+                <option value="+57" selected>+57</option>
                 <option value="+1">+1</option>
                 <option value="+52">+52</option>
                 <option value="+34">+34</option>
@@ -100,50 +149,88 @@
                 required
                 class="form-input flex-1"
                 placeholder="300 123 4567"
+                pattern="[0-9]{10}"
+                value="{{ form.telefono.value|default:'' }}"
               />
             </div>
             <p class="form-hint">
-              Necesitamos tu teléfono para configurar tu cuenta. No se mostrará en tu perfil.
+              Necesitamos tu teléfono para configurar tu cuenta. No se mostrará públicamente sin tu autorización.
             </p>
           </div>
 
-          <!-- Email -->
-          <div class="form-group">
-            <label class="form-label">Email *</label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              required
-              class="form-input"
-              placeholder="tu@email.com"
-            />
-            <p class="form-hint">
-              Necesitamos tu email para configurar tu cuenta. No se mostrará en tu perfil.
-            </p>
-          </div>
-
-          <!-- Contraseña -->
-          <div class="form-group">
-            <label class="form-label">Contraseña *</label>
-            <div class="password-wrapper">
+          <!-- Email y Usuario -->
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Email *</label>
               <input
-                type="password"
-                name="password"
-                id="password"
+                type="email"
+                name="email"
+                id="email"
                 required
                 class="form-input"
-                placeholder="Mínimo 8 caracteres"
+                placeholder="tu@email.com"
+                value="{{ form.email.value|default:'' }}"
               />
-              <button type="button" class="password-toggle" id="togglePassword">
-                <svg class="eye-icon" id="eyeOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                <svg class="eye-icon hidden" id="eyeClosed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                </svg>
-              </button>
+              <p class="form-hint">
+                Se usará para acceder a tu cuenta
+              </p>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nombre de usuario *</label>
+              <input
+                type="text"
+                name="username"
+                id="username"
+                required
+                class="form-input"
+                placeholder="usuario123"
+                value="{{ form.username.value|default:'' }}"
+              />
+              <p class="form-hint">
+                Solo letras, números y @/./+/-/_
+              </p>
+            </div>
+          </div>
+
+          <!-- Contraseñas -->
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Contraseña *</label>
+              <div class="password-wrapper">
+                <input
+                  type="password"
+                  name="password1"
+                  id="password1"
+                  required
+                  class="form-input"
+                  placeholder="Mínimo 8 caracteres"
+                />
+                <button type="button" class="password-toggle" data-target="password1">
+                  <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirmar Contraseña *</label>
+              <div class="password-wrapper">
+                <input
+                  type="password"
+                  name="password2"
+                  id="password2"
+                  required
+                  class="form-input"
+                  placeholder="Repite tu contraseña"
+                />
+                <button type="button" class="password-toggle" data-target="password2">
+                  <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -151,16 +238,16 @@
           <div class="terms-wrapper">
             <input
               type="checkbox"
-              name="aceptaTerminos"
-              id="aceptaTerminos"
+              name="acepta_terminos"
+              id="acepta_terminos"
               required
               class="checkbox"
             />
-            <label for="aceptaTerminos" class="terms-label">
+            <label for="acepta_terminos" class="terms-label">
               Al registrarte, confirmas que estás de acuerdo con nuestros
-              <a href="#" class="link">términos y condiciones</a>
+              <a href=" " target="_blank" class="link">términos y condiciones</a>
               y que entiendes nuestra
-              <a href="#" class="link">política de privacidad</a>.
+              <a href=" " target="_blank" class="link">política de privacidad</a>.
             </label>
           </div>
 
@@ -168,6 +255,14 @@
           <button type="submit" class="submit-btn">
             Crear una cuenta de especialista
           </button>
+
+          <!-- Link a login -->
+          <div class="text-center mt-4">
+            <p class="text-sm text-gray-600">
+              ¿Ya tienes una cuenta? 
+              <a href="{% url 'login' %}" class="link">Inicia sesión aquí</a>
+            </p>
+          </div>
         </form>
       </div>
 
@@ -176,7 +271,7 @@
         <div class="preview-card">
           <div class="preview-header">
             <div class="preview-icon">✨</div>
-            <h3 class="preview-title">Vista previa</h3>
+            <h3 class="preview-title">Vista previa de tu perfil</h3>
           </div>
 
           <div class="preview-profile">
@@ -186,12 +281,12 @@
               </svg>
             </div>
             <h4 class="preview-name">
-              <!-- <span id="previewNombre"></span>
-              <span id="previewApellidos"></span> -->
+              <span id="previewNombre">Tu Nombre</span>
+              <span id="previewApellidos"></span>
             </h4>
             <p class="preview-info">
-              <!-- <span id="previewEspecialidad"></span>
-              <span id="previewUbicacion"></span> -->
+              <span id="previewEspecialidad">Tu Especialidad</span>
+              <span id="previewUbicacionText"></span>
             </p>
             <div class="preview-rating">
               <span class="star">★</span>
@@ -199,6 +294,7 @@
               <span class="star">★</span>
               <span class="star">★</span>
               <span class="star">★</span>
+              <span class="rating-text">5.0</span>
             </div>
           </div>
 

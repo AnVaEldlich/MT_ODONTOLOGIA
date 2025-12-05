@@ -1,127 +1,166 @@
 // registerprofesional.js
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Toggle password visibility
-  const togglePassword = document.getElementById('togglePassword');
-  const passwordInput = document.getElementById('password');
-  const eyeOpen = document.getElementById('eyeOpen');
-  const eyeClosed = document.getElementById('eyeClosed');
-
-  if (togglePassword) {
-    togglePassword.addEventListener('click', function() {
-      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-      passwordInput.setAttribute('type', type);
-      
-      eyeOpen.classList.toggle('hidden');
-      eyeClosed.classList.toggle('hidden');
-    });
-  }
-
-  // Update preview in real-time
-  const nombreInput = document.getElementById('nombre');
-  const apellidosInput = document.getElementById('apellidos');
-  const especialidadInput = document.getElementById('especialidad');
-  const ubicacionInput = document.getElementById('ubicacion');
-
-  const previewNombre = document.getElementById('previewNombre');
-  const previewApellidos = document.getElementById('previewApellidos');
-  const previewEspecialidad = document.getElementById('previewEspecialidad');
-  const previewUbicacion = document.getElementById('previewUbicacion');
-  const previewUbicacion2 = document.getElementById('previewUbicacion2');
-
-  // Update nombre
-  if (nombreInput) {
-    nombreInput.addEventListener('input', function() {
-      previewNombre.textContent = this.value || 'Tu nombre';
-    });
-  }
-
-  // Update apellidos
-  if (apellidosInput) {
-    apellidosInput.addEventListener('input', function() {
-      const apellidosText = this.value ? ' ' + this.value : '';
-      previewApellidos.textContent = apellidosText;
-    });
-  }
-
-  // Update especialidad
-  if (especialidadInput) {
-    especialidadInput.addEventListener('change', function() {
-      const selectedText = this.options[this.selectedIndex].text;
-      previewEspecialidad.textContent = this.value ? selectedText : 'Tu especialidad';
-      updatePreviewInfo();
-    });
-  }
-
-  // Update ubicacion
-  if (ubicacionInput) {
-    ubicacionInput.addEventListener('input', function() {
-      const ubicacionText = this.value || 'Tu ciudad';
-      previewUbicacion2.textContent = this.value || 'Ubicación de consulta';
-      updatePreviewInfo();
-    });
-  }
-
-  // Function to update the separator in preview info
-  function updatePreviewInfo() {
-    const especialidad = especialidadInput.value ? 
-      especialidadInput.options[especialidadInput.selectedIndex].text : 'Tu especialidad';
-    const ubicacion = ubicacionInput.value || '';
+    // Elementos del formulario
+    const form = document.getElementById('registerForm');
+    const firstNameInput = document.getElementById('first_name');
+    const lastNameInput = document.getElementById('last_name');
+    const especialidadSelect = document.getElementById('especialidad');
+    const ubicacionInput = document.getElementById('ubicacion');
     
-    if (ubicacion) {
-      previewUbicacion.textContent = ' • ' + ubicacion;
-    } else {
-      previewUbicacion.textContent = '';
+    // Elementos del preview
+    const previewNombre = document.getElementById('previewNombre');
+    const previewApellidos = document.getElementById('previewApellidos');
+    const previewEspecialidad = document.getElementById('previewEspecialidad');
+    const previewUbicacionText = document.getElementById('previewUbicacionText');
+    const previewUbicacion2 = document.getElementById('previewUbicacion2');
+    
+    // Mapa de especialidades
+    const especialidadesMap = {
+        'odontologia-general': 'Odontología General',
+        'ortodoncia': 'Ortodoncia',
+        'endodoncia': 'Endodoncia',
+        'periodoncia': 'Periodoncia',
+        'odontopediatria': 'Odontopediatría',
+        'cirugia-oral': 'Cirugía Oral',
+        'implantologia': 'Implantología',
+        'estetica-dental': 'Estética Dental',
+        'prostodoncia': 'Prostodoncia'
+    };
+    
+    // Actualizar preview en tiempo real
+    function updatePreview() {
+        const nombre = firstNameInput.value.trim();
+        const apellidos = lastNameInput.value.trim();
+        const especialidad = especialidadSelect.value;
+        const ubicacion = ubicacionInput.value.trim();
+        
+        // Actualizar nombre
+        if (nombre || apellidos) {
+            previewNombre.textContent = nombre || 'Tu Nombre';
+            previewApellidos.textContent = apellidos ? ' ' + apellidos : '';
+        } else {
+            previewNombre.textContent = 'Tu Nombre';
+            previewApellidos.textContent = '';
+        }
+        
+        // Actualizar especialidad
+        if (especialidad) {
+            previewEspecialidad.textContent = especialidadesMap[especialidad];
+        } else {
+            previewEspecialidad.textContent = 'Tu Especialidad';
+        }
+        
+        // Actualizar ubicación
+        if (ubicacion) {
+            previewUbicacionText.textContent = ' • ' + ubicacion;
+            previewUbicacion2.textContent = ubicacion;
+        } else {
+            previewUbicacionText.textContent = '';
+            previewUbicacion2.textContent = 'Ubicación de consulta';
+        }
     }
-  }
-
-  // Form validation
-  const registerForm = document.getElementById('registerForm');
-  
-  if (registerForm) {
-    registerForm.addEventListener('submit', function(e) {
-      const password = document.getElementById('password').value;
-      
-      // Validate password length
-      if (password.length < 8) {
-        e.preventDefault();
-        alert('La contraseña debe tener al menos 8 caracteres.');
-        return false;
-      }
-      
-      // Validate terms acceptance
-      const aceptaTerminos = document.getElementById('aceptaTerminos');
-      if (!aceptaTerminos.checked) {
-        e.preventDefault();
-        alert('Debes aceptar los términos y condiciones.');
-        return false;
-      }
-      
-      // If everything is OK, the form will submit normally
-      // Django will handle the POST request
+    
+    // Event listeners para actualizar preview
+    if (firstNameInput) firstNameInput.addEventListener('input', updatePreview);
+    if (lastNameInput) lastNameInput.addEventListener('input', updatePreview);
+    if (especialidadSelect) especialidadSelect.addEventListener('change', updatePreview);
+    if (ubicacionInput) ubicacionInput.addEventListener('input', updatePreview);
+    
+    // Toggle password visibility
+    const passwordToggles = document.querySelectorAll('.password-toggle');
+    
+    passwordToggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            
+            if (passwordInput) {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                } else {
+                    passwordInput.type = 'password';
+                }
+            }
+        });
     });
-  }
-
-  // Optional: Phone number formatting (Colombia)
-  const telefonoInput = document.getElementById('telefono');
-  if (telefonoInput) {
-    telefonoInput.addEventListener('input', function(e) {
-      // Remove all non-numeric characters
-      let value = this.value.replace(/\D/g, '');
-      
-      // Limit to 10 digits (for Colombia)
-      if (value.length > 10) {
-        value = value.substring(0, 10);
-      }
-      
-      // Format as XXX XXX XXXX
-      if (value.length > 6) {
-        value = value.substring(0, 3) + ' ' + value.substring(3, 6) + ' ' + value.substring(6);
-      } else if (value.length > 3) {
-        value = value.substring(0, 3) + ' ' + value.substring(3);
-      }
-      
-      this.value = value;
-    });
-  }
+    
+    // Validación de teléfono en tiempo real
+    const telefonoInput = document.getElementById('telefono');
+    if (telefonoInput) {
+        telefonoInput.addEventListener('input', function(e) {
+            // Permitir solo números y espacios
+            this.value = this.value.replace(/[^0-9\s]/g, '');
+        });
+    }
+    
+    // Validación del formulario antes de enviar
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const password1 = document.getElementById('password1').value;
+            const password2 = document.getElementById('password2').value;
+            const aceptaTerminos = document.getElementById('acepta_terminos').checked;
+            
+            // Validar contraseñas
+            if (password1 !== password2) {
+                e.preventDefault();
+                alert('Las contraseñas no coinciden. Por favor, verifica.');
+                return false;
+            }
+            
+            if (password1.length < 8) {
+                e.preventDefault();
+                alert('La contraseña debe tener al menos 8 caracteres.');
+                return false;
+            }
+            
+            // Validar términos
+            if (!aceptaTerminos) {
+                e.preventDefault();
+                alert('Debes aceptar los términos y condiciones para continuar.');
+                return false;
+            }
+            
+            // Mostrar loader o desactivar botón
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creando cuenta...';
+            }
+        });
+    }
+    
+    // Validación de email en tiempo real
+    const emailInput = document.getElementById('email');
+    if (emailInput) {
+        emailInput.addEventListener('blur', function() {
+            const email = this.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (email && !emailRegex.test(email)) {
+                this.setCustomValidity('Por favor, ingresa un email válido');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+    
+    // Auto-formatear teléfono
+    if (telefonoInput) {
+        telefonoInput.addEventListener('blur', function() {
+            let phone = this.value.replace(/\s/g, '');
+            if (phone.length === 10) {
+                // Formato: 300 123 4567
+                this.value = phone.substring(0, 3) + ' ' + 
+                            phone.substring(3, 6) + ' ' + 
+                            phone.substring(6);
+            }
+        });
+    }
+    
+    // Animar el scroll al primer error
+    const errorInputs = document.querySelectorAll('.error-text');
+    if (errorInputs.length > 0) {
+        errorInputs[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
 });

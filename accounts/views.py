@@ -55,7 +55,17 @@ def registro_pro(request):
     return render(request, 'accounts/registro_pro.html')
 
 def registerprofesional(request):
-    return render(request, 'accounts/registerprofesional.html')
+        """
+        Vista para registrar un nuevo profesional.
+        """
+        if request.method == "POST":
+            # Aquí puedes manejar el formulario de registro del profesional
+            # Por ejemplo, obtener los datos del formulario y guardarlos en la base de datos
+            pass
+
+
+        return render(request, 'accounts/registerprofesional.html')
+
 
 def formclinic(request):
     return render(request, 'accounts/formclinic.html')

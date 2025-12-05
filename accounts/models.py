@@ -44,14 +44,21 @@ class Paciente(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.id_number}"
 
-        
+
 
 class Profesional(models.Model):
-    # Información Personal
+
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    
     id_type = models.CharField(max_length=20)
     id_number = models.CharField(max_length=30, unique=True)
+    especialidad = models.CharField(max_length=100)
+    ubicacion = models.CharField(max_length=255)
+    codigo_pais = models.CharField(max_length=10)
+    telefono = models.CharField(max_length=20)
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=150, unique=True)
+    password1 = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    birth_date = models
+
