@@ -82,8 +82,10 @@ def registerprofesional(request):
             telefono=request.POST['telefono'],
         )
 
+        return redirect('login')
 
-        return render(request, 'accounts/registerprofesional.html')
+
+    return render(request, 'accounts/registerprofesional.html')
 
 
 def formclinic(request):
