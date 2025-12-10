@@ -143,13 +143,14 @@
                 <option value="+34">+34</option>
               </select>
               <input
+           <input
                 type="tel"
                 name="telefono"
                 id="telefono"
                 required
                 class="form-input flex-1"
-                placeholder="300 123 4567"
-                pattern="[0-9]{10}"
+                placeholder="+57 300 123 4567"
+                pattern="^\+?57[ -]?[0-9]{10}$"
                 value="{{ form.telefono.value|default:'' }}"
               />
             </div>

@@ -1,20 +1,18 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password
+from django.contrib import messages
+from django.db import transaction
 from .models import Paciente
 from .models import Profesional
 from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 
 def login_view(request):
-
     return render(request, 'accounts/login.html')
 
 def register(request):
-
     if request.method == "POST":
-        
         # 1. Obtener lista de condiciones marcadas
         conditions = request.POST.getlist("conditions[]")
 
@@ -54,39 +52,32 @@ def register(request):
     return render(request, 'accounts/register.html')
 
 def registro_pro(request):
-
     return render(request, 'accounts/registro_pro.html')
 
 def registerprofesional(request):
 
     if request.method == 'POST':
-        # Crear el User
-        user = User.objects.create(
+            # Crear el usuario
+        user = User.objects.create_user(
             username=request.POST['username'],
             email=request.POST['email'],
-            first_name=request.POST['first_name'],
-            last_name=request.POST['last_name'],
-            password=make_password(request.POST['password1'])  # Hashea la contraseña
+            password=request.POST['password1'],
+            first_name=request.POST['first_name'],  # Guardar aquí
+            last_name=request.POST['last_name']      # Guardar aquí
         )
         
-        # Crear el Profesional vinculado
-        profesional = Profesional.objects.create(
+        # Crear el profesional
+        Profesional.objects.create(
             user=user,
-            first_name=request.POST['first_name'],
-            last_name=request.POST['last_name'],
             id_type=request.POST['id_type'],
             id_number=request.POST['id_number'],
             especialidad=request.POST['especialidad'],
             ubicacion=request.POST['ubicacion'],
             codigo_pais=request.POST['codigo_pais'],
-            telefono=request.POST['telefono'],
+            telefono=request.POST['telefono']
         )
-
-        return redirect('login')
-
-
+        
     return render(request, 'accounts/registerprofesional.html')
-
 
 def formclinic(request):
     return render(request, 'accounts/formclinic.html')

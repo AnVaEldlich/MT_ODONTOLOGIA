@@ -46,7 +46,6 @@ class Paciente(models.Model):
         return f"{self.first_name} {self.last_name} - {self.id_number}"
 
 
-
 class Profesional(models.Model):
     ID_TYPE_CHOICES = [
         ('CC', 'Cédula de Ciudadanía'),
@@ -70,26 +69,50 @@ class Profesional(models.Model):
     # Relación con User de Django (esto maneja username, email, password)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profesional')
     
-    # Datos personales
-    first_name = models.CharField(max_length=100, verbose_name="Nombre(s)")
-    last_name = models.CharField(max_length=100, verbose_name="Apellidos")
+    # Datos personales (ya no necesitas estos campos aquí, están en User)
+    # first_name y last_name se guardarán en user.first_name y user.last_name
     
     # Identificación
-    id_type = models.CharField(max_length=20, choices=ID_TYPE_CHOICES, verbose_name="Tipo de Identificación")
-    id_number = models.CharField(max_length=30, unique=True, verbose_name="Número de Identificación")
+    id_type = models.CharField(
+        max_length=3,  # Cambiado de 20 a 3 porque tus choices son 'CC', 'CE', 'PAS', 'TI'
+        choices=ID_TYPE_CHOICES, 
+        verbose_name="Tipo de Identificación"
+    )
+    id_number = models.CharField(
+        max_length=30, 
+        unique=True, 
+        verbose_name="Número de Identificación"
+    )
     
     # Información profesional
-    especialidad = models.CharField(max_length=100, choices=ESPECIALIDAD_CHOICES, verbose_name="Especialidad")
-    ubicacion = models.CharField(max_length=255, verbose_name="Ubicación")
+    especialidad = models.CharField(
+        max_length=50,  # Ajustado al tamaño real de tus opciones
+        choices=ESPECIALIDAD_CHOICES, 
+        verbose_name="Especialidad"
+    )
+    ubicacion = models.CharField(
+        max_length=255, 
+        verbose_name="Ubicación"
+    )
     
     # Contacto
-    codigo_pais = models.CharField(max_length=10, default='+57')
-    telefono = models.CharField(max_length=20, verbose_name="Teléfono")
+    codigo_pais = models.CharField(
+        max_length=5, 
+        default='+57',
+        verbose_name="Código de país"
+    )
+    telefono = models.CharField(
+        max_length=20, 
+        verbose_name="Teléfono"
+    )
     
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_verified = models.BooleanField(default=False, verbose_name="Perfil verificado")
+    is_verified = models.BooleanField(
+        default=False, 
+        verbose_name="Perfil verificado"
+    )
 
     class Meta:
         verbose_name = "Profesional"
@@ -97,7 +120,11 @@ class Profesional(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} - {self.get_especialidad_display()}"
+        return f"{self.user.first_name} {self.user.last_name} - {self.get_especialidad_display()}"
 
     def get_full_name(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.user.first_name} {self.user.last_name}"
+    
+    def get_full_phone(self):
+        """Retorna el teléfono completo con código de país"""
+        return f"{self.codigo_pais} {self.telefono}"
