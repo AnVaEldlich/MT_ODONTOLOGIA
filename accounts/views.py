@@ -2,8 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.db import transaction
-from .models import Paciente
-from .models import Profesional
+from .models import Paciente, Profesional, ClinicCenter
 from django.contrib.auth.models import User
 
 # Create your views here.
@@ -80,4 +79,14 @@ def registerprofesional(request):
     return render(request, 'accounts/registerprofesional.html')
 
 def formclinic(request):
+    if request.method == "POST":
+        # Crear el centro médico
+        ClinicCenter.objects.create(
+            clinic_name=request.POST.get("clinicName"),
+            specialists_range=request.POST.get("specialists"),
+            city=request.POST.get("city"),
+        )
+        messages.success(request, "Centro Médico registrado exitosamente.")
+        return redirect('formclinic')
+    
     return render(request, 'accounts/formclinic.html')
