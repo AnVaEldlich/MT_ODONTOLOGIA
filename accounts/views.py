@@ -17,6 +17,7 @@ def register(request):
 
         # 2. Crear el paciente con los booleanos correctos
         Paciente.objects.create(
+            
             first_name = request.POST.get("first_name"),
             last_name = request.POST.get("last_name"),
             id_type = request.POST.get("id_type"),
