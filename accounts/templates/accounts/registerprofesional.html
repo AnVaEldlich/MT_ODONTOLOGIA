@@ -23,48 +23,34 @@
       <div class="form-section">
         <form method="post" id="registerForm" class="form-content">
           {% csrf_token %}
-          
+
           <!-- Mensajes de error -->
           {% if messages %}
-            <div class="messages">
-              {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                  {{ message }}
-                </div>
-              {% endfor %}
+          <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+              {{ message }}
             </div>
+            {% endfor %}
+          </div>
           {% endif %}
-          
+
           <!-- Nombre y Apellidos -->
           <div class="grid-2">
             <div class="form-group">
               <label class="form-label">Nombre(s) *</label>
-              <input
-                type="text"
-                name="first_name"
-                id="first_name"
-                required
-                class="form-input"
-                placeholder="Ej: María José"
-                value="{{ form.first_name.value|default:'' }}"
-              />
+              <input type="text" name="first_name" id="first_name" required class="form-input"
+                placeholder="Ej: María José" value="{{ form.first_name.value|default:'' }}" />
               {% if form.first_name.errors %}
-                <span class="error-text">{{ form.first_name.errors.0 }}</span>
+              <span class="error-text">{{ form.first_name.errors.0 }}</span>
               {% endif %}
             </div>
             <div class="form-group">
               <label class="form-label">Apellidos *</label>
-              <input
-                type="text"
-                name="last_name"
-                id="last_name"
-                required
-                class="form-input"
-                placeholder="Ej: González Pérez"
-                value="{{ form.last_name.value|default:'' }}"
-              />
+              <input type="text" name="last_name" id="last_name" required class="form-input"
+                placeholder="Ej: González Pérez" value="{{ form.last_name.value|default:'' }}" />
               {% if form.last_name.errors %}
-                <span class="error-text">{{ form.last_name.errors.0 }}</span>
+              <span class="error-text">{{ form.last_name.errors.0 }}</span>
               {% endif %}
             </div>
           </div>
@@ -86,15 +72,8 @@
             </div>
             <div class="form-group">
               <label class="form-label">Número de Identificación *</label>
-              <input
-                type="text"
-                name="id_number"
-                id="id_number"
-                required
-                class="form-input"
-                placeholder="Ej: 1234567890"
-                value="{{ form.id_number.value|default:'' }}"
-              />
+              <input type="text" name="id_number" id="id_number" required class="form-input"
+                placeholder="Ej: 1234567890" value="{{ form.id_number.value|default:'' }}" />
             </div>
           </div>
 
@@ -120,15 +99,8 @@
             </div>
             <div class="form-group">
               <label class="form-label">Ubicación de tu consulta *</label>
-              <input
-                type="text"
-                name="ubicacion"
-                id="ubicacion"
-                required
-                class="form-input"
-                placeholder="Ej: Ibagué, Tolima"
-                value="{{ form.ubicacion.value|default:'' }}"
-              />
+              <input type="text" name="ubicacion" id="ubicacion" required class="form-input"
+                placeholder="Ej: Ibagué, Tolima" value="{{ form.ubicacion.value|default:'' }}" />
             </div>
           </div>
 
@@ -142,17 +114,9 @@
                 <option value="+52">+52</option>
                 <option value="+34">+34</option>
               </select>
-              <input
-           <input
-                type="tel"
-                name="telefono"
-                id="telefono"
-                required
-                class="form-input flex-1"
-                placeholder="+57 300 123 4567"
-                pattern="^\+?57[ -]?[0-9]{10}$"
-                value="{{ form.telefono.value|default:'' }}"
-              />
+              <input <input type="tel" name="telefono" id="telefono" required class="form-input flex-1"
+                placeholder="+57 300 123 4567" pattern="^\+?57[ -]?[0-9]{10}$"
+                value="{{ form.telefono.value|default:'' }}" />
             </div>
             <p class="form-hint">
               Necesitamos tu teléfono para configurar tu cuenta. No se mostrará públicamente sin tu autorización.
@@ -163,30 +127,16 @@
           <div class="grid-2">
             <div class="form-group">
               <label class="form-label">Email *</label>
-              <input
-                type="email"
-                name="email"
-                id="email"
-                required
-                class="form-input"
-                placeholder="tu@email.com"
-                value="{{ form.email.value|default:'' }}"
-              />
+              <input type="email" name="email" id="email" required class="form-input" placeholder="tu@email.com"
+                value="{{ form.email.value|default:'' }}" />
               <p class="form-hint">
                 Se usará para acceder a tu cuenta
               </p>
             </div>
             <div class="form-group">
               <label class="form-label">Nombre de usuario *</label>
-              <input
-                type="text"
-                name="username"
-                id="username"
-                required
-                class="form-input"
-                placeholder="usuario123"
-                value="{{ form.username.value|default:'' }}"
-              />
+              <input type="text" name="username" id="username" required class="form-input" placeholder="usuario123"
+                value="{{ form.username.value|default:'' }}" />
               <p class="form-hint">
                 Solo letras, números y @/./+/-/_
               </p>
@@ -198,18 +148,14 @@
             <div class="form-group">
               <label class="form-label">Contraseña *</label>
               <div class="password-wrapper">
-                <input
-                  type="password"
-                  name="password1"
-                  id="password1"
-                  required
-                  class="form-input"
-                  placeholder="Mínimo 8 caracteres"
-                />
+                <input type="password" name="password1" id="password1" required class="form-input"
+                  placeholder="Mínimo 8 caracteres" />
                 <button type="button" class="password-toggle" data-target="password1">
                   <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </button>
               </div>
@@ -217,18 +163,14 @@
             <div class="form-group">
               <label class="form-label">Confirmar Contraseña *</label>
               <div class="password-wrapper">
-                <input
-                  type="password"
-                  name="password2"
-                  id="password2"
-                  required
-                  class="form-input"
-                  placeholder="Repite tu contraseña"
-                />
+                <input type="password" name="password2" id="password2" required class="form-input"
+                  placeholder="Repite tu contraseña" />
                 <button type="button" class="password-toggle" data-target="password2">
                   <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </button>
               </div>
@@ -237,13 +179,7 @@
 
           <!-- Términos y condiciones -->
           <div class="terms-wrapper">
-            <input
-              type="checkbox"
-              name="acepta_terminos"
-              id="acepta_terminos"
-              required
-              class="checkbox"
-            />
+            <input type="checkbox" name="acepta_terminos" id="acepta_terminos" required class="checkbox" />
             <label for="acepta_terminos" class="terms-label">
               Al registrarte, confirmas que estás de acuerdo con nuestros
               <a href=" " target="_blank" class="link">términos y condiciones</a>
@@ -260,7 +196,7 @@
           <!-- Link a login -->
           <div class="text-center mt-4">
             <p class="text-sm text-gray-600">
-              ¿Ya tienes una cuenta? 
+              ¿Ya tienes una cuenta?
               <a href="{% url 'login' %}" class="link">Inicia sesión aquí</a>
             </p>
           </div>
@@ -278,7 +214,8 @@
           <div class="preview-profile">
             <div class="preview-avatar">
               <svg class="avatar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
             <h4 class="preview-name">
@@ -302,20 +239,24 @@
           <div class="preview-details">
             <div class="detail-item">
               <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <span id="previewUbicacion2">Ubicación de consulta</span>
             </div>
             <div class="detail-item">
               <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <span>Horarios disponibles</span>
             </div>
             <div class="detail-item">
               <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>Perfil verificado</span>
             </div>

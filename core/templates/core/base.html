@@ -4,11 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}DentiPlus{% endblock %}</title>
-
-
-   
-   <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <title>{% block title %}MT ODONTOLOGIA INTEGRAL{% endblock %}</title>
+    <link rel="icon" href="{% static 'images/teeth.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
     {% block extra_css %}
     
     {% endblock %}
@@ -21,7 +19,7 @@
 
     <nav id="navbar">
         <div class="nav-container">
-            <div class="logo" {% if request.path != '/' %} onclick="window.location.href='/';"{% endif %}> DentiPlus </div>
+            <div class="logo" {% if request.path != '/' %} onclick="window.location.href='/';"{% endif %}> MT ODONTOLOGIA </div>
 
             <ul class="nav-links">
             

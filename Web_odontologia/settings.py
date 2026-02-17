@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'perfiles',
 ]
 
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -73,6 +75,7 @@ TEMPLATES = [
 
 
 STATIC_URL = 'static/'
+
 
 STATICFILES_DIRS = [
     BASE_DIR / "core" / "static"

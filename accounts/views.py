@@ -1,16 +1,18 @@
+"""Account management views for patient and professional registration."""
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
-from django.db import transaction
-from .models import Paciente, Profesional, ClinicCenter
 from django.contrib.auth.models import User
+from .models import Paciente, Profesional, ClinicCenter
 
-# Create your views here.
 
 def login_view(request):
+    """Display the login page."""
     return render(request, 'accounts/login.html')
 
+
 def register(request):
+    """Handle patient registration."""
     if request.method == "POST":
         # 1. Obtener lista de condiciones marcadas
         conditions = request.POST.getlist("conditions[]")
@@ -40,7 +42,7 @@ def register(request):
             alergias = "alergias" in conditions,
             embarazo = "embarazo" in conditions,
             ninguna = "ninguna" in conditions,
-
+ 
             medications = request.POST.get("medications"),
             dental_history = request.POST.get("dental_history"),
 
@@ -48,22 +50,25 @@ def register(request):
         )
 
         return redirect('login')
-        
+
     return render(request, 'accounts/register.html')
 
+
 def registro_pro(request):
+    """Display the professional registration page."""
     return render(request, 'accounts/registro_pro.html')
 
-def registerprofesional(request):
 
+def registerprofesional(request):
+    """Handle professional registration."""
     if request.method == 'POST':
-            # Crear el usuario
+        # Crear el usuario
         user = User.objects.create_user(
             username=request.POST['username'],
             email=request.POST['email'],
             password=request.POST['password1'],
-            first_name=request.POST['first_name'],  # Guardar aquí
-            last_name=request.POST['last_name']      # Guardar aquí
+            first_name=request.POST['first_name'],
+            last_name=request.POST['last_name']
         )
         
         # Crear el profesional
@@ -76,10 +81,12 @@ def registerprofesional(request):
             codigo_pais=request.POST['codigo_pais'],
             telefono=request.POST['telefono']
         )
-        
+
     return render(request, 'accounts/registerprofesional.html')
 
+
 def formclinic(request):
+    """Handle clinic center registration."""
     if request.method == "POST":
         # Crear el centro médico
         ClinicCenter.objects.create(
@@ -89,5 +96,5 @@ def formclinic(request):
         )
         messages.success(request, "Centro Médico registrado exitosamente.")
         return redirect('formclinic')
-    
+
     return render(request, 'accounts/formclinic.html')
