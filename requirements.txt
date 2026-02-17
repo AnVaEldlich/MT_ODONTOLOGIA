@@ -1,4 +1,4 @@
-# DentiPlus - Dependencias del Proyecto
+# MT ODONTOLOGIA - Dependencias del Proyecto
 # Python 3.10+
 
 # Framework principal

@@ -2,30 +2,28 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro Centro Médico</title>
     <link rel="stylesheet" href="{% static 'accounts/css/formclinic.css' %}">
+    <link rel="icon" href="{% static 'images/teeth.png' %}" type="image/x-icon">
 </head>
+
 <body>
     <div class="container">
         <!-- Form Section -->
         <div class="form-section">
             <h1>Regístrese como centro médico</h1>
-            
+
             <form id="registrationForm" method="POST" action="{% url 'formclinic' %}">
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="clinicName">
                         Nombre de la clínica/centro <span class="required">*</span>
                     </label>
-                    <input 
-                        type="text" 
-                        id="clinicName" 
-                        name="clinicName" 
-                        required
-                    >
+                    <input type="text" id="clinicName" name="clinicName" required>
                 </div>
 
                 <div class="form-group">
@@ -46,13 +44,7 @@
                     <label for="city">
                         Ciudad <span class="required">*</span>
                     </label>
-                    <input 
-                        type="text" 
-                        id="city" 
-                        name="city" 
-                        placeholder="Introducir la ciudad"
-                        required
-                    >
+                    <input type="text" id="city" name="city" placeholder="Introducir la ciudad" required>
                 </div>
 
                 <button type="submit" class="btn btn-submit">
@@ -94,4 +86,5 @@
         </div>
     </div>
 </body>
+
 </html>
