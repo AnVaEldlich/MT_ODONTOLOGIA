@@ -1,32 +1,67 @@
 """Account management views for patient and professional registration."""
 from django.shortcuts import render, redirect
-from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.contrib.auth.models import User
 from .models import Paciente, Profesional, ClinicCenter
+from django.contrib.auth import authenticate, login
 
 
 def login_view(request):
     """Display the login page."""
+    if request.method == "POST":
+        user = authenticate(
+            request,
+            username=request.POST.get("email"),
+            password=request.POST.get("password")
+        )
+
+        if user is not None:
+            login(request, user)
+            return redirect('perfil')
+        else:
+            messages.error(request, "Invalid credentials")
+
     return render(request, 'accounts/login.html')
 
 
 def register(request):
     """Handle patient registration."""
     if request.method == "POST":
+
+        email = request.POST.get("email")
+        id_number = request.POST.get("id_number")
+
+        if User.objects.filter(username=email).exists():
+            messages.error(request, "User already exists")
+            return redirect('register')
+        
+        if Paciente.objects.filter(id_number=id_number).exists():
+            messages.error(request, "Patient already registered")
+            return redirect('register')
+
         # 1. Obtener lista de condiciones marcadas
         conditions = request.POST.getlist("conditions[]")
+
+        user = User.objects.create_user(
+            username=email,  # o username separado
+            email=email,
+            password=request.POST.get("password"),
+            first_name=request.POST.get("first_name"),
+            last_name=request.POST.get("last_name")
+    )
 
         # 2. Crear el paciente con los booleanos correctos
         Paciente.objects.create(
             
+            user=user,
+
             first_name = request.POST.get("first_name"),
             last_name = request.POST.get("last_name"),
             id_type = request.POST.get("id_type"),
             id_number = request.POST.get("id_number"),
             birth_date = request.POST.get("birth_date"),
             gender = request.POST.get("gender"),
-            email = request.POST.get("email"),
+            # email = request.POST.get("email"),
             phone = request.POST.get("phone"),
             address = request.POST.get("address"),
             city = request.POST.get("city"),
@@ -46,11 +81,14 @@ def register(request):
             medications = request.POST.get("medications"),
             dental_history = request.POST.get("dental_history"),
 
-            password = make_password(request.POST.get("password")),
+            # password = make_password(request.POST.get("password")),
         )
 
-        return redirect('login')
+        
 
+        login(request, user)
+
+        return redirect('perfil')  # Redirige al perfil del paciente después del registro
     return render(request, 'accounts/register.html')
 
 

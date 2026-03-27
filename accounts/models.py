@@ -16,7 +16,7 @@ class Paciente(models.Model):
     gender = models.CharField(max_length=20)
 
     # Información de contacto
-    email = models.EmailField(unique=True)
+    # email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
@@ -39,9 +39,16 @@ class Paciente(models.Model):
     dental_history = models.TextField(blank=True, null=True)
 
     # Contraseña
-    password = models.CharField(max_length=255)
+    # password = models.CharField(max_length=255)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='paciente',
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.id_number}"
