@@ -75,6 +75,7 @@
                         <label for="idNumber">Número de Identificación <span class="required">*</span></label>
                         <div class="input-wrapper">
                             <input type="text" id="idNumber" name="id_number" placeholder="Número de documento"
+                                inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 required>
                         </div>
                     </div>
