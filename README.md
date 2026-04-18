@@ -1,8 +1,8 @@
-# 🦷 DentiPlus - Sistema Web de Gestión Odontológica
+# 🦷 MT ODONTOLOGIA - Sistema Web de Gestión Odontológica
 
 ## 📋 Descripción General
 
-**DentiPlus** es una aplicación web moderna desarrollada con **Django 5.2.7** que proporciona un sistema integral de gestión para clínicas odontológicas. La plataforma permite la administración de pacientes, profesionales de la salud dental y citas, facilitando la comunicación y coordinación entre clientes y proveedores de servicios odontológicos.
+**MT ODONTOLOGIA** es una aplicación web moderna desarrollada con **Django 5.2.7** que proporciona un sistema integral de gestión para clínicas odontológicas. La plataforma permite la administración de pacientes, profesionales de la salud dental y citas, facilitando la comunicación y coordinación entre clientes y proveedores de servicios odontológicos.
 
 ### Características Principales
 

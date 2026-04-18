@@ -72,7 +72,7 @@
                 return;
             }
 
-            alert('¡Registro exitoso!\n\nBienvenido a DentiPlus. Tu sonrisa perfecta nos inspira.\n\nEsta es una plantilla de demostración.');
+            alert('¡Registro exitoso!\n\nBienvenido a MT ODONTOLOGIA. Tu sonrisa perfecta nos inspira.\n\nEsta es una plantilla de demostración.');
         }
 
         document.getElementById('ninguna').addEventListener('change', function() {
