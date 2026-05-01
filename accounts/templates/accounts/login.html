@@ -11,6 +11,7 @@
 </head>
 
 <body>
+    <form action="{% url 'login_view' %}" method="POST">
     <div class="login-container">
         <div class="logo" onclick="window.location.href='{% url 'home' %}'">
             <h1>MT ODONTOLOGIA INTEGRAL</h1>
@@ -43,7 +44,7 @@
                 contraseña?</a>
         </div>
 
-        <button class="btn-login" onclick="handleLogin()">Iniciar Sesión</button>
+        <button class="btn-login" type="submit">Iniciar Sesión</button>
 
         <div class="divider">
             <span>o</span>
@@ -53,8 +54,9 @@
             ¿No tienes cuenta? <a href="{% url 'register' %}"> Regístrate aquí</a>
         </div>
     </div>
-
+    </form>
     <script src="{% static 'accounts/js/login.js' %}"></script>
+
 </body>
 
 </html>

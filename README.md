@@ -1,17 +1,17 @@
-# 🦷 MT ODONTOLOGIA - Sistema Web de Gestión Odontológica
+# MT ODONTOLOGIA - Sistema Web de Gestión Odontológica
 
-## 📋 Descripción General
+## Descripción General
 
 **MT ODONTOLOGIA** es una aplicación web moderna desarrollada con **Django 5.2.7** que proporciona un sistema integral de gestión para clínicas odontológicas. La plataforma permite la administración de pacientes, profesionales de la salud dental y citas, facilitando la comunicación y coordinación entre clientes y proveedores de servicios odontológicos.
 
 ### Características Principales
 
-- 👥 **Gestión de Pacientes**: Registro completo con información personal, médica y de contacto
-- 🏥 **Gestión de Profesionales**: Registro de odontólogos con especialidades variadas
-- 📅 **Sistema de Citas**: Coordinación entre pacientes y profesionales
-- 🔐 **Autenticación**: Sistemas de login y registro separados para pacientes y profesionales
-- 💾 **Base de Datos Robusta**: MySQL para almacenamiento confiable
-- 🎨 **Interfaz Moderna**: Diseño responsivo con CSS avanzado y JavaScript interactivo
+-  **Gestión de Pacientes**: Registro completo con información personal, médica y de contacto
+-  **Gestión de Profesionales**: Registro de odontólogos con especialidades variadas
+-  **Sistema de Citas**: Coordinación entre pacientes y profesionales
+-  **Autenticación**: Sistemas de login y registro separados para pacientes y profesionales
+-  **Base de Datos Robusta**: MySQL para almacenamiento confiable
+-  **Interfaz Moderna**: Diseño responsivo con CSS avanzado y JavaScript interactivo
 
 ---
 
