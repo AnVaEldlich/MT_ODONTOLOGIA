@@ -5,7 +5,7 @@
 Django==5.2.7
 
 # Base de datos
-mysqlclient==2.2.0
+PyMySQL==1.1.0
 
 # Variables de entorno (Recomendado)
 python-decouple==3.8

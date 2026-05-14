@@ -10,10 +10,30 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def _load_dotenv() -> None:
+    """Carga WEB_ODONTOLOGIA/.env sin depender del cwd (estable con autoreload)."""
+    path = BASE_DIR / ".env"
+    if not path.is_file():
+        return
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, val = line.partition("=")
+        key = key.strip()
+        val = val.strip().strip('"').strip("'")
+        if key:
+            os.environ[key] = val
+
+
+_load_dotenv()
 
 
 # Quick-start development settings - unsuitable for production
@@ -87,19 +107,29 @@ WSGI_APPLICATION = 'Web_odontologia.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'db_de_odontologia',
-        'USER': 'root',
-        'PASSWORD': '3080',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
+_use_sqlite = os.getenv("USE_SQLITE", "True").lower() in ("true", "1", "yes", "on")
+
+if _use_sqlite:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.getenv("DB_NAME", "db_de_odontologia"),
+            "USER": os.getenv("DB_USER", "root"),
+            "PASSWORD": os.getenv("DB_PASSWORD", "3080"),
+            "HOST": os.getenv("DB_HOST", "localhost"),
+            "PORT": os.getenv("DB_PORT", "3306"),
+            "OPTIONS": {
+                "charset": "utf8mb4",
+            },
+        }
+    }
 
 
 # Password validation
