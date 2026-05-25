@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis citas — MT Odontología</title>
+    <link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
+    <style>
+        .wrap { max-width: 720px; margin: 2rem auto; padding: 1rem 2rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #eee; }
+        .badge { padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.85rem; }
+        .pendiente { background: #fef3c7; }
+        .confirmada { background: #d1fae5; }
+        .cancelada { background: #fee2e2; }
+        .actions a, .actions button { margin-right: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1>Mis citas</h1>
+        <p><a href="{% url 'solicitar_cita' %}">+ Nueva cita</a> · <a href="{% url 'perfil' %}">Perfil</a> · <a href="{% url 'logout' %}">Salir</a></p>
+        {% if messages %}{% for m in messages %}<p>{{ m }}</p>{% endfor %}{% endif %}
+        {% if citas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Profesional</th>
+                    <th>Estado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cita in citas %}
+                <tr>
+                    <td>{{ cita.fecha_hora|date:"d/m/Y H:i" }}</td>
+                    <td>{{ cita.profesional.get_full_name }} ({{ cita.profesional.get_especialidad_display }})</td>
+                    <td><span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span></td>
+                    <td class="actions">
+                        {% if cita.estado != 'cancelada' %}
+                        <form method="post" action="{% url 'cancelar_cita' cita.pk %}" style="display:inline">
+                            {% csrf_token %}
+                            <button type="submit">Cancelar</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No tienes citas. <a href="{% url 'solicitar_cita' %}">Agenda la primera</a>.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

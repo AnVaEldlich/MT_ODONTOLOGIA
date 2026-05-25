@@ -22,6 +22,8 @@
                 <h2>Registro de Paciente</h2>
                 <p>Completa tu información para comenzar tu camino hacia una sonrisa perfecta</p>
             </div>
+            {% if messages %}{% for message in messages %}<p style="color:#b91c1c;text-align:center">{{ message }}</p>{% endfor %}{% endif %}
+            {% if form.non_field_errors %}{% for error in form.non_field_errors %}<p style="color:#b91c1c;text-align:center">{{ error }}</p>{% endfor %}{% endif %}
 
             <div class="progress-steps">
                 <div class="step active" data-step="1">

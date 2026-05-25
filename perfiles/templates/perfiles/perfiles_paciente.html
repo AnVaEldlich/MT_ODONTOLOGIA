@@ -1,105 +1,69 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Settings</title>
+    <title>Mi perfil — MT Odontología</title>
     <link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
 </head>
-
 <body>
-    <div class="sidebar">
-        <div class="sidebar-icon">⊞</div>
-        <div class="sidebar-icon">◷</div>
-        <div class="sidebar-icon">⚙</div>
-        <div class="sidebar-icon">💬</div>
-        <div class="sidebar-icon">⚙</div>
-    </div>
-
     <div class="container">
         <div class="header">
             <div class="welcome-section">
-                <h1>Welcome, Amanda</h1>
-                <p>Tue 07 June 2022</p>
+                <h1>Hola, {{ paciente.first_name }}</h1>
+                <p>{{ paciente.city }}, {{ paciente.department }}</p>
             </div>
             <div class="header-right">
-                <div class="search-box">
-                    <span>🔍</span>
-                    <input type="text" placeholder="Search">
-                </div>
-                <div class="notification-icon">🔔</div>
-                <div class="user-avatar"></div>
+                <a href="{% url 'solicitar_cita' %}">Agendar cita</a>
+                <a href="{% url 'mis_citas' %}">Mis citas</a>
+                <a href="{% url 'logout' %}">Cerrar sesión</a>
             </div>
         </div>
 
-        <div class="banner"></div>
-
         <div class="profile-section">
             <div class="profile-header">
-                <div class="profile-info">
-                    <div class="profile-avatar">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70'%3E%3Crect fill='%23ddd' width='70' height='70'/%3E%3C/svg%3E"
-                            alt="Profile">
-                    </div>
-                    <div class="profile-details">
-                        <h2>Alexa Rawles</h2>
-                        <p>alexarawles@gmail.com</p>
-                    </div>
+                <div class="profile-details">
+                    <h2>{{ paciente.first_name }} {{ paciente.last_name }}</h2>
+                    <p>{{ user.email }}</p>
+                    <p>Documento: {{ paciente.id_type }} {{ paciente.id_number }}</p>
+                    <p>Teléfono: {{ paciente.phone }}</p>
+                    {% if paciente.eps %}<p>EPS: {{ paciente.eps }}</p>{% endif %}
                 </div>
-                <button class="edit-btn">Edit</button>
             </div>
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" placeholder="Your First Name">
+                    <label>Dirección</label>
+                    <p>{{ paciente.address }}</p>
                 </div>
                 <div class="form-group">
-                    <label>Nick Name</label>
-                    <input type="text" placeholder="Your First Name">
+                    <label>Fecha de nacimiento</label>
+                    <p>{{ paciente.birth_date|date:"d/m/Y" }}</p>
                 </div>
                 <div class="form-group">
-                    <label>Gender</label>
-                    <select>
-                        <option>Your First Name</option>
-                    </select>
+                    <label>Género</label>
+                    <p>{{ paciente.gender }}</p>
                 </div>
-                <div class="form-group">
-                    <label>Country</label>
-                    <select>
-                        <option>Your First Name</option>
-                    </select>
+                {% if paciente.dental_history %}
+                <div class="form-group full-width">
+                    <label>Historia dental</label>
+                    <p>{{ paciente.dental_history }}</p>
                 </div>
-                <div class="form-group">
-                    <label>Language</label>
-                    <select>
-                        <option>Your First Name</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Time Zone</label>
-                    <select>
-                        <option>Your First Name</option>
-                    </select>
-                </div>
+                {% endif %}
             </div>
 
-            <div class="email-section">
-                <h3>My email Address</h3>
-                <div class="email-item">
-                    <div class="email-icon">✉</div>
-                    <div class="email-details">
-                        <p>alexarawles@gmail.com</p>
-                        <span>1 month ago</span>
-                    </div>
-                </div>
-                <button class="add-email-btn">+ Add Email Address</button>
-            </div>
+            <h3 style="margin-top:2rem">Próximas citas</h3>
+            {% if citas %}
+            <ul>
+                {% for cita in citas %}
+                <li>{{ cita.fecha_hora|date:"d/m/Y H:i" }} — Dr(a). {{ cita.profesional.get_full_name }} ({{ cita.get_estado_display }})</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p><a href="{% url 'solicitar_cita' %}">Agenda tu primera cita</a></p>
+            {% endif %}
         </div>
     </div>
 </body>
-
 </html>

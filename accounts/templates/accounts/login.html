@@ -7,56 +7,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MT ODONTOLOGIA INTEGRAL - Iniciar Sesión</title>
     <link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
-    <link rel="icon" href="{% static 'images/teeth.png' %}" type="image/x-icon">
 </head>
 
 <body>
-    <form action="{% url 'login_view' %}" method="POST">
-    <div class="login-container">
-        <div class="logo" onclick="window.location.href='{% url 'home' %}'">
-            <h1>MT ODONTOLOGIA INTEGRAL</h1>
-        </div>
-        <div class="welcome-text">
-            <p>Inicia sesión para continuar</p>
-        </div>
+    <form action="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}" method="POST">
+        {% csrf_token %}
+        <div class="login-container">
+            <div class="logo" onclick="window.location.href='{% url 'home' %}'">
+                <h1>MT ODONTOLOGIA INTEGRAL</h1>
+            </div>
+            <div class="welcome-text">
+                <p>Inicia sesión para continuar</p>
+            </div>
 
-        <div class="form-group">
-            <label for="email">Correo electrónico</label>
-            <div class="input-wrapper">
-                <input type="email" id="email" placeholder="tu@email.com" autocomplete="email">
+            {% if messages %}
+            {% for message in messages %}
+            <p class="form-error">{{ message }}</p>
+            {% endfor %}
+            {% endif %}
+            {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+            <p class="form-error">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+
+            <div class="form-group">
+                <label for="id_email">Correo electrónico</label>
+                <div class="input-wrapper">
+                    {{ form.email }}
+                </div>
+                {% if form.email.errors %}<p class="form-error">{{ form.email.errors.0 }}</p>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password">Contraseña</label>
+                <div class="input-wrapper">
+                    {{ form.password }}
+                </div>
+                {% if form.password.errors %}<p class="form-error">{{ form.password.errors.0 }}</p>{% endif %}
+            </div>
+
+            <button class="btn-login" type="submit">Iniciar Sesión</button>
+
+            <div class="divider">
+                <span>o</span>
+            </div>
+
+            <div class="register-link">
+                ¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a>
             </div>
         </div>
-
-        <div class="form-group">
-            <label for="password">Contraseña</label>
-            <div class="input-wrapper">
-                <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
-            </div>
-        </div>
-
-        <div class="checkbox-wrapper">
-            <input type="checkbox" id="remember">
-            <label for="remember">Recordarme</label>
-        </div>
-
-        <div class="forgot-password">
-            <a href="#" onclick="alert('Funcionalidad de recuperación de contraseña'); return false;">¿Olvidaste tu
-                contraseña?</a>
-        </div>
-
-        <button class="btn-login" type="submit">Iniciar Sesión</button>
-
-        <div class="divider">
-            <span>o</span>
-        </div>
-
-        <div class="register-link">
-            ¿No tienes cuenta? <a href="{% url 'register' %}"> Regístrate aquí</a>
-        </div>
-    </div>
     </form>
-    <script src="{% static 'accounts/js/login.js' %}"></script>
-
 </body>
 
 </html>
