@@ -1,44 +1,35 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel profesional — MT Odontología</title>
-    <link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="welcome-section">
-                <h1>Dr(a). {{ profesional.get_full_name }}</h1>
-                <p>{{ profesional.get_especialidad_display }} — {{ profesional.ubicacion }}</p>
-            </div>
-            <div class="header-right">
-                <a href="{% url 'agenda_profesional' %}">Agenda</a>
-                <a href="{% url 'logout' %}">Cerrar sesión</a>
-            </div>
-        </div>
+{% extends 'perfiles/base_panel.html' %}
 
-        <div class="profile-section">
-            <p>Documento: {{ profesional.id_type }} {{ profesional.id_number }}</p>
-            <p>Contacto: {{ profesional.get_full_phone }}</p>
-            <p>Correo: {{ user.email }}</p>
+{% block panel_title %}Panel profesional — MT Odontología{% endblock %}
 
-            <h3 style="margin-top:2rem">Citas programadas</h3>
-            {% if citas %}
-            <ul>
-                {% for cita in citas %}
-                {% if cita.estado != 'cancelada' %}
-                <li>{{ cita.fecha_hora|date:"d/m/Y H:i" }} — {{ cita.paciente.first_name }} {{ cita.paciente.last_name }} ({{ cita.get_estado_display }})</li>
-                {% endif %}
-                {% endfor %}
-            </ul>
-            <p><a href="{% url 'agenda_profesional' %}">Ver agenda completa y calendario</a></p>
-            {% else %}
-            <p>No hay citas. Aparecerán cuando los pacientes soliciten.</p>
-            {% endif %}
-        </div>
+{% block panel_content %}
+<div class="profile-header">
+    <div class="profile-details">
+        <h2>Dr(a). {{ profesional.get_full_name }}</h2>
+        <p>{{ profesional.get_especialidad_display }} — {{ profesional.ubicacion }}</p>
+        <p>Documento: {{ profesional.get_id_type_display }} {{ profesional.id_number }}</p>
+        <p>Contacto: {{ profesional.get_full_phone }}</p>
+        <p>Correo: {{ user.email }}</p>
+        {% if profesional.is_verified %}
+        <p style="margin-top:0.5rem"><span class="badge-verified">Perfil verificado</span></p>
+        {% endif %}
     </div>
-</body>
-</html>
+    <a href="{% url 'editar_perfil_profesional' %}" class="edit-btn">Editar perfil</a>
+</div>
+
+<h3 style="margin-top:1rem;margin-bottom:0.75rem;font-size:1.1rem;color:#334155">Citas programadas</h3>
+{% if citas %}
+<ul style="list-style:none;padding:0">
+    {% for cita in citas %}
+    <li style="padding:0.5rem 0;border-bottom:1px solid #eee">
+        {{ cita.fecha_hora|date:"d/m/Y H:i" }} — {{ cita.paciente.first_name }} {{ cita.paciente.last_name }}
+        <span class="badge-condition">{{ cita.get_estado_display }}</span>
+        {% if cita.motivo %}<br><small style="color:#94a3b8">{{ cita.motivo }}</small>{% endif %}
+    </li>
+    {% endfor %}
+</ul>
+<p style="margin-top:1rem"><a href="{% url 'agenda_profesional' %}">Ver agenda completa y calendario</a></p>
+{% else %}
+<p style="color:#64748b">No hay citas. Aparecerán cuando los pacientes soliciten.</p>
+{% endif %}
+{% endblock %}

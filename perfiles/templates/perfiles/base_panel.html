@@ -1,0 +1,127 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
+<style>
+    .panel-page {
+        padding: 2rem 1rem 4rem;
+        min-height: calc(100vh - 80px);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .panel-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    .panel-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 1.25rem;
+        padding: 1.25rem 2rem;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        align-items: center;
+    }
+    .panel-nav a {
+        color: #4F7DF3;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .panel-nav a:hover {
+        text-decoration: underline;
+    }
+    .panel-nav a.active {
+        color: #0f172a;
+        font-weight: 600;
+    }
+    .panel-messages {
+        padding: 1rem 2rem 0;
+    }
+    .panel-messages .message {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    .panel-messages .success { background: #d1fae5; color: #065f46; }
+    .panel-messages .error { background: #fee2e2; color: #991b1b; }
+    .panel-messages .info { background: #dbeafe; color: #1e40af; }
+    .panel-messages .warning { background: #fef3c7; color: #92400e; }
+    .panel-body {
+        padding: 2rem;
+    }
+    .badge-verified {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: #d1fae5;
+        color: #065f46;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .badge-condition {
+        display: inline-block;
+        padding: 0.25rem 0.6rem;
+        margin: 0.2rem 0.25rem 0.2rem 0;
+        background: #f1f5f9;
+        color: #475569;
+        border-radius: 6px;
+        font-size: 0.8rem;
+    }
+    .read-only-block {
+        background: #f8fafc;
+        padding: 1rem 1.25rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+    .read-only-block p {
+        margin: 0.35rem 0;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+    .read-only-block strong {
+        color: #334155;
+    }
+</style>
+{% block panel_extra_css %}{% endblock %}
+{% endblock %}
+
+{% block title %}{% block panel_title %}Mi panel — MT Odontología{% endblock %}{% endblock %}
+
+{% block content %}
+<div class="panel-page">
+    <div class="panel-container">
+        <nav class="panel-nav" aria-label="Panel de usuario">
+            <a href="{% url 'home' %}">Inicio</a>
+            {% if user_role == 'paciente' %}
+            <a href="{% url 'perfil' %}" {% if request.resolver_match.url_name == 'perfil' %}class="active"{% endif %}>Mi perfil</a>
+            <a href="{% url 'editar_perfil' %}" {% if request.resolver_match.url_name == 'editar_perfil' %}class="active"{% endif %}>Editar perfil</a>
+            <a href="{% url 'mis_citas' %}">Mis citas</a>
+            <a href="{% url 'solicitar_cita' %}">Agendar cita</a>
+            {% elif user_role == 'profesional' %}
+            <a href="{% url 'perfil_profesional' %}" {% if request.resolver_match.url_name == 'perfil_profesional' %}class="active"{% endif %}>Mi perfil</a>
+            <a href="{% url 'editar_perfil_profesional' %}" {% if request.resolver_match.url_name == 'editar_perfil_profesional' %}class="active"{% endif %}>Editar perfil</a>
+            <a href="{% url 'agenda_profesional' %}">Agenda</a>
+            {% endif %}
+            <a href="{% url 'logout' %}">Cerrar sesión</a>
+        </nav>
+        {% if messages %}
+        <div class="panel-messages">
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="panel-body">
+            {% block panel_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}{% block panel_extra_js %}{% endblock %}{% endblock %}

@@ -1,38 +1,33 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitar cita — MT Odontología</title>
-    <link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
-    <style>
-        .cita-form { max-width: 520px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,.08); }
-        .cita-form label { display: block; margin-top: 1rem; font-weight: 600; }
-        .cita-form input, .cita-form select, .cita-form textarea { width: 100%; padding: 0.6rem; margin-top: 0.25rem; border: 1px solid #ddd; border-radius: 8px; }
-        .btn-primary { margin-top: 1.5rem; padding: 0.75rem 1.5rem; background: #2563eb; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
-        .nav-links { text-align: center; margin: 1rem; }
-        .nav-links a { margin: 0 0.5rem; color: #2563eb; }
-    </style>
-</head>
-<body>
-    <div class="nav-links">
-        <a href="{% url 'perfil' %}">Mi perfil</a>
-        <a href="{% url 'mis_citas' %}">Mis citas</a>
-        <a href="{% url 'logout' %}">Cerrar sesión</a>
-    </div>
-    <div class="cita-form">
-        <h1>Agendar cita</h1>
-        {% if messages %}{% for m in messages %}<p>{{ m }}</p>{% endfor %}{% endif %}
-        <form method="post">
-            {% csrf_token %}
-            {% for field in form %}
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}<p style="color:red">{{ field.errors.0 }}</p>{% endif %}
-            {% endfor %}
-            <button type="submit" class="btn-primary">Solicitar cita</button>
-        </form>
-    </div>
-</body>
-</html>
+{% extends 'perfiles/base_panel.html' %}
+
+{% block panel_title %}Agendar cita — MT Odontología{% endblock %}
+
+{% block panel_extra_css %}
+<style>
+    .cita-form label { display: block; margin-top: 1rem; font-weight: 600; color: #334155; }
+    .cita-form input, .cita-form select, .cita-form textarea {
+        width: 100%; padding: 0.6rem; margin-top: 0.25rem;
+        border: 1px solid #e5e5e5; border-radius: 8px;
+    }
+    .cita-form .btn-primary {
+        margin-top: 1.5rem; padding: 0.75rem 1.5rem;
+        background: #4F7DF3; color: #fff; border: none;
+        border-radius: 8px; cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block panel_content %}
+<div class="cita-form">
+    <h2 style="margin-bottom:1rem;color:#334155">Agendar cita</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<p style="color:#dc2626;font-size:0.85rem">{{ field.errors.0 }}</p>{% endif %}
+        {% endfor %}
+        <button type="submit" class="btn-primary">Solicitar cita</button>
+    </form>
+</div>
+{% endblock %}

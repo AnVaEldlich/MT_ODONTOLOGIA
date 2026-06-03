@@ -1,69 +1,66 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi perfil — MT Odontología</title>
-    <link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="welcome-section">
-                <h1>Hola, {{ paciente.first_name }}</h1>
-                <p>{{ paciente.city }}, {{ paciente.department }}</p>
-            </div>
-            <div class="header-right">
-                <a href="{% url 'solicitar_cita' %}">Agendar cita</a>
-                <a href="{% url 'mis_citas' %}">Mis citas</a>
-                <a href="{% url 'logout' %}">Cerrar sesión</a>
-            </div>
-        </div>
+{% extends 'perfiles/base_panel.html' %}
 
-        <div class="profile-section">
-            <div class="profile-header">
-                <div class="profile-details">
-                    <h2>{{ paciente.first_name }} {{ paciente.last_name }}</h2>
-                    <p>{{ user.email }}</p>
-                    <p>Documento: {{ paciente.id_type }} {{ paciente.id_number }}</p>
-                    <p>Teléfono: {{ paciente.phone }}</p>
-                    {% if paciente.eps %}<p>EPS: {{ paciente.eps }}</p>{% endif %}
-                </div>
-            </div>
+{% block panel_title %}Mi perfil — MT Odontología{% endblock %}
 
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Dirección</label>
-                    <p>{{ paciente.address }}</p>
-                </div>
-                <div class="form-group">
-                    <label>Fecha de nacimiento</label>
-                    <p>{{ paciente.birth_date|date:"d/m/Y" }}</p>
-                </div>
-                <div class="form-group">
-                    <label>Género</label>
-                    <p>{{ paciente.gender }}</p>
-                </div>
-                {% if paciente.dental_history %}
-                <div class="form-group full-width">
-                    <label>Historia dental</label>
-                    <p>{{ paciente.dental_history }}</p>
-                </div>
-                {% endif %}
-            </div>
-
-            <h3 style="margin-top:2rem">Próximas citas</h3>
-            {% if citas %}
-            <ul>
-                {% for cita in citas %}
-                <li>{{ cita.fecha_hora|date:"d/m/Y H:i" }} — Dr(a). {{ cita.profesional.get_full_name }} ({{ cita.get_estado_display }})</li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p><a href="{% url 'solicitar_cita' %}">Agenda tu primera cita</a></p>
-            {% endif %}
-        </div>
+{% block panel_content %}
+<div class="profile-header">
+    <div class="profile-details">
+        <h2>{{ paciente.first_name }} {{ paciente.last_name }}</h2>
+        <p>{{ user.email }}</p>
+        <p>Documento: {{ paciente.id_type }} {{ paciente.id_number }}</p>
+        <p>Teléfono: {{ paciente.phone }}</p>
+        {% if paciente.eps %}<p>EPS: {{ paciente.eps }}</p>{% endif %}
     </div>
-</body>
-</html>
+    <a href="{% url 'editar_perfil' %}" class="edit-btn">Editar perfil</a>
+</div>
+
+<div class="read-only-block">
+    <p><strong>Fecha de nacimiento:</strong> {{ paciente.birth_date|date:"d/m/Y" }}</p>
+    <p><strong>Género:</strong> {{ paciente.gender }}</p>
+    <p><strong>Dirección:</strong> {{ paciente.address }}, {{ paciente.city }}, {{ paciente.department }}</p>
+    {% if paciente.emergency_contact %}
+    <p><strong>Contacto de emergencia:</strong> {{ paciente.emergency_contact }} — {{ paciente.emergency_phone }}</p>
+    {% endif %}
+</div>
+
+{% if paciente.diabetes or paciente.hipertension or paciente.cardiopatia or paciente.alergias or paciente.embarazo or paciente.ninguna %}
+<h3 style="margin-bottom:0.75rem;font-size:1rem;color:#334155">Condiciones médicas</h3>
+<div style="margin-bottom:1.5rem">
+    {% if paciente.diabetes %}<span class="badge-condition">Diabetes</span>{% endif %}
+    {% if paciente.hipertension %}<span class="badge-condition">Hipertensión</span>{% endif %}
+    {% if paciente.cardiopatia %}<span class="badge-condition">Problemas cardíacos</span>{% endif %}
+    {% if paciente.alergias %}<span class="badge-condition">Alergias</span>{% endif %}
+    {% if paciente.embarazo %}<span class="badge-condition">Embarazo</span>{% endif %}
+    {% if paciente.ninguna %}<span class="badge-condition">Ninguna</span>{% endif %}
+</div>
+{% endif %}
+
+{% if paciente.medications %}
+<div class="form-group full-width" style="margin-bottom:1rem">
+    <label>Medicamentos</label>
+    <p style="color:#64748b;margin-top:0.5rem">{{ paciente.medications }}</p>
+</div>
+{% endif %}
+
+{% if paciente.dental_history %}
+<div class="form-group full-width" style="margin-bottom:1.5rem">
+    <label>Historia dental</label>
+    <p style="color:#64748b;margin-top:0.5rem">{{ paciente.dental_history }}</p>
+</div>
+{% endif %}
+
+<h3 style="margin-top:1rem;margin-bottom:0.75rem;font-size:1.1rem;color:#334155">Próximas citas</h3>
+{% if citas %}
+<ul style="list-style:none;padding:0">
+    {% for cita in citas %}
+    <li style="padding:0.5rem 0;border-bottom:1px solid #eee">
+        {{ cita.fecha_hora|date:"d/m/Y H:i" }} — Dr(a). {{ cita.profesional.get_full_name }}
+        <span class="badge-condition">{{ cita.get_estado_display }}</span>
+    </li>
+    {% endfor %}
+</ul>
+<p style="margin-top:1rem"><a href="{% url 'mis_citas' %}">Ver todas mis citas</a></p>
+{% else %}
+<p style="color:#64748b"><a href="{% url 'solicitar_cita' %}">Agenda tu primera cita</a></p>
+{% endif %}
+{% endblock %}
