@@ -741,8 +741,9 @@ section {
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.4) 0%, rgba(139, 92, 246, 0.3) 100%);
 }
 
-.portfolio-content {
+.portfolio-item {
     padding: 2rem;
+    cursor: pointer;
 }
 
 .portfolio-content h4 {
@@ -751,6 +752,7 @@ section {
     margin-bottom: 1rem;
     color: var(--text-primary);
     font-weight: 600;
+
 }
 
 .portfolio-content p {
