@@ -1,14 +1,21 @@
+import re
+
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-
+from .auth_utils import resolve_user_for_login
 from .models import ClinicCenter, Paciente, Profesional
 
 
 class LoginForm(forms.Form):
-    email = forms.EmailField(
-        label="Correo electrónico",
-        widget=forms.EmailInput(attrs={"placeholder": "tu@email.com", "autocomplete": "email"}),
+    email = forms.CharField(
+        label="Correo electrónico o usuario",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "tu@email.com",
+                "autocomplete": "username",
+            }
+        ),
     )
     password = forms.CharField(
         label="Contraseña",
@@ -22,14 +29,16 @@ class LoginForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
-        email = cleaned.get("email")
+        identifier = cleaned.get("email")
         password = cleaned.get("password")
-        if email and password:
-            self.user_cache = authenticate(
-                self.request,
-                username=email,
-                password=password,
-            )
+        if identifier and password:
+            user = resolve_user_for_login(identifier)
+            if user is not None:
+                self.user_cache = authenticate(
+                    self.request,
+                    username=user.username,
+                    password=password,
+                )
             if self.user_cache is None:
                 raise forms.ValidationError("Credenciales inválidas.")
         return cleaned
@@ -128,8 +137,10 @@ class PatientRegisterForm(forms.Form):
 
 
 class ProfessionalRegisterForm(forms.Form):
-    username = forms.CharField(max_length=150)
-    email = forms.EmailField()
+    email = forms.EmailField(
+        label="Correo electrónico",
+        help_text="Usarás este correo para iniciar sesión.",
+    )
     password1 = forms.CharField(min_length=8, widget=forms.PasswordInput)
     password2 = forms.CharField(widget=forms.PasswordInput)
     first_name = forms.CharField(max_length=100)
@@ -139,16 +150,33 @@ class ProfessionalRegisterForm(forms.Form):
     especialidad = forms.ChoiceField(choices=Profesional.ESPECIALIDAD_CHOICES)
     ubicacion = forms.CharField(max_length=255)
     codigo_pais = forms.CharField(max_length=5, initial="+57")
-    telefono = forms.CharField(max_length=20)
+    telefono = forms.CharField(
+        max_length=20,
+        label="Teléfono móvil",
+        help_text="10 dígitos sin código de país (ej. 3001234567).",
+    )
 
-    def clean_username(self):
-        username = self.cleaned_data["username"]
-        if User.objects.filter(username=username).exists():
-            raise forms.ValidationError("Este nombre de usuario ya existe.")
-        return username
+    def clean_email(self):
+        email = self.cleaned_data["email"].strip().lower()
+        if User.objects.filter(username__iexact=email).exists():
+            raise forms.ValidationError("Ya existe una cuenta con este correo.")
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("Ya existe una cuenta con este correo.")
+        return email
+
+    def clean_telefono(self):
+        telefono = self.cleaned_data["telefono"]
+        digits = re.sub(r"\D", "", telefono)
+        if len(digits) == 12 and digits.startswith("57"):
+            digits = digits[2:]
+        if len(digits) != 10:
+            raise forms.ValidationError(
+                "Ingresa un número móvil de 10 dígitos (sin el +57)."
+            )
+        return digits
 
     def clean_id_number(self):
-        id_number = self.cleaned_data["id_number"]
+        id_number = self.cleaned_data["id_number"].strip()
         if Profesional.objects.filter(id_number=id_number).exists():
             raise forms.ValidationError("Este documento ya está registrado.")
         return id_number
@@ -160,9 +188,10 @@ class ProfessionalRegisterForm(forms.Form):
         return cleaned
 
     def save(self):
+        email = self.cleaned_data["email"]
         user = User.objects.create_user(
-            username=self.cleaned_data["username"],
-            email=self.cleaned_data["email"],
+            username=email,
+            email=email,
             password=self.cleaned_data["password1"],
             first_name=self.cleaned_data["first_name"],
             last_name=self.cleaned_data["last_name"],

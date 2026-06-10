@@ -20,7 +20,8 @@
 {% endblock %}
 
 {% block panel_content %}
-<h2 style="margin-bottom:1rem;color:#334155">Mis citas</h2>
+<div class="app-page">
+<h2 class="section-title" style="margin-top:0">Mis citas</h2>
 <p style="margin-bottom:1rem"><a href="{% url 'solicitar_cita' %}">+ Nueva cita</a></p>
 
 {% if citas %}
@@ -52,6 +53,7 @@
     </tbody>
 </table>
 {% else %}
-<p style="color:#64748b">No tienes citas. <a href="{% url 'solicitar_cita' %}">Agenda la primera</a>.</p>
+<p class="text-muted">No tienes citas. <a href="{% url 'solicitar_cita' %}" class="text-link">Agenda la primera</a>.</p>
 {% endif %}
+</div>
 {% endblock %}

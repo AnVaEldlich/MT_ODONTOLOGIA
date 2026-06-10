@@ -18,8 +18,8 @@
 {% endblock %}
 
 {% block panel_content %}
-<div class="cita-form">
-    <h2 style="margin-bottom:1rem;color:#334155">Agendar cita</h2>
+<div class="app-page cita-form">
+    <h2 class="section-title" style="margin-top:0">Agendar cita</h2>
     <form method="post">
         {% csrf_token %}
         {% for field in form %}

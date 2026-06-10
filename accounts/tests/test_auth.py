@@ -70,6 +70,58 @@ def test_perfil_requires_login(client):
 
 
 @pytest.mark.django_db
+def test_professional_register_and_login(client):
+    register_url = reverse("registerprofesional")
+    response = client.post(
+        register_url,
+        {
+            "first_name": "María",
+            "last_name": "González",
+            "id_type": "CC",
+            "id_number": "9876543210",
+            "especialidad": "ortodoncia",
+            "ubicacion": "Bogotá",
+            "codigo_pais": "+57",
+            "telefono": "300 123 4567",
+            "email": "maria.pro@test.com",
+            "password1": "testpass123",
+            "password2": "testpass123",
+        },
+        follow=True,
+    )
+    assert response.status_code == 200
+    user = User.objects.get(username="maria.pro@test.com")
+    assert hasattr(user, "profesional")
+    assert response.wsgi_request.user.is_authenticated
+
+    client.logout()
+    login_url = reverse("login")
+    response = client.post(
+        login_url,
+        {"email": "maria.pro@test.com", "password": "testpass123"},
+        follow=True,
+    )
+    assert response.status_code == 200
+    assert response.wsgi_request.user.is_authenticated
+
+
+@pytest.mark.django_db
+def test_login_with_legacy_username(client):
+    user = User.objects.create_user(
+        username="dr_legacy",
+        email="legacy@test.com",
+        password="testpass123",
+    )
+    response = client.post(
+        reverse("login"),
+        {"email": "dr_legacy", "password": "testpass123"},
+        follow=True,
+    )
+    assert response.status_code == 200
+    assert response.wsgi_request.user == user
+
+
+@pytest.mark.django_db
 def test_logout(client):
     user = User.objects.create_user(username="u@test.com", email="u@test.com", password="secret123")
     client.login(username="u@test.com", password="secret123")

@@ -1,0 +1,189 @@
+# MT Odontología Integral — Reglas del proyecto
+
+Este archivo define las reglas obligatorias para todo desarrollo en **WEB_ODONTOLOGIA**, plataforma profesional de gestión odontológica (pacientes, profesionales, citas y perfiles).
+
+**Antes de modificar cualquier archivo del proyecto, leer y cumplir estas reglas.**
+
+---
+
+## 1. Tono profesional y prohibición de emojis
+
+### Prohibido en todo el proyecto
+- Emojis en código, comentarios, commits, mensajes de usuario, plantillas HTML, CSS, JavaScript, tests, documentación y respuestas generadas para este repositorio.
+- Iconos decorativos tipo emoji sustituidos por texto o iconografía SVG profesional cuando sea necesario.
+- Lenguaje informal, jerga o expresiones coloquiales en la interfaz visible al usuario.
+
+### Obligatorio
+- Textos de interfaz en **español neutro y formal** (usted o segunda persona formal según contexto clínico).
+- Nomenclatura clínica correcta: paciente, profesional, cita, agenda, tratamiento, odontólogo, especialidad.
+- Mensajes de error y éxito claros, breves y accionables, sin adornos.
+
+---
+
+## 2. Contexto del dominio odontológico
+
+- Tratar datos de salud con sensibilidad: no exponer información clínica innecesaria en logs, URLs o mensajes públicos.
+- Separar flujos por rol: `paciente` y `profesional`. No mezclar permisos ni vistas sin validación explícita.
+- Validar en backend toda regla de negocio (citas, perfiles, autenticación); el frontend solo mejora la experiencia.
+- Mantener coherencia con los modelos y roles existentes en `accounts`, `perfiles` y `citas`.
+
+---
+
+## 3. Arquitectura Django
+
+### Estructura de apps
+| App        | Responsabilidad                                      |
+|------------|------------------------------------------------------|
+| `core`     | Plantillas base, estáticos globales, vistas públicas |
+| `accounts` | Autenticación, registro, roles                       |
+| `perfiles` | Perfiles de paciente y profesional                   |
+| `citas`    | Solicitud, agenda y gestión de citas                 |
+
+### Reglas estrictas de código Python
+- Seguir **PEP 8** y el estilo ya presente en el proyecto (docstrings en módulos públicos, imports ordenados).
+- Lógica de negocio en `views.py`, `forms.py` o módulos dedicados; no en plantillas.
+- Usar decoradores de Django (`@login_required`, permisos por rol) en todas las vistas protegidas.
+- Formularios con `django.forms` o `ModelForm`; validación en `clean()` y `clean_<field>()`.
+- Consultas eficientes: `select_related` / `prefetch_related` cuando se acceda a relaciones en listados.
+- No hardcodear secretos: usar variables de entorno vía `.env` (patrón de `settings.py`).
+- No modificar `SECRET_KEY`, credenciales ni `.env` en commits.
+- Migraciones: generar con `makemigrations` tras cambios en modelos; no editar migraciones aplicadas manualmente salvo corrección justificada.
+
+### URLs y plantillas
+- Nombres de URL descriptivos en español o inglés técnico consistente (`url_name` en snake_case).
+- Herencia de plantillas obligatoria:
+  - Vistas públicas y landing: extender `core/base.html`.
+  - Paneles de usuario autenticado: extender `perfiles/base_panel.html`.
+- Bloques estándar: `title`, `extra_css`, `content`, `extra_js`. En paneles usar además `panel_content`, `panel_extra_css`, `panel_extra_js`.
+- Cargar estáticos con `{% load static %}` y `{% static 'ruta' %}`; nunca rutas absolutas hardcodeadas.
+
+### JavaScript
+- Un archivo JS por vista o flujo cuando la lógica supere pocas líneas inline.
+- Ubicación: `<app>/static/<app>/js/`.
+- Sin dependencias nuevas sin justificación; respetar el stack actual (vanilla JS o lo ya integrado).
+
+### Tests
+- Tests en `tests/` o `tests.py` con **pytest** y **pytest-django**.
+- Cubrir flujos críticos: autenticación, registro, permisos por rol, citas y perfiles.
+- Ejecutar tests antes de dar por terminado un cambio relevante: `pytest` desde `WEB_ODONTOLOGIA/`.
+
+---
+
+## 4. Sistema de diseño y armonía visual
+
+Objetivo: que landing, login, registro, paneles de paciente/profesional y módulo de citas parezcan **un mismo producto**, no páginas independientes.
+
+### Fuente de verdad de estilos
+Las variables CSS definidas en `core/static/css/base.css` son el **design system oficial**. Usarlas siempre antes de inventar colores nuevos:
+
+```css
+/* Colores y superficies */
+--primary-color, --secondary-color, --accent-color
+--text-primary, --text-secondary, --text-light
+--bg-primary, --bg-secondary, --bg-dark, --bg-card
+
+/* Efectos */
+--gradient-primary, --gradient-elegant
+--shadow-sm, --shadow-md, --shadow-lg, --shadow-xl
+```
+
+### Reglas de diseño obligatorias
+
+#### Colores
+- Color primario de acción y enlaces: `var(--primary-color)` o `#4F7DF3` donde ya esté establecido en paneles.
+- Fondos de página en paneles: `var(--gradient-primary)` (gradiente violeta institucional).
+- Texto principal: `var(--text-primary)`; texto secundario o ayuda: `var(--text-secondary)`.
+- No introducir paletas ajenas (rosa neón, verde lima, etc.) sin alinearlas al sistema existente.
+
+#### Tipografía
+- Familia base del sistema: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif`.
+- Títulos de sección: peso 600–700; cuerpo: 400; etiquetas y metadatos: 0.8–0.9rem.
+- Jerarquía consistente: `h1` página, `h2` sección, `h3` subsección.
+
+#### Espaciado y layout
+- Contenedor principal de paneles: `max-width: 1000px`, centrado, `border-radius: 12px`.
+- Padding interno de paneles: `2rem` en cuerpo; navegación secundaria con `1.25rem 2rem`.
+- Espaciado entre bloques: múltiplos de `0.5rem` (8px base).
+- Páginas de panel: `min-height: calc(100vh - 80px)` para consistencia vertical.
+
+#### Componentes reutilizables
+Usar o extender estas clases/patrones ya definidos en `perfiles/base_panel.html` y CSS asociado:
+
+| Componente        | Clases / patrón                                      |
+|-------------------|------------------------------------------------------|
+| Contenedor panel  | `.panel-page` > `.panel-container`                   |
+| Navegación panel  | `.panel-nav` con estado `.active`                    |
+| Mensajes flash    | `.panel-messages` > `.message.success/error/info/warning` |
+| Badges            | `.badge-verified`, `.badge-condition`                |
+| Bloques lectura   | `.read-only-block`                                   |
+| Tarjetas          | fondo blanco, `border-radius: 12px`, `box-shadow: var(--shadow-lg)` |
+
+Al crear un módulo nuevo, replicar esta estructura antes de diseñar componentes desde cero.
+
+#### Botones
+- Primario: fondo `var(--primary-color)` o gradiente primario, texto blanco, `border-radius: 8px`, padding `0.75rem 1.5rem`.
+- Secundario: borde `1px solid #e2e8f0`, fondo blanco, texto `var(--text-primary)`.
+- Estados hover: transición `0.2s ease`; focus visible para accesibilidad (`outline` o `box-shadow`).
+
+#### Formularios
+- Inputs: borde `#e2e8f0`, `border-radius: 8px`, padding `0.75rem 1rem`.
+- Labels visibles y asociados (`for` / `id`).
+- Errores de validación en color `#991b1b` sobre fondo `#fee2e2` (patrón de mensajes existente).
+- Agrupar campos relacionados; evitar formularios de una sola columna excesivamente largos sin secciones.
+
+#### Mensajes y estados
+Mantener la misma semántica de color en **todas** las vistas:
+
+| Estado  | Fondo     | Texto     |
+|---------|-----------|-----------|
+| Éxito   | `#d1fae5` | `#065f46` |
+| Error   | `#fee2e2` | `#991b1b` |
+| Info    | `#dbeafe` | `#1e40af` |
+| Aviso   | `#fef3c7` | `#92400e` |
+
+### CSS: reglas de organización
+- Estilos globales y variables: `core/static/css/base.css`.
+- Estilos por app: `<app>/static/<app>/css/`.
+- Evitar bloques `<style>` inline extensos en plantillas; extraer a archivo CSS del módulo.
+- Si se requiere CSS puntual en plantilla, limitarlo a overrides mínimos y documentar por qué.
+- No duplicar variables `:root` en archivos de app; importar o asumir que `base.css` ya está cargado vía `core/base.html`.
+- Responsive: probar en viewport móvil (≤768px); navegación y tablas deben ser usables sin scroll horizontal.
+
+### Accesibilidad mínima
+- Contraste suficiente texto/fondo (WCAG AA donde sea posible).
+- `aria-label`, `role` y estados `aria-expanded` en menús desplegables (como en navbar existente).
+- Botones e iconos interactivos con texto alternativo o etiqueta accesible.
+- Formularios navegables por teclado.
+
+---
+
+## 5. Seguridad
+
+- Escapar salida en plantillas (Django lo hace por defecto); no usar `|safe` sin sanitización explícita.
+- Protección CSRF en todos los formularios POST.
+- Validar permisos de rol en vista **y** en queryset (un paciente no accede a agenda profesional).
+- Parámetros `next` en login: validar que sean URLs internas.
+- No registrar datos personales o clínicos en `print()` ni logs de depuración.
+
+---
+
+## 6. Alcance y calidad de cambios
+
+- Cambios mínimos y enfocados: no refactorizar código no relacionado con la tarea.
+- Reutilizar funciones, formularios y plantillas base existentes antes de crear duplicados.
+- Comentarios solo para lógica de negocio no obvia; el código debe ser legible por sí mismo.
+- No añadir dependencias pip ni librerías frontend sin necesidad demostrada.
+- No crear archivos de documentación (README, etc.) salvo que se soliciten explícitamente.
+- Idioma del código: identificadores en inglés (convención Python/Django); textos de usuario en español.
+
+---
+
+## 7. Checklist antes de entregar cambios
+
+- [ ] Sin emojis en ningún archivo tocado.
+- [ ] Textos de UI en español formal y consistentes con el dominio odontológico.
+- [ ] Vista extiende la plantilla base correcta (`core/base.html` o `perfiles/base_panel.html`).
+- [ ] Estilos usan variables y patrones del design system; armonía visual con otros módulos.
+- [ ] Permisos y validación en backend verificados.
+- [ ] Tests actualizados o añadidos para comportamiento nuevo crítico.
+- [ ] Sin secretos ni valores de `.env` en el código commiteado.

@@ -9,9 +9,7 @@
 {% block content %}
 <div class="min-h-screen bg-gradient py-12 px-4">
   <div class="max-w-6xl mx-auto">
-    <!-- Header -->
     <div class="text-center mb-12">
-      <h1 class="title-brand mb-3">MT ODONTOLOGIA INTEGRAL</h1>
       <h2 class="title-main mb-4">Crea tu perfil profesional gratuito</h2>
       <p class="subtitle">
         Únete a nuestra red de especialistas. Conecta con pacientes que necesitan tus servicios.
@@ -19,138 +17,117 @@
     </div>
 
     <div class="grid-container">
-      <!-- Formulario -->
       <div class="form-section">
-        <form method="post" id="registerForm" class="form-content">
+        <form method="post" id="registerForm" class="form-content" novalidate>
           {% csrf_token %}
 
-          <!-- Mensajes de error -->
           {% if messages %}
           <div class="messages">
             {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-              {{ message }}
-            </div>
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
             {% endfor %}
           </div>
           {% endif %}
 
-          <!-- Nombre y Apellidos -->
+          {% if form.non_field_errors %}
+          <div class="messages">
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-error">{{ error }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
           <div class="grid-2">
             <div class="form-group">
-              <label class="form-label">Nombre(s) *</label>
+              <label class="form-label" for="first_name">Nombre(s) *</label>
               <input type="text" name="first_name" id="first_name" required class="form-input"
                 placeholder="Ej: María José" value="{{ form.first_name.value|default:'' }}" />
-              {% if form.first_name.errors %}
-              <span class="error-text">{{ form.first_name.errors.0 }}</span>
-              {% endif %}
+              {% if form.first_name.errors %}<span class="error-text">{{ form.first_name.errors.0 }}</span>{% endif %}
             </div>
             <div class="form-group">
-              <label class="form-label">Apellidos *</label>
+              <label class="form-label" for="last_name">Apellidos *</label>
               <input type="text" name="last_name" id="last_name" required class="form-input"
                 placeholder="Ej: González Pérez" value="{{ form.last_name.value|default:'' }}" />
-              {% if form.last_name.errors %}
-              <span class="error-text">{{ form.last_name.errors.0 }}</span>
-              {% endif %}
+              {% if form.last_name.errors %}<span class="error-text">{{ form.last_name.errors.0 }}</span>{% endif %}
             </div>
           </div>
 
-          <!-- Identificación -->
           <div class="grid-2">
             <div class="form-group">
-              <label class="form-label">Tipo de Identificación *</label>
+              <label class="form-label" for="id_type">Tipo de Identificación *</label>
               <div class="select-wrapper">
                 <select name="id_type" id="id_type" required class="form-input">
                   <option value="">Selecciona tipo</option>
-                  <option value="CC">Cédula de Ciudadanía</option>
-                  <option value="CE">Cédula de Extranjería</option>
-                  <option value="PAS">Pasaporte</option>
-                  <option value="TI">Tarjeta de Identidad</option>
+                  {% for value, label in form.fields.id_type.choices %}
+                  <option value="{{ value }}" {% if form.id_type.value == value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
                 </select>
                 <span class="select-icon">▼</span>
               </div>
+              {% if form.id_type.errors %}<span class="error-text">{{ form.id_type.errors.0 }}</span>{% endif %}
             </div>
             <div class="form-group">
-              <label class="form-label">Número de Identificación *</label>
+              <label class="form-label" for="id_number">Número de Identificación *</label>
               <input type="text" name="id_number" id="id_number" required class="form-input"
                 placeholder="Ej: 1234567890" value="{{ form.id_number.value|default:'' }}" />
+              {% if form.id_number.errors %}<span class="error-text">{{ form.id_number.errors.0 }}</span>{% endif %}
             </div>
           </div>
 
-          <!-- Especialidad y Ubicación -->
           <div class="grid-2">
             <div class="form-group">
-              <label class="form-label">Especialidad *</label>
+              <label class="form-label" for="especialidad">Especialidad *</label>
               <div class="select-wrapper">
                 <select name="especialidad" id="especialidad" required class="form-input">
                   <option value="">Selecciona tu especialidad</option>
-                  <option value="odontologia-general">Odontología General</option>
-                  <option value="ortodoncia">Ortodoncia</option>
-                  <option value="endodoncia">Endodoncia</option>
-                  <option value="periodoncia">Periodoncia</option>
-                  <option value="odontopediatria">Odontopediatría</option>
-                  <option value="cirugia-oral">Cirugía Oral</option>
-                  <option value="implantologia">Implantología</option>
-                  <option value="estetica-dental">Estética Dental</option>
-                  <option value="prostodoncia">Prostodoncia</option>
+                  {% for value, label in form.fields.especialidad.choices %}
+                  <option value="{{ value }}" {% if form.especialidad.value == value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
                 </select>
                 <span class="select-icon">▼</span>
               </div>
+              {% if form.especialidad.errors %}<span class="error-text">{{ form.especialidad.errors.0 }}</span>{% endif %}
             </div>
             <div class="form-group">
-              <label class="form-label">Ubicación de tu consulta *</label>
+              <label class="form-label" for="ubicacion">Ubicación de tu consulta *</label>
               <input type="text" name="ubicacion" id="ubicacion" required class="form-input"
                 placeholder="Ej: Ibagué, Tolima" value="{{ form.ubicacion.value|default:'' }}" />
+              {% if form.ubicacion.errors %}<span class="error-text">{{ form.ubicacion.errors.0 }}</span>{% endif %}
             </div>
           </div>
 
-          <!-- Teléfono -->
           <div class="form-group">
-            <label class="form-label">Número de teléfono móvil *</label>
+            <label class="form-label" for="telefono">Número de teléfono móvil *</label>
             <div class="phone-input">
-              <select name="codigo_pais" id="codigo_pais" class="phone-code">
-                <option value="+57" selected>+57</option>
-                <option value="+1">+1</option>
-                <option value="+52">+52</option>
-                <option value="+34">+34</option>
+              <select name="codigo_pais" id="codigo_pais" class="phone-code" aria-label="Código de país">
+                <option value="+57" {% if form.codigo_pais.value == "+57" or not form.codigo_pais.value %}selected{% endif %}>+57</option>
+                <option value="+1" {% if form.codigo_pais.value == "+1" %}selected{% endif %}>+1</option>
+                <option value="+52" {% if form.codigo_pais.value == "+52" %}selected{% endif %}>+52</option>
+                <option value="+34" {% if form.codigo_pais.value == "+34" %}selected{% endif %}>+34</option>
               </select>
-              <input <input type="tel" name="telefono" id="telefono" required class="form-input flex-1"
-                placeholder="+57 300 123 4567" pattern="^\+?57[ -]?[0-9]{10}$"
-                value="{{ form.telefono.value|default:'' }}" />
+              <input type="tel" name="telefono" id="telefono" required class="form-input flex-1"
+                inputmode="numeric" maxlength="12"
+                placeholder="300 123 4567" value="{{ form.telefono.value|default:'' }}" />
             </div>
-            <p class="form-hint">
-              Necesitamos tu teléfono para configurar tu cuenta. No se mostrará públicamente sin tu autorización.
-            </p>
+            <p class="form-hint">10 dígitos sin el +57 (ej. 3001234567).</p>
+            {% if form.telefono.errors %}<span class="error-text">{{ form.telefono.errors.0 }}</span>{% endif %}
           </div>
 
-          <!-- Email y Usuario -->
-          <div class="grid-2">
-            <div class="form-group">
-              <label class="form-label">Email *</label>
-              <input type="email" name="email" id="email" required class="form-input" placeholder="tu@email.com"
-                value="{{ form.email.value|default:'' }}" />
-              <p class="form-hint">
-                Se usará para acceder a tu cuenta
-              </p>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Nombre de usuario *</label>
-              <input type="text" name="username" id="username" required class="form-input" placeholder="usuario123"
-                value="{{ form.username.value|default:'' }}" />
-              <p class="form-hint">
-                Solo letras, números y @/./+/-/_
-              </p>
-            </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Correo electrónico *</label>
+            <input type="email" name="email" id="email" required class="form-input" placeholder="tu@email.com"
+              autocomplete="email" value="{{ form.email.value|default:'' }}" />
+            <p class="form-hint">Este correo será tu usuario para iniciar sesión.</p>
+            {% if form.email.errors %}<span class="error-text">{{ form.email.errors.0 }}</span>{% endif %}
           </div>
 
-          <!-- Contraseñas -->
           <div class="grid-2">
             <div class="form-group">
-              <label class="form-label">Contraseña *</label>
+              <label class="form-label" for="password1">Contraseña *</label>
               <div class="password-wrapper">
                 <input type="password" name="password1" id="password1" required class="form-input"
-                  placeholder="Mínimo 8 caracteres" />
-                <button type="button" class="password-toggle" data-target="password1">
+                  placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
+                <button type="button" class="password-toggle" data-target="password1" aria-label="Mostrar contraseña">
                   <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -159,13 +136,14 @@
                   </svg>
                 </button>
               </div>
+              {% if form.password1.errors %}<span class="error-text">{{ form.password1.errors.0 }}</span>{% endif %}
             </div>
             <div class="form-group">
-              <label class="form-label">Confirmar Contraseña *</label>
+              <label class="form-label" for="password2">Confirmar contraseña *</label>
               <div class="password-wrapper">
                 <input type="password" name="password2" id="password2" required class="form-input"
-                  placeholder="Repite tu contraseña" />
-                <button type="button" class="password-toggle" data-target="password2">
+                  placeholder="Repite tu contraseña" autocomplete="new-password" />
+                <button type="button" class="password-toggle" data-target="password2" aria-label="Mostrar contraseña">
                   <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -174,26 +152,22 @@
                   </svg>
                 </button>
               </div>
+              {% if form.password2.errors %}<span class="error-text">{{ form.password2.errors.0 }}</span>{% endif %}
             </div>
           </div>
 
-          <!-- Términos y condiciones -->
           <div class="terms-wrapper">
             <input type="checkbox" name="acepta_terminos" id="acepta_terminos" required class="checkbox" />
             <label for="acepta_terminos" class="terms-label">
               Al registrarte, confirmas que estás de acuerdo con nuestros
-              <a href=" " target="_blank" class="link">términos y condiciones</a>
+              <a href="#" class="link">términos y condiciones</a>
               y que entiendes nuestra
-              <a href=" " target="_blank" class="link">política de privacidad</a>.
+              <a href="#" class="link">política de privacidad</a>.
             </label>
           </div>
 
-          <!-- Botón Submit -->
-          <button type="submit" class="submit-btn">
-            Crear una cuenta de especialista
-          </button>
+          <button type="submit" class="submit-btn">Crear una cuenta de especialista</button>
 
-          <!-- Link a login -->
           <div class="text-center mt-4">
             <p class="text-sm text-gray-600">
               ¿Ya tienes una cuenta?
@@ -203,14 +177,12 @@
         </form>
       </div>
 
-      <!-- Preview del perfil -->
       <div class="preview-section">
         <div class="preview-card">
           <div class="preview-header">
             <div class="preview-icon">✨</div>
             <h3 class="preview-title">Vista previa de tu perfil</h3>
           </div>
-
           <div class="preview-profile">
             <div class="preview-avatar">
               <svg class="avatar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,46 +198,11 @@
               <span id="previewEspecialidad">Tu Especialidad</span>
               <span id="previewUbicacionText"></span>
             </p>
-            <div class="preview-rating">
-              <span class="star">★</span>
-              <span class="star">★</span>
-              <span class="star">★</span>
-              <span class="star">★</span>
-              <span class="star">★</span>
-              <span class="rating-text">5.0</span>
-            </div>
           </div>
-
           <div class="preview-details">
             <div class="detail-item">
-              <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
               <span id="previewUbicacion2">Ubicación de consulta</span>
             </div>
-            <div class="detail-item">
-              <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span>Horarios disponibles</span>
-            </div>
-            <div class="detail-item">
-              <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Perfil verificado</span>
-            </div>
-          </div>
-
-          <div class="preview-cta">
-            <p class="cta-text">
-              <strong>Tu perfil será visible</strong> para miles de pacientes buscando especialistas como tú
-            </p>
           </div>
         </div>
       </div>

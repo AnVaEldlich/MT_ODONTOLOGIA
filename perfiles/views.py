@@ -1,6 +1,9 @@
+from datetime import date
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
 from accounts.models import Paciente, Profesional
 from accounts.roles import user_role
@@ -16,6 +19,16 @@ def _get_paciente(user):
 
 def _get_profesional(user):
     return get_object_or_404(Profesional, user=user)
+
+
+def _calcular_edad(birth_date):
+    """Calcula la edad en años a partir de la fecha de nacimiento."""
+    if not birth_date:
+        return None
+    hoy = date.today()
+    return hoy.year - birth_date.year - (
+        (hoy.month, hoy.day) < (birth_date.month, birth_date.day)
+    )
 
 
 @login_required
@@ -36,17 +49,33 @@ def dashboard(request):
 @paciente_required
 def perfil_paciente(request):
     paciente = _get_paciente(request.user)
-    citas = (
+    ahora = timezone.now()
+    citas_activas = (
         paciente.citas.exclude(estado=Cita.ESTADO_CANCELADA)
         .select_related("profesional__user")
-        .order_by("fecha_hora")[:5]
     )
+    proximas = citas_activas.filter(fecha_hora__gte=ahora).order_by("fecha_hora")
+    citas = list(citas_activas.order_by("-fecha_hora")[:5])
+
+    condiciones = [
+        paciente.diabetes,
+        paciente.hipertension,
+        paciente.cardiopatia,
+        paciente.alergias,
+        paciente.embarazo,
+    ]
+
     return render(
         request,
         "perfiles/perfiles_paciente.html",
         {
             "paciente": paciente,
             "citas": citas,
+            "edad": _calcular_edad(paciente.birth_date),
+            "total_citas": citas_activas.count(),
+            "proximas_count": proximas.count(),
+            "proxima_cita": proximas.first(),
+            "num_condiciones": sum(1 for c in condiciones if c),
         },
     )
 

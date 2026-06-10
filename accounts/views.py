@@ -60,7 +60,24 @@ def registro_pro(request):
     return render(request, "accounts/registro_pro.html")
 
 
+def _push_form_errors(request, form):
+    for field, errors in form.errors.items():
+        label = (
+            form.fields[field].label
+            if field in form.fields
+            else "Formulario"
+        )
+        for error in errors:
+            if field == "__all__":
+                messages.error(request, error)
+            else:
+                messages.error(request, f"{label}: {error}")
+
+
 def registerprofesional(request):
+    if request.user.is_authenticated:
+        return redirect(dashboard_url_name(request.user))
+
     if request.method == "POST":
         form = ProfessionalRegisterForm(request.POST)
         if form.is_valid():
@@ -68,8 +85,7 @@ def registerprofesional(request):
             login(request, user)
             messages.success(request, "Profesional registrado correctamente.")
             return redirect("perfil_profesional")
-        for error in form.non_field_errors():
-            messages.error(request, error)
+        _push_form_errors(request, form)
     else:
         form = ProfessionalRegisterForm()
 

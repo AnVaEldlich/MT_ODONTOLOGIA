@@ -18,7 +18,8 @@
 {% endblock %}
 
 {% block panel_content %}
-<h2 style="margin-bottom:0.5rem;color:#334155">Agenda — {{ profesional.get_full_name }}</h2>
+<div class="app-page">
+<h2 class="section-title" style="margin-top:0">Agenda — {{ profesional.get_full_name }}</h2>
 <p style="color:#64748b;margin-bottom:1rem">{{ profesional.get_especialidad_display }}</p>
 
 <div id="calendar"></div>
@@ -54,8 +55,9 @@
     </tbody>
 </table>
 {% else %}
-<p style="color:#64748b">Sin citas programadas.</p>
+<p class="text-muted">Sin citas programadas.</p>
 {% endif %}
+</div>
 {% endblock %}
 
 {% block panel_extra_js %}

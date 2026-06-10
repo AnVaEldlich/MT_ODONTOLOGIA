@@ -3,56 +3,58 @@
 {% block panel_title %}Editar perfil — MT Odontología{% endblock %}
 
 {% block panel_content %}
-<h2 style="margin-bottom:1.5rem;color:#334155">Editar perfil</h2>
+<div class="panel-form-page">
+    <h2>Editar perfil</h2>
 
-{% if role_label == 'paciente' %}
-<div class="read-only-block">
-    <p><strong>Nombre:</strong> {{ profile_form.instance.first_name }} {{ profile_form.instance.last_name }}</p>
-    <p><strong>Documento:</strong> {{ profile_form.instance.id_type }} {{ profile_form.instance.id_number }}</p>
-    <p><strong>Fecha de nacimiento:</strong> {{ profile_form.instance.birth_date|date:"d/m/Y" }}</p>
-    <p><strong>Género:</strong> {{ profile_form.instance.gender }}</p>
-    <p style="font-size:0.85rem;margin-top:0.5rem">Los datos de identidad no se pueden modificar desde aquí.</p>
-</div>
-{% else %}
-<div class="read-only-block">
-    <p><strong>Nombre:</strong> {{ profesional.get_full_name }}</p>
-    <p><strong>Documento:</strong> {{ profesional.get_id_type_display }} {{ profesional.id_number }}</p>
-    {% if profesional.is_verified %}
-    <p><span class="badge-verified">Perfil verificado</span></p>
+    {% if role_label == 'paciente' %}
+    <div class="read-only-block">
+        <p><strong>Nombre:</strong> {{ profile_form.instance.first_name }} {{ profile_form.instance.last_name }}</p>
+        <p><strong>Documento:</strong> {{ profile_form.instance.id_type }} {{ profile_form.instance.id_number }}</p>
+        <p><strong>Fecha de nacimiento:</strong> {{ profile_form.instance.birth_date|date:"d/m/Y" }}</p>
+        <p><strong>Género:</strong> {{ profile_form.instance.gender }}</p>
+        <p style="font-size:0.85rem;margin-top:0.5rem">Los datos de identidad no se pueden modificar desde aquí.</p>
+    </div>
+    {% else %}
+    <div class="read-only-block">
+        <p><strong>Nombre:</strong> {{ profesional.get_full_name }}</p>
+        <p><strong>Documento:</strong> {{ profesional.get_id_type_display }} {{ profesional.id_number }}</p>
+        {% if profesional.is_verified %}
+        <p><span class="badge-verified">Perfil verificado</span></p>
+        {% endif %}
+    </div>
     {% endif %}
-</div>
-{% endif %}
 
-<form method="post" class="form-grid" style="display:block">
-    {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
 
-    <h3 style="margin:1.5rem 0 1rem;font-size:1rem;color:#334155">Correo</h3>
-    <div class="form-group">
-        <label for="{{ user_form.email.id_for_label }}">{{ user_form.email.label }}</label>
-        {{ user_form.email }}
-        {% if user_form.email.errors %}<p style="color:#dc2626;font-size:0.85rem">{{ user_form.email.errors.0 }}</p>{% endif %}
-    </div>
-
-    <h3 style="margin:1.5rem 0 1rem;font-size:1rem;color:#334155">Datos del perfil</h3>
-    <div class="form-grid">
-        {% for field in profile_form %}
-        <div class="form-group{% if field.field.widget.input_type == 'checkbox' %} full-width{% endif %}">
-            {% if field.field.widget.input_type == 'checkbox' %}
-            <label style="flex-direction:row;align-items:center;gap:0.5rem">
-                {{ field }} {{ field.label }}
-            </label>
-            {% else %}
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% endif %}
-            {% if field.errors %}<p style="color:#dc2626;font-size:0.85rem">{{ field.errors.0 }}</p>{% endif %}
+        <h3 class="section-title">Correo</h3>
+        <div class="form-group">
+            <label for="{{ user_form.email.id_for_label }}">{{ user_form.email.label }}</label>
+            {{ user_form.email }}
+            {% if user_form.email.errors %}<p class="field-error">{{ user_form.email.errors.0 }}</p>{% endif %}
         </div>
-        {% endfor %}
-    </div>
 
-    <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap">
-        <button type="submit" class="edit-btn">Guardar cambios</button>
-        <a href="{% url cancel_url %}" style="padding:10px 30px;color:#64748b;text-decoration:none;font-size:14px">Cancelar</a>
-    </div>
-</form>
+        <h3 class="section-title">Datos del perfil</h3>
+        <div class="form-grid">
+            {% for field in profile_form %}
+            <div class="form-group{% if field.field.widget.input_type == 'checkbox' %} full-width{% endif %}">
+                {% if field.field.widget.input_type == 'checkbox' %}
+                <label style="flex-direction:row;align-items:center;gap:0.5rem;display:flex">
+                    {{ field }} {{ field.label }}
+                </label>
+                {% else %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% endif %}
+                {% if field.errors %}<p class="field-error">{{ field.errors.0 }}</p>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Guardar cambios</button>
+            <a href="{% url cancel_url %}" class="btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
 {% endblock %}
