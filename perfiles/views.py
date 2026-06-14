@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.utils import timezone
 
 from accounts.roles import dashboard_url_name, user_role
 
@@ -19,7 +20,25 @@ def perfil_paciente(request):
     except Exception:
         return redirect("home")
 
-    citas = paciente.citas.select_related("profesional__user").order_by("-fecha_hora")[:10]
+    citas_qs = paciente.citas.select_related("profesional__user")
+    proximas = citas_qs.filter(
+        estado__in=["pendiente", "confirmada"],
+        fecha_hora__gte=timezone.now(),
+    )
+    citas = citas_qs.order_by("-fecha_hora")[:10]
+
+    condiciones = [
+        nombre
+        for activo, nombre in [
+            (paciente.diabetes, "Diabetes"),
+            (paciente.hipertension, "Hipertensión"),
+            (paciente.cardiopatia, "Cardiopatía"),
+            (paciente.alergias, "Alergias"),
+            (paciente.embarazo, "Embarazo"),
+        ]
+        if activo
+    ]
+
     return render(
         request,
         "perfiles/perfiles_paciente.html",
@@ -27,6 +46,8 @@ def perfil_paciente(request):
             "paciente": paciente,
             "user": request.user,
             "citas": citas,
+            "stats": {"proximas": proximas.count(), "total": citas_qs.count()},
+            "condiciones": condiciones,
         },
     )
 
@@ -40,13 +61,24 @@ def perfil_profesional(request):
     except Exception:
         return redirect("home")
 
-    citas = profesional.citas.select_related("paciente").order_by("fecha_hora")
+    citas_qs = profesional.citas.select_related("paciente")
+    stats = {
+        "pendientes": citas_qs.filter(estado="pendiente").count(),
+        "confirmadas": citas_qs.filter(estado="confirmada").count(),
+        "total": citas_qs.count(),
+    }
+    proximas = citas_qs.filter(
+        estado__in=["pendiente", "confirmada"],
+        fecha_hora__gte=timezone.now(),
+    ).order_by("fecha_hora")[:8]
+
     return render(
         request,
         "perfiles/perfil_profesional.html",
         {
             "profesional": profesional,
             "user": request.user,
-            "citas": citas,
+            "citas": proximas,
+            "stats": stats,
         },
     )

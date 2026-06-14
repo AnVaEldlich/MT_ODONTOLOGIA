@@ -6,53 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis citas — MT Odontología</title>
     <link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
-    <style>
-        .wrap { max-width: 720px; margin: 2rem auto; padding: 1rem 2rem; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #eee; }
-        .badge { padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.85rem; }
-        .pendiente { background: #fef3c7; }
-        .confirmada { background: #d1fae5; }
-        .cancelada { background: #fee2e2; }
-        .actions a, .actions button { margin-right: 0.5rem; }
-    </style>
 </head>
 <body>
-    <div class="wrap">
-        <h1>Mis citas</h1>
-        <p><a href="{% url 'solicitar_cita' %}">+ Nueva cita</a> · <a href="{% url 'perfil' %}">Perfil</a> · <a href="{% url 'logout' %}">Salir</a></p>
-        {% if messages %}{% for m in messages %}<p>{{ m }}</p>{% endfor %}{% endif %}
-        {% if citas %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Profesional</th>
-                    <th>Estado</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for cita in citas %}
-                <tr>
-                    <td>{{ cita.fecha_hora|date:"d/m/Y H:i" }}</td>
-                    <td>{{ cita.profesional.get_full_name }} ({{ cita.profesional.get_especialidad_display }})</td>
-                    <td><span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span></td>
-                    <td class="actions">
-                        {% if cita.estado != 'cancelada' %}
-                        <form method="post" action="{% url 'cancelar_cita' cita.pk %}" style="display:inline">
-                            {% csrf_token %}
-                            <button type="submit">Cancelar</button>
-                        </form>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p>No tienes citas. <a href="{% url 'solicitar_cita' %}">Agenda la primera</a>.</p>
-        {% endif %}
-    </div>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a href="{% url 'home' %}" class="brand"><span class="dot"></span> MT Odontología</a>
+            <nav class="topnav">
+                <a href="{% url 'perfil' %}">Mi perfil</a>
+                <a href="{% url 'mis_citas' %}">Mis citas</a>
+                <a href="{% url 'solicitar_cita' %}">Agendar cita</a>
+                <a href="{% url 'logout' %}" class="logout">Salir</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page">
+        <div class="page-head">
+            <h1>Mis citas</h1>
+            <p>Consulta el estado de tus citas y cancela las que ya no necesites.</p>
+        </div>
+
+        {% if messages %}{% for m in messages %}<div class="alert {{ m.tags }}">{{ m }}</div>{% endfor %}{% endif %}
+
+        <div class="card">
+            <div class="card-title-row">
+                <h2>Listado de citas</h2>
+                <a href="{% url 'solicitar_cita' %}" class="btn btn-primary btn-sm">+ Nueva cita</a>
+            </div>
+            {% if citas %}
+            <table class="table">
+                <thead>
+                    <tr><th>Fecha</th><th>Profesional</th><th>Estado</th><th></th></tr>
+                </thead>
+                <tbody>
+                    {% for cita in citas %}
+                    <tr>
+                        <td data-label="Fecha">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</td>
+                        <td data-label="Profesional">{{ cita.profesional.get_full_name }} <span class="who">({{ cita.profesional.get_especialidad_display }})</span></td>
+                        <td data-label="Estado"><span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span></td>
+                        <td data-label="" class="actions">
+                            {% if cita.estado != 'cancelada' %}
+                            <form method="post" action="{% url 'cancelar_cita' cita.pk %}" onsubmit="return confirm('¿Cancelar esta cita?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Cancelar</button>
+                            </form>
+                            {% else %}<span class="who">—</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty">
+                <div class="icon">🦷</div>
+                <p>No tienes citas registradas.</p>
+                <a href="{% url 'solicitar_cita' %}" class="btn btn-primary" style="margin-top:1rem">Agenda la primera</a>
+            </div>
+            {% endif %}
+        </div>
+    </main>
 </body>
 </html>

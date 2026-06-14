@@ -8,62 +8,94 @@
     <link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="welcome-section">
-                <h1>Hola, {{ paciente.first_name }}</h1>
-                <p>{{ paciente.city }}, {{ paciente.department }}</p>
-            </div>
-            <div class="header-right">
-                <a href="{% url 'solicitar_cita' %}">Agendar cita</a>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a href="{% url 'home' %}" class="brand"><span class="dot"></span> MT Odontología</a>
+            <nav class="topnav">
+                <a href="{% url 'perfil' %}">Mi perfil</a>
                 <a href="{% url 'mis_citas' %}">Mis citas</a>
-                <a href="{% url 'logout' %}">Cerrar sesión</a>
+                <a href="{% url 'solicitar_cita' %}">Agendar cita</a>
+                <a href="{% url 'logout' %}" class="logout">Salir</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page">
+        <div class="page-head">
+            <h1>Hola, {{ paciente.first_name }} 👋</h1>
+            <p>{{ paciente.city }}, {{ paciente.department }}</p>
+        </div>
+
+        {% if messages %}{% for m in messages %}<div class="alert {{ m.tags }}">{{ m }}</div>{% endfor %}{% endif %}
+
+        <div class="stats">
+            <div class="stat">
+                <div class="num">{{ stats.proximas }}</div>
+                <div class="label">Citas próximas</div>
+            </div>
+            <div class="stat ok">
+                <div class="num">{{ stats.total }}</div>
+                <div class="label">Citas en total</div>
+            </div>
+            <div class="stat warn">
+                <div class="num">{{ condiciones|length }}</div>
+                <div class="label">Condiciones médicas</div>
             </div>
         </div>
 
-        <div class="profile-section">
-            <div class="profile-header">
-                <div class="profile-details">
+        <div class="card">
+            <div class="profile-top">
+                <div class="avatar">{{ paciente.first_name|first }}{{ paciente.last_name|first }}</div>
+                <div>
                     <h2>{{ paciente.first_name }} {{ paciente.last_name }}</h2>
-                    <p>{{ user.email }}</p>
-                    <p>Documento: {{ paciente.id_type }} {{ paciente.id_number }}</p>
-                    <p>Teléfono: {{ paciente.phone }}</p>
-                    {% if paciente.eps %}<p>EPS: {{ paciente.eps }}</p>{% endif %}
+                    <div class="sub">{{ user.email }}</div>
+                    <div class="sub">Documento: {{ paciente.id_type|upper }} {{ paciente.id_number }}</div>
                 </div>
             </div>
 
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Dirección</label>
-                    <p>{{ paciente.address }}</p>
-                </div>
-                <div class="form-group">
-                    <label>Fecha de nacimiento</label>
-                    <p>{{ paciente.birth_date|date:"d/m/Y" }}</p>
-                </div>
-                <div class="form-group">
-                    <label>Género</label>
-                    <p>{{ paciente.gender }}</p>
+            <div class="info-grid">
+                <div class="info-item"><div class="k">Teléfono</div><div class="v">{{ paciente.phone }}</div></div>
+                <div class="info-item"><div class="k">Dirección</div><div class="v">{{ paciente.address }}</div></div>
+                <div class="info-item"><div class="k">Fecha de nacimiento</div><div class="v">{{ paciente.birth_date|date:"d/m/Y" }}</div></div>
+                <div class="info-item"><div class="k">Género</div><div class="v">{{ paciente.gender|capfirst }}</div></div>
+                {% if paciente.eps %}<div class="info-item"><div class="k">EPS</div><div class="v">{{ paciente.eps }}</div></div>{% endif %}
+                <div class="info-item full-width">
+                    <div class="k">Condiciones médicas</div>
+                    {% if condiciones %}
+                    <div class="chips">{% for c in condiciones %}<span class="chip">{{ c }}</span>{% endfor %}</div>
+                    {% else %}<div class="v">Ninguna registrada</div>{% endif %}
                 </div>
                 {% if paciente.dental_history %}
-                <div class="form-group full-width">
-                    <label>Historia dental</label>
-                    <p>{{ paciente.dental_history }}</p>
-                </div>
+                <div class="info-item full-width"><div class="k">Historia dental</div><div class="v">{{ paciente.dental_history }}</div></div>
                 {% endif %}
             </div>
+        </div>
 
-            <h3 style="margin-top:2rem">Próximas citas</h3>
+        <div class="card">
+            <div class="card-title-row">
+                <h2>Mis citas</h2>
+                <a href="{% url 'solicitar_cita' %}" class="btn btn-primary btn-sm">+ Agendar cita</a>
+            </div>
             {% if citas %}
-            <ul>
+            <ul class="cita-list">
                 {% for cita in citas %}
-                <li>{{ cita.fecha_hora|date:"d/m/Y H:i" }} — Dr(a). {{ cita.profesional.get_full_name }} ({{ cita.get_estado_display }})</li>
+                <li>
+                    <div>
+                        <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
+                        <div class="who">Dr(a). {{ cita.profesional.get_full_name }} — {{ cita.profesional.get_especialidad_display }}</div>
+                    </div>
+                    <span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span>
+                </li>
                 {% endfor %}
             </ul>
             {% else %}
-            <p><a href="{% url 'solicitar_cita' %}">Agenda tu primera cita</a></p>
+            <div class="empty">
+                <div class="icon">🦷</div>
+                <p>Aún no tienes citas.</p>
+                <a href="{% url 'solicitar_cita' %}" class="btn btn-primary" style="margin-top:1rem">Agenda tu primera cita</a>
+            </div>
             {% endif %}
         </div>
-    </div>
+    </main>
 </body>
 </html>
