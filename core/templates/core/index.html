@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/templatemo-personal-style.css' %}">
-<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<link rel="stylesheet" href="{% static 'css/templatemo-personal-style.css' %}?v=2">
+<link rel="stylesheet" href="{% static 'css/base.css' %}?v=2">
 {% endblock %}
 
 {% block content %}
@@ -36,7 +36,9 @@
     <div class="container">
         <h2 class="section-title fade-in">Sobre Nosotros - MT ODONTOLOGIA INTEGRAL</h2>
         <div class="about-content">
-            <div class="about-image slide-in-left"></div>
+            <div class="about-image slide-in-left">
+                <img src="{% static 'images/About.jpg' %}" alt="Consultorio odontológico MT Odontología">
+            </div>
             <div class="about-text slide-in-right">
                 <h3>Nos apasiona transformar sonrisas y mejorar la salud bucal de nuestros pacientes.</h3>
                 <p>Somos un equipo de profesionales altamente calificados, dedicados a brindar servicios odontológicos
@@ -69,7 +71,9 @@
         <h2 class="section-title fade-in">Tratamientos</h2>
         <div class="portfolio-grid">
             <div class="portfolio-item">
-                <div class="portfolio-image"></div>
+                <div class="portfolio-image">
+                    <img src="{% static 'images/Ordotodoncia.jpg' %}" alt="Ortodoncia">
+                </div>
                 <div class="portfolio-content">
                     <h4>Ortodoncia</h4>
                     <p>Tratamientos de ortodoncia personalizados para corregir la alineación dental y mejorar la
@@ -82,7 +86,9 @@
                 </div>
             </div>
             <div class="portfolio-item">
-                <div class="portfolio-image"></div>
+                <div class="portfolio-image">
+                    <img src="{% static 'images/Endodoncia.jpg' %}" alt="Endodoncia">
+                </div>
                 <div class="portfolio-content">
                     <h4>Endodoncia</h4>
                     <p>Tratamientos de conducto para salvar dientes dañados o infectados, utilizando técnicas avanzadas
@@ -95,7 +101,9 @@
                 </div>
             </div>
             <div class="portfolio-item">
-                <div class="portfolio-image"></div>
+                <div class="portfolio-image">
+                    <img src="{% static 'images/Implante.jpg' %}" alt="Implantes dentales">
+                </div>
                 <div class="portfolio-content">
                     <h4>Implantes Dentales</h4>
                     <p>Soluciones permanentes para reemplazar dientes perdidos con implantes de titanio de alta calidad,
@@ -108,7 +116,9 @@
                 </div>
             </div>
             <div class="portfolio-item">
-                <div class="portfolio-image"></div>
+                <div class="portfolio-image">
+                    <img src="{% static 'images/Blanqueamiento.jpg' %}" alt="Blanqueamiento dental">
+                </div>
                 <div class="portfolio-content">
                     <h4>Blanqueamiento Dental</h4>
                     <p>Tratamientos de blanqueamiento profesional para aclarar el tono de tus dientes de manera segura y
@@ -122,7 +132,9 @@
             </div>
 
             <div class="portfolio-item">
-                <div class="portfolio-image"></div>
+                <div class="portfolio-image">
+                    <img src="{% static 'images/Estetica.jpg' %}" alt="Odontología estética">
+                </div>
                 <div class="portfolio-content">
                     <h4>Odontología Estética</h4>
                     <p>Diseño de sonrisa integral con carillas de porcelana, resinas estéticas y contorneado dental para
@@ -135,7 +147,9 @@
                 </div>
             </div>
             <div class="portfolio-item">
-                <div class="portfolio-image"></div>
+                <div class="portfolio-image">
+                    <img src="{% static 'images/Limpieza.jpg' %}" alt="Limpieza dental">
+                </div>
                 <div class="portfolio-content">
                     <h4>Limpieza y Prevención</h4>
                     <p>Profilaxis dental profesional, eliminación de sarro y placa bacteriana, aplicación de flúor y
