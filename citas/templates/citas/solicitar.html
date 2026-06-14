@@ -4,35 +4,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitar cita — MT Odontología</title>
+    <title>Agendar cita — MT Odontología</title>
     <link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
-    <style>
-        .cita-form { max-width: 520px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,.08); }
-        .cita-form label { display: block; margin-top: 1rem; font-weight: 600; }
-        .cita-form input, .cita-form select, .cita-form textarea { width: 100%; padding: 0.6rem; margin-top: 0.25rem; border: 1px solid #ddd; border-radius: 8px; }
-        .btn-primary { margin-top: 1.5rem; padding: 0.75rem 1.5rem; background: #2563eb; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
-        .nav-links { text-align: center; margin: 1rem; }
-        .nav-links a { margin: 0 0.5rem; color: #2563eb; }
-    </style>
 </head>
 <body>
-    <div class="nav-links">
-        <a href="{% url 'perfil' %}">Mi perfil</a>
-        <a href="{% url 'mis_citas' %}">Mis citas</a>
-        <a href="{% url 'logout' %}">Cerrar sesión</a>
-    </div>
-    <div class="cita-form">
-        <h1>Agendar cita</h1>
-        {% if messages %}{% for m in messages %}<p>{{ m }}</p>{% endfor %}{% endif %}
-        <form method="post">
-            {% csrf_token %}
-            {% for field in form %}
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}<p style="color:red">{{ field.errors.0 }}</p>{% endif %}
-            {% endfor %}
-            <button type="submit" class="btn-primary">Solicitar cita</button>
-        </form>
-    </div>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a href="{% url 'home' %}" class="brand"><span class="dot"></span> MT Odontología</a>
+            <nav class="topnav">
+                <a href="{% url 'perfil' %}">Mi perfil</a>
+                <a href="{% url 'mis_citas' %}">Mis citas</a>
+                <a href="{% url 'logout' %}" class="logout">Salir</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page">
+        <div class="page-head">
+            <h1>Agendar nueva cita</h1>
+            <p>Elige un profesional, la fecha y cuéntanos el motivo de tu consulta.</p>
+        </div>
+
+        {% if messages %}{% for m in messages %}<div class="alert {{ m.tags }}">{{ m }}</div>{% endfor %}{% endif %}
+
+        <div class="card form-narrow">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<div class="err">{{ field.errors.0 }}</div>{% endif %}
+                </div>
+                {% endfor %}
+                <div class="actions" style="margin-top:1rem">
+                    <button type="submit" class="btn btn-primary">Solicitar cita</button>
+                    <a href="{% url 'mis_citas' %}" class="btn btn-ghost">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </main>
 </body>
 </html>

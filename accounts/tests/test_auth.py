@@ -31,6 +31,7 @@ def test_patient_register_and_login(client):
     assert response.status_code == 200
     assert User.objects.filter(username="ana@test.com").exists()
     assert Paciente.objects.filter(id_number="1234567890").exists()
+    assert response.request["PATH_INFO"] == reverse("perfil")
 
     client.logout()
     login_url = reverse("login")
@@ -41,6 +42,33 @@ def test_patient_register_and_login(client):
     )
     assert response.status_code == 200
     assert response.wsgi_request.user.is_authenticated
+
+
+@pytest.mark.django_db
+def test_register_redirects_to_perfil_without_db_error(client):
+    """Tras registrarse, el perfil debe cargar (requiere tabla citas_cita)."""
+    response = client.post(
+        reverse("register"),
+        {
+            "first_name": "Luis",
+            "last_name": "Ruiz",
+            "id_type": "cc",
+            "id_number": "5555555555",
+            "birth_date": "1988-01-10",
+            "gender": "masculino",
+            "email": "luis@test.com",
+            "phone": "3001112233",
+            "address": "Calle 5",
+            "city": "Cali",
+            "department": "valle",
+            "password": "testpass123",
+            "confirm_password": "testpass123",
+        },
+        follow=True,
+    )
+    assert response.status_code == 200
+    assert response.request["PATH_INFO"] == reverse("perfil")
+    assert b"OperationalError" not in response.content
 
 
 @pytest.mark.django_db
