@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Clinica odontologica">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="100%" stop-color="#764ba2"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#f5f7ff" stop-opacity="0.92"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <circle cx="1020" cy="120" r="180" fill="#ffffff" fill-opacity="0.09"/>
+  <circle cx="180" cy="690" r="220" fill="#ffffff" fill-opacity="0.08"/>
+  <rect x="170" y="130" width="860" height="540" rx="36" fill="url(#card)"/>
+  <rect x="220" y="190" width="260" height="360" rx="22" fill="#e8ecff"/>
+  <rect x="520" y="190" width="460" height="120" rx="18" fill="#e1e7ff"/>
+  <rect x="520" y="340" width="460" height="26" rx="13" fill="#ced8ff"/>
+  <rect x="520" y="388" width="410" height="26" rx="13" fill="#ced8ff"/>
+  <rect x="520" y="436" width="360" height="26" rx="13" fill="#ced8ff"/>
+  <path d="M282 296c0-42 34-76 76-76s76 34 76 76v34c0 52-24 97-60 131l-16 15-16-15c-36-34-60-79-60-131v-34z" fill="#7f8fff"/>
+  <circle cx="358" cy="292" r="39" fill="#ffffff"/>
+  <text x="520" y="524" fill="#5b5f84" font-size="44" font-family="Arial, sans-serif" font-weight="700">MT ODONTOLOGIA</text>
+  <text x="520" y="566" fill="#7d82ac" font-size="24" font-family="Arial, sans-serif">Atencion integral con enfoque humano</text>
+</svg>

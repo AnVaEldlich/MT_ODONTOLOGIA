@@ -586,7 +586,7 @@ section {
 .about-image {
     width: 100%;
     height: 500px;
-    background: var(--gradient-elegant) center/cover;
+    background: url('/static/images/about-clinic.svg') center/cover;
     border-radius: 30px;
     position: relative;
     overflow: hidden;
@@ -703,27 +703,27 @@ section {
 }
 
 .portfolio-item:nth-child(1) .portfolio-image {
-    background-image: var(--gradient-primary);
+    background-image: url('/static/images/treatment-ortodoncia.svg');
 }
 
 .portfolio-item:nth-child(2) .portfolio-image {
-    background-image: var(--gradient-secondary);
+    background-image: url('/static/images/treatment-endodoncia.svg');
 }
 
 .portfolio-item:nth-child(3) .portfolio-image {
-    background-image: var(--gradient-tertiary);
+    background-image: url('/static/images/treatment-implantes.svg');
 }
 
 .portfolio-item:nth-child(4) .portfolio-image {
-    background-image: var(--gradient-elegant);
+    background-image: url('/static/images/treatment-blanqueamiento.svg');
 }
 
 .portfolio-item:nth-child(5) .portfolio-image {
-    background-image: var(--gradient-secondary);
+    background-image: url('/static/images/treatment-estetica.svg');
 }
 
 .portfolio-item:nth-child(6) .portfolio-image {
-    background-image: var(--gradient-primary);
+    background-image: url('/static/images/treatment-limpieza.svg');
 }
 
 .portfolio-image::before {
