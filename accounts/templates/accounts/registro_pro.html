@@ -1,8 +1,15 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% block content %}
 
+{% block title %}Crear cuenta — MT Odontología{% endblock %}
+
+{% block body_class %}auth-layout{% endblock %}
+
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'accounts/css/registro_pro.css' %}">
+{% endblock %}
+
+{% block content %}
 
 <div class="container">
     <h1>Crear una cuenta gratuita</h1>

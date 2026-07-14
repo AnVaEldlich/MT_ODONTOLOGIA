@@ -1,88 +1,76 @@
+{% extends 'core/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel profesional — MT Odontología</title>
-    <link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
-</head>
-<body>
-    <header class="topbar">
-        <div class="topbar-inner">
-            <a href="{% url 'home' %}" class="brand"><span class="dot"></span> MT Odontología</a>
-            <nav class="topnav">
-                <a href="{% url 'perfil_profesional' %}">Mi panel</a>
-                <a href="{% url 'agenda_profesional' %}">Agenda</a>
-                <a href="{% url 'logout' %}" class="logout">Salir</a>
-            </nav>
-        </div>
-    </header>
 
-    <main class="page">
-        <div class="page-head">
-            <h1>Dr(a). {{ profesional.get_full_name }}</h1>
-            <p>{{ profesional.get_especialidad_display }} · {{ profesional.ubicacion }}</p>
-        </div>
+{% block title %}Panel profesional — MT Odontología{% endblock %}
 
-        {% if messages %}{% for m in messages %}<div class="alert {{ m.tags }}">{{ m }}</div>{% endfor %}{% endif %}
+{% block body_class %}app-layout{% endblock %}
 
-        <div class="stats">
-            <div class="stat warn">
-                <div class="num">{{ stats.pendientes }}</div>
-                <div class="label">Citas pendientes</div>
-            </div>
-            <div class="stat ok">
-                <div class="num">{{ stats.confirmadas }}</div>
-                <div class="label">Citas confirmadas</div>
-            </div>
-            <div class="stat">
-                <div class="num">{{ stats.total }}</div>
-                <div class="label">Citas en total</div>
-            </div>
-        </div>
+{% block main_class %}page{% endblock %}
 
-        <div class="card">
-            <div class="profile-top">
-                <div class="avatar">{{ profesional.user.first_name|first }}{{ profesional.user.last_name|first }}</div>
-                <div>
-                    <h2>{{ profesional.get_full_name }}</h2>
-                    <div class="sub">{{ user.email }}</div>
-                    {% if profesional.is_verified %}<span class="badge confirmada">Perfil verificado</span>{% endif %}
-                </div>
-            </div>
-            <div class="info-grid">
-                <div class="info-item"><div class="k">Especialidad</div><div class="v">{{ profesional.get_especialidad_display }}</div></div>
-                <div class="info-item"><div class="k">Documento</div><div class="v">{{ profesional.get_id_type_display }} {{ profesional.id_number }}</div></div>
-                <div class="info-item"><div class="k">Contacto</div><div class="v">{{ profesional.get_full_phone }}</div></div>
-                <div class="info-item"><div class="k">Ubicación</div><div class="v">{{ profesional.ubicacion }}</div></div>
-            </div>
-        </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
+{% endblock %}
 
-        <div class="card">
-            <div class="card-title-row">
-                <h2>Próximas citas</h2>
-                <a href="{% url 'agenda_profesional' %}" class="btn btn-light btn-sm">Ver agenda completa</a>
-            </div>
-            {% if citas %}
-            <ul class="cita-list">
-                {% for cita in citas %}
-                <li>
-                    <div>
-                        <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
-                        <div class="who">{{ cita.paciente.first_name }} {{ cita.paciente.last_name }}{% if cita.motivo %} — {{ cita.motivo }}{% endif %}</div>
-                    </div>
-                    <span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <div class="empty">
-                <div class="icon">📅</div>
-                <p>No hay citas próximas. Aparecerán cuando los pacientes soliciten.</p>
-            </div>
-            {% endif %}
+{% block content %}
+<div class="page-head">
+    <h1>Dr(a). {{ profesional.get_full_name }}</h1>
+    <p>{{ profesional.get_especialidad_display }} · {{ profesional.ubicacion }}</p>
+</div>
+
+<div class="stats">
+    <div class="stat warn">
+        <div class="num">{{ stats.pendientes }}</div>
+        <div class="label">Citas pendientes</div>
+    </div>
+    <div class="stat ok">
+        <div class="num">{{ stats.confirmadas }}</div>
+        <div class="label">Citas confirmadas</div>
+    </div>
+    <div class="stat">
+        <div class="num">{{ stats.total }}</div>
+        <div class="label">Citas en total</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="profile-top">
+        <div class="avatar">{{ profesional.user.first_name|first }}{{ profesional.user.last_name|first }}</div>
+        <div>
+            <h2>{{ profesional.get_full_name }}</h2>
+            <div class="sub">{{ user.email }}</div>
+            {% if profesional.is_verified %}<span class="badge confirmada">Perfil verificado</span>{% endif %}
         </div>
-    </main>
-</body>
-</html>
+    </div>
+    <div class="info-grid">
+        <div class="info-item"><div class="k">Especialidad</div><div class="v">{{ profesional.get_especialidad_display }}</div></div>
+        <div class="info-item"><div class="k">Documento</div><div class="v">{{ profesional.get_id_type_display }} {{ profesional.id_number }}</div></div>
+        <div class="info-item"><div class="k">Contacto</div><div class="v">{{ profesional.get_full_phone }}</div></div>
+        <div class="info-item"><div class="k">Ubicación</div><div class="v">{{ profesional.ubicacion }}</div></div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-title-row">
+        <h2>Próximas citas</h2>
+        <a href="{% url 'agenda_profesional' %}" class="btn btn-light btn-sm">Ver agenda completa</a>
+    </div>
+    {% if citas %}
+    <ul class="cita-list">
+        {% for cita in citas %}
+        <li>
+            <div>
+                <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
+                <div class="who">{{ cita.paciente.first_name }} {{ cita.paciente.last_name }}{% if cita.motivo %} — {{ cita.motivo }}{% endif %}</div>
+            </div>
+            <span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty">
+        <div class="icon">📅</div>
+        <p>No hay citas próximas. Aparecerán cuando los pacientes soliciten.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

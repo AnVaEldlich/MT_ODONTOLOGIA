@@ -91,8 +91,8 @@
     width: 100%;
 }
 
-/* Navigation */
-nav {
+/* Navigation — solo el landing (#navbar), no el topnav de la app */
+#navbar {
     position: fixed;
     top: 0;
     width: 100%;
@@ -104,7 +104,7 @@ nav {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-nav.scrolled {
+#navbar.scrolled {
     background: rgba(255, 255, 255, 0.98);
     box-shadow: var(--shadow-lg);
     padding: 0.75rem 0;
@@ -369,4 +369,143 @@ nav.scrolled {
 
 .mobile-nav-links a:hover {
     transform: scale(1.05);
+}
+
+/* ---------- App shell (paneles, citas, auth) ---------- */
+.topbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 1rem 0;
+    box-shadow: 0 2px 10px rgba(76, 70, 168, 0.08);
+}
+
+.topbar-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.topbar .brand {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    background: none;
+    -webkit-text-fill-color: #fff;
+}
+
+.topbar .brand .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25);
+}
+
+.topnav {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.topnav a {
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 500;
+    font-size: 0.92rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.topnav a:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    transform: none;
+}
+
+.topnav a::after {
+    display: none;
+}
+
+.topnav a.logout {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.topnav a.logout:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.site-messages {
+    max-width: 1080px;
+    margin: 1rem auto 0;
+    padding: 0 1.5rem;
+}
+
+.site-messages .alert {
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.site-messages .alert.success,
+.site-messages .alert.info {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.site-messages .alert.error,
+.site-messages .alert.warning {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+body.auth-layout {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+body.auth-layout main {
+    min-height: calc(100vh - 72px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+body.auth-layout.auth-center main {
+    align-items: center;
+}
+
+body.app-layout {
+    background: #f4f5fb;
+    min-height: 100vh;
+}
+
+main.page .site-messages {
+    max-width: none;
+    margin: 0 0 1rem;
+    padding: 0;
+}
+
+@media (max-width: 768px) {
+    .topnav {
+        width: 100%;
+    }
+
+    .topnav a {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.7rem;
+    }
 }

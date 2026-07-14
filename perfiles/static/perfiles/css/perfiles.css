@@ -31,11 +31,11 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
 }
 
 a {
@@ -43,70 +43,7 @@ a {
     text-decoration: none;
 }
 
-/* ---------- Top navbar ---------- */
-.topbar {
-    background: var(--gradient);
-    color: #fff;
-    padding: 1rem 0;
-    box-shadow: var(--shadow-sm);
-}
-
-.topbar-inner {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.brand {
-    font-size: 1.25rem;
-    font-weight: 800;
-    letter-spacing: -0.3px;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.brand .dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25);
-}
-
-.topnav {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    flex-wrap: wrap;
-}
-
-.topnav a {
-    color: rgba(255, 255, 255, 0.92);
-    font-weight: 500;
-    font-size: 0.92rem;
-    padding: 0.5rem 0.9rem;
-    border-radius: 10px;
-    transition: background 0.2s ease;
-}
-
-.topnav a:hover {
-    background: rgba(255, 255, 255, 0.18);
-}
-
-.topnav a.logout {
-    background: rgba(255, 255, 255, 0.16);
-}
-
-.topnav a.logout:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
+/* Topbar vive en base.html; estilos en core/static/css/base.css */
 
 /* ---------- Layout ---------- */
 .page {
