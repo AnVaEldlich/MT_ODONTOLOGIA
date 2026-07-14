@@ -586,13 +586,19 @@ section {
 .about-image {
     width: 100%;
     height: 500px;
-    background: url('/static/images/About.jpg') center/cover;
     border-radius: 30px;
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-2xl);
     transform: rotate(-2deg);
     transition: transform 0.4s ease;
+}
+
+.about-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .about-image:hover {
@@ -698,32 +704,15 @@ section {
     background: var(--gradient-primary);
     position: relative;
     overflow: hidden;
-    background-size: cover;
-    background-position: center;
 }
 
-.portfolio-item:nth-child(1) .portfolio-image {
-    background-image: url('/static/images/Ordotodoncia.jpg');
-}
-
-.portfolio-item:nth-child(2) .portfolio-image {
-    background-image: url('/static/images/Endodoncia.jpg');
-}
-
-.portfolio-item:nth-child(3) .portfolio-image {
-    background-image: url('/static/images/Implante.jpg');
-}
-
-.portfolio-item:nth-child(4) .portfolio-image {
-    background-image: url('/static/images/Blanqueamiento.jpg');
-}
-
-.portfolio-item:nth-child(5) .portfolio-image {
-    background-image: url('/static/images/Estetica.jpg');
-}
-
-.portfolio-item:nth-child(6) .portfolio-image {
-    background-image: url('/static/images/Limpieza.jpg');
+.portfolio-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    position: relative;
+    z-index: 0;
 }
 
 .portfolio-image::before {
@@ -733,8 +722,10 @@ section {
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 1;
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
     transition: all 0.3s ease;
+    pointer-events: none;
 }
 
 .portfolio-item:hover .portfolio-image::before {

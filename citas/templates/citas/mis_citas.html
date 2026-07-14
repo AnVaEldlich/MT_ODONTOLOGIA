@@ -1,0 +1,56 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Mis citas — MT Odontología{% endblock %}
+
+{% block body_class %}app-layout{% endblock %}
+
+{% block main_class %}page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <h1>Mis citas</h1>
+    <p>Consulta el estado de tus citas y cancela las que ya no necesites.</p>
+</div>
+
+<div class="card">
+    <div class="card-title-row">
+        <h2>Listado de citas</h2>
+        <a href="{% url 'solicitar_cita' %}" class="btn btn-primary btn-sm">+ Nueva cita</a>
+    </div>
+    {% if citas %}
+    <table class="table">
+        <thead>
+            <tr><th>Fecha</th><th>Profesional</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for cita in citas %}
+            <tr>
+                <td data-label="Fecha">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</td>
+                <td data-label="Profesional">{{ cita.profesional.get_full_name }} <span class="who">({{ cita.profesional.get_especialidad_display }})</span></td>
+                <td data-label="Estado"><span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span></td>
+                <td data-label="" class="actions">
+                    {% if cita.estado != 'cancelada' %}
+                    <form method="post" action="{% url 'cancelar_cita' cita.pk %}" onsubmit="return confirm('¿Cancelar esta cita?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Cancelar</button>
+                    </form>
+                    {% else %}<span class="who">—</span>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty">
+        <div class="icon">🦷</div>
+        <p>No tienes citas registradas.</p>
+        <a href="{% url 'solicitar_cita' %}" class="btn btn-primary" style="margin-top:1rem">Agenda la primera</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

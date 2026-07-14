@@ -1,90 +1,84 @@
+{% extends 'core/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="es">
+{% block title %}Registro centro médico — MT Odontología{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro Centro Médico</title>
-    <link rel="stylesheet" href="{% static 'accounts/css/formclinic.css' %}">
-    <link rel="icon" href="{% static 'images/teeth.png' %}" type="image/x-icon">
-</head>
+{% block body_class %}auth-layout{% endblock %}
 
-<body>
-    <div class="container">
-        <!-- Form Section -->
-        <div class="form-section">
-            <h1>Regístrese como centro médico</h1>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/formclinic.css' %}">
+{% endblock %}
 
-            <form id="registrationForm" method="POST" action="{% url 'formclinic' %}">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="clinicName">
-                        Nombre de la clínica/centro <span class="required">*</span>
-                    </label>
-                    <input type="text" id="clinicName" name="clinicName" required>
-                </div>
+{% block content %}
+<div class="container">
+    <div class="form-section">
+        <h1>Regístrese como centro médico</h1>
 
-                <div class="form-group">
-                    <label for="specialists">
-                        ¿Cuántos especialistas trabajan en el centro? <span class="required">*</span>
-                    </label>
-                    <select id="specialists" name="specialists" required>
-                        <option value="">--- Elegir ---</option>
-                        <option value="1-5">1-5 especialistas</option>
-                        <option value="6-10">6-10 especialistas</option>
-                        <option value="11-20">11-20 especialistas</option>
-                        <option value="21-50">21-50 especialistas</option>
-                        <option value="51+">Más de 50 especialistas</option>
-                    </select>
-                </div>
+        <form id="registrationForm" method="POST" action="{% url 'formclinic' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="clinicName">
+                    Nombre de la clínica/centro <span class="required">*</span>
+                </label>
+                <input type="text" id="clinicName" name="clinicName" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="city">
-                        Ciudad <span class="required">*</span>
-                    </label>
-                    <input type="text" id="city" name="city" placeholder="Introducir la ciudad" required>
-                </div>
+            <div class="form-group">
+                <label for="specialists">
+                    ¿Cuántos especialistas trabajan en el centro? <span class="required">*</span>
+                </label>
+                <select id="specialists" name="specialists" required>
+                    <option value="">--- Elegir ---</option>
+                    <option value="1-5">1-5 especialistas</option>
+                    <option value="6-10">6-10 especialistas</option>
+                    <option value="11-20">11-20 especialistas</option>
+                    <option value="21-50">21-50 especialistas</option>
+                    <option value="51+">Más de 50 especialistas</option>
+                </select>
+            </div>
 
-                <button type="submit" class="btn btn-submit">
-                    Registrarme de forma gratuita
-                </button>
+            <div class="form-group">
+                <label for="city">
+                    Ciudad <span class="required">*</span>
+                </label>
+                <input type="text" id="city" name="city" placeholder="Introducir la ciudad" required>
+            </div>
 
-                <div class="back-link">
-                    ¿No eres profesional de la salud? <a href="{% url 'registro_pro' %}">Volver</a>
-                </div>
-            </form>
+            <button type="submit" class="btn btn-submit">
+                Registrarme de forma gratuita
+            </button>
+
+            <div class="back-link">
+                ¿No eres profesional de la salud? <a href="{% url 'registro_pro' %}">Volver</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="benefits-section">
+        <h2>Impulse el prestigio de su centro</h2>
+        <p class="subtitle">Notará los resultados mes a mes</p>
+
+        <div class="benefit-item">
+            <div class="benefit-icon icon-users">👥</div>
+            <div class="benefit-text">
+                <strong>Llegue a 1 millón de pacientes al mes</strong>
+            </div>
         </div>
 
-        <!-- Benefits Section -->
-        <div class="benefits-section">
-            <h2>Impulse el prestigio de su centro</h2>
-            <p class="subtitle">Notará los resultados mes a mes</p>
-
-            <div class="benefit-item">
-                <div class="benefit-icon icon-users">👥</div>
-                <div class="benefit-text">
-                    <strong>Llegue a 1 millón de pacientes al mes</strong>
-                </div>
+        <div class="benefit-item">
+            <div class="benefit-icon icon-gem">💎</div>
+            <div class="benefit-text">
+                <strong>Sitúe a sus doctores en la plataforma de salud líder en todo el mundo</strong>
             </div>
+        </div>
 
-            <div class="benefit-item">
-                <div class="benefit-icon icon-gem">💎</div>
-                <div class="benefit-text">
-                    <strong>Sitúe a sus doctores en la plataforma de salud líder en todo el mundo</strong>
-                </div>
-            </div>
-
-            <div class="benefit-item">
-                <div class="benefit-icon icon-check">✓</div>
-                <div class="benefit-text">
-                    <strong>Reduzca el ausentismo de pacientes</strong>
-                    <span>hasta en un 85%</span>
-                </div>
+        <div class="benefit-item">
+            <div class="benefit-icon icon-check">✓</div>
+            <div class="benefit-text">
+                <strong>Reduzca el ausentismo de pacientes</strong>
+                <span>hasta en un 85%</span>
             </div>
         </div>
     </div>
-</body>
-
-</html>
+</div>
+{% endblock %}

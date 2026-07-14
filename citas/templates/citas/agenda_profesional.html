@@ -1,0 +1,75 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Agenda — MT Odontología{% endblock %}
+
+{% block body_class %}app-layout{% endblock %}
+
+{% block main_class %}page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <h1>Agenda</h1>
+    <p>{{ profesional.get_full_name }} · {{ profesional.get_especialidad_display }}</p>
+</div>
+
+<div class="card">
+    <div id="calendar"></div>
+</div>
+
+<div class="card">
+    <h2>Listado de citas</h2>
+    {% if citas %}
+    <table class="table">
+        <thead>
+            <tr><th>Fecha</th><th>Paciente</th><th>Motivo</th><th>Estado</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+            {% for cita in citas %}
+            <tr>
+                <td data-label="Fecha">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</td>
+                <td data-label="Paciente">{{ cita.paciente.first_name }} {{ cita.paciente.last_name }}</td>
+                <td data-label="Motivo">{{ cita.motivo|default:"—" }}</td>
+                <td data-label="Estado"><span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span></td>
+                <td data-label="" class="actions">
+                    {% if cita.estado == 'pendiente' %}
+                    <form method="post" action="{% url 'confirmar_cita' cita.pk %}">{% csrf_token %}<button type="submit" class="btn btn-success btn-sm">Confirmar</button></form>
+                    {% endif %}
+                    {% if cita.estado != 'cancelada' %}
+                    <form method="post" action="{% url 'cancelar_cita' cita.pk %}" onsubmit="return confirm('¿Cancelar esta cita?');">{% csrf_token %}<button type="submit" class="btn btn-danger btn-sm">Cancelar</button></form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty">
+        <div class="icon">📅</div>
+        <p>Sin citas programadas.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const el = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(el, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            height: 'auto',
+            headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
+            events: JSON.parse('{{ calendar_events_json|escapejs }}')
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}

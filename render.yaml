@@ -1,0 +1,20 @@
+# Blueprint para deploy en Render (https://render.com)
+services:
+  - type: web
+    name: mt-odontologia
+    runtime: python
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: gunicorn Web_odontologia.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: USE_SQLITE
+        value: "True"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://*.onrender.com"
+      - key: PYTHON_VERSION
+        value: "3.12.0"
