@@ -1,118 +1,123 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MT ODONTOLOGIA INTEGRAL{% endblock %}</title>
+    <title>{% block title %}MT Odontología Integral{% endblock %}</title>
     <link rel="icon" href="{% static 'images/Teeth.png' %}" type="image/png">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    {% block extra_css %}
-    
-    {% endblock %}
-
+    {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
 
-    <!-- Navigation -->
+{% block navbar %}
+{% with is_home=request.resolver_match.url_name|default:'' %}
+<nav id="navbar">
+    <div class="nav-container">
+        <div class="logo" onclick="window.location.href='{% url 'home' %}'">MT ODONTOLOGIA</div>
+        <ul class="nav-links">
+            {% if is_home == 'home' %}
+            <li><a href="#home">Inicio</a></li>
+            <li><a href="#about">Sobre</a></li>
+            <li><a href="#portfolio">Tratamientos</a></li>
+            <li><a href="#contact">Agendar cita</a></li>
+            {% else %}
+            <li><a href="{% url 'home' %}">Inicio</a></li>
+            <li><a href="{% url 'home' %}#about">Sobre</a></li>
+            <li><a href="{% url 'home' %}#portfolio">Tratamientos</a></li>
+            {% if user_role == 'paciente' %}
+            <li><a href="{% url 'solicitar_cita' %}">Agendar cita</a></li>
+            {% else %}
+            <li><a href="{% url 'home' %}#contact">Agendar cita</a></li>
+            {% endif %}
+            {% endif %}
 
-    <nav id="navbar">
-        <div class="nav-container">
-            <div class="logo" {% if request.path != '/' %} onclick="window.location.href='/';"{% endif %}> MT ODONTOLOGIA </div>
-
-            <ul class="nav-links">
-            
-            {% if request.path == '/' %}
-
-                <li class="{% if request.path == '/' %}active{% endif %}">
-                    <a href="{% if request.path != '/' %}/{% else %}#home{% endif %}">Inicio</a>
-                </li>
-                <li class="{% if request.path == '/'%}active{% endif %}">
-                    <a href="#about">Sobre</a>
-                </li>
-                <li class="{% if request.path == '/'%}active{% endif %}">
-                    <a href="#portfolio">Tratamientos</a>
-                </li>
-                <li class="{% if request.path == '/'%}active{% endif %}">
-                    <a href="#contact">Agendar cita</a>
-                </li>
-                {% if user.is_authenticated %}
-                <li><a href="{% url 'dashboard' %}">Mi panel</a></li>
-                <li><a href="{% url 'logout' %}">Salir</a></li>
+            {% if user.is_authenticated %}
+                {% if user_role == 'paciente' %}
+                <li><a href="{% url 'perfil' %}">Mi perfil</a></li>
+                <li><a href="{% url 'mis_citas' %}">Mis citas</a></li>
+                {% elif user_role == 'profesional' %}
+                <li><a href="{% url 'perfil_profesional' %}">Mi panel</a></li>
+                <li><a href="{% url 'agenda_profesional' %}">Agenda</a></li>
                 {% else %}
-                <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
+                <li><a href="{% url 'dashboard' %}">Mi panel</a></li>
                 {% endif %}
-
-                <!-- Dropdown especialistas -->
-
-                <div class="dropdown" id="dd1">
-
-                    <button class="dd-toggle" id="dd1_btn" aria-haspopup="true" aria-expanded="false">
+                <li><a href="{% url 'logout' %}">Salir</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
+                <li class="dropdown" id="dd1">
+                    <button type="button" class="dd-toggle" id="dd1_btn" aria-haspopup="true" aria-expanded="false">
                         <span class="dd-label">¿Eres un especialista?</span>
                         <span class="chev" aria-hidden="true"></span>
                     </button>
                     <div class="menu" role="menu" aria-labelledby="dd1_btn">
                         <a class="menu-item" role="menuitem" href="{% url 'registro_pro' %}">Registrarse gratuitamente</a>
-                        <a class="menu-item" role="menuitem" href="#">Soluciones para profesionales</a>
                     </div>
-                </div>
+                </li>
             {% endif %}
-
-
-
-            {% if request.path ==  '/accounts/registro_pro/' %}
-
-            <li>
-                
-                <p>¿Ya tienes una cuenta?</p>
-
-                <a href="{% url 'login' %}" style="color: cornflowerblue;">Iniciar Sesion</a>     
-
-            </li>
-
-
-            {% endif %}
-
-
-            </ul>
-
-            {% if request.path == '/' %}
-
-            <div class="mobile-menu-toggle" id="mobileMenuToggle">
-                <div class="hamburger"></div>
-                <div class="hamburger"></div>
-                <div class="hamburger"></div>
-            </div>
-
-            {% endif %}
-        </div>
-    </nav>
-
-    <!-- Mobile Menu -->
-
-    {% if request.path == '/' %}
-    <div class="mobile-menu" id="mobileMenu">
-        <ul class="mobile-nav-links">
-            <li><a href="#home">Inicio</a></li>
-            <li><a href="#about">Sobre</a></li>
-            <li><a href="#portfolio">Tratamientos</a></li>
-            <li><a href="#contact">Agendar cita</a></li>
         </ul>
+        <div class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menú" role="button" tabindex="0">
+            <div class="hamburger"></div>
+            <div class="hamburger"></div>
+            <div class="hamburger"></div>
+        </div>
+    </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+    <ul class="mobile-nav-links">
+        {% if is_home == 'home' %}
+        <li><a href="#home">Inicio</a></li>
+        <li><a href="#about">Sobre</a></li>
+        <li><a href="#portfolio">Tratamientos</a></li>
+        <li><a href="#contact">Agendar cita</a></li>
+        {% else %}
+        <li><a href="{% url 'home' %}">Inicio</a></li>
+        <li><a href="{% url 'home' %}#about">Sobre</a></li>
+        <li><a href="{% url 'home' %}#portfolio">Tratamientos</a></li>
+        {% if user_role == 'paciente' %}
+        <li><a href="{% url 'solicitar_cita' %}">Agendar cita</a></li>
+        {% else %}
+        <li><a href="{% url 'home' %}#contact">Agendar cita</a></li>
+        {% endif %}
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            {% if user_role == 'paciente' %}
+            <li><a href="{% url 'perfil' %}">Mi perfil</a></li>
+            <li><a href="{% url 'mis_citas' %}">Mis citas</a></li>
+            {% elif user_role == 'profesional' %}
+            <li><a href="{% url 'perfil_profesional' %}">Mi panel</a></li>
+            <li><a href="{% url 'agenda_profesional' %}">Agenda</a></li>
+            {% else %}
+            <li><a href="{% url 'dashboard' %}">Mi panel</a></li>
+            {% endif %}
+            <li><a href="{% url 'logout' %}">Salir</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
+            <li><a href="{% url 'registro_pro' %}">Soy especialista</a></li>
+        {% endif %}
+    </ul>
+</div>
+{% endwith %}
+{% endblock %}
+
+<main class="{% block main_class %}{% endblock %}">
+    {% block messages %}
+    {% if messages %}
+    <div class="site-messages">
+        {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
     </div>
     {% endif %}
-
-    <!-- CONTENIDO QUE CAMBIA EN CADA PÁGINA -->
-
-    <main>
-        {% block content %}
-        
-        {% endblock %}
-    </main>
-
-
-    {% block extra_js %}
-
     {% endblock %}
-</body>
 
+    {% block content %}{% endblock %}
+</main>
+
+<script src="{% static 'js/navbar.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
 </html>

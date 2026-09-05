@@ -1,48 +1,36 @@
+{% extends 'core/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agendar cita — MT Odontología</title>
-    <link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
-</head>
-<body>
-    <header class="topbar">
-        <div class="topbar-inner">
-            <a href="{% url 'home' %}" class="brand"><span class="dot"></span> MT Odontología</a>
-            <nav class="topnav">
-                <a href="{% url 'perfil' %}">Mi perfil</a>
-                <a href="{% url 'mis_citas' %}">Mis citas</a>
-                <a href="{% url 'logout' %}" class="logout">Salir</a>
-            </nav>
-        </div>
-    </header>
 
-    <main class="page">
-        <div class="page-head">
-            <h1>Agendar nueva cita</h1>
-            <p>Elige un profesional, la fecha y cuéntanos el motivo de tu consulta.</p>
-        </div>
+{% block title %}Agendar cita — MT Odontología{% endblock %}
 
-        {% if messages %}{% for m in messages %}<div class="alert {{ m.tags }}">{{ m }}</div>{% endfor %}{% endif %}
+{% block body_class %}app-layout{% endblock %}
 
-        <div class="card form-narrow">
-            <form method="post" novalidate>
-                {% csrf_token %}
-                {% for field in form %}
-                <div class="field">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}<div class="err">{{ field.errors.0 }}</div>{% endif %}
-                </div>
-                {% endfor %}
-                <div class="actions" style="margin-top:1rem">
-                    <button type="submit" class="btn btn-primary">Solicitar cita</button>
-                    <a href="{% url 'mis_citas' %}" class="btn btn-ghost">Cancelar</a>
-                </div>
-            </form>
+{% block main_class %}page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <h1>Agendar nueva cita</h1>
+    <p>Elige un profesional, la fecha y cuéntanos el motivo de tu consulta.</p>
+</div>
+
+<div class="card form-narrow">
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="err">{{ field.errors.0 }}</div>{% endif %}
         </div>
-    </main>
-</body>
-</html>
+        {% endfor %}
+        <div class="actions" style="margin-top:1rem">
+            <button type="submit" class="btn btn-primary">Solicitar cita</button>
+            <a href="{% url 'mis_citas' %}" class="btn btn-ghost">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

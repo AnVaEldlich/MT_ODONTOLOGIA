@@ -22,19 +22,24 @@
     --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     --glass: rgba(255, 255, 255, 0.15);
     --glass-border: rgba(255, 255, 255, 0.2);
+    --white: #ffffff;
+    --green: #15b37a;
+    --green-dark: #0da569;
+    --shadow: 0 6px 20px rgba(7, 22, 26, 0.15);
+    --navbar-offset: 6.5rem;
 }
 
-.logo {
-            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
-            font-size: 1.75rem;
-            font-weight: 700;
-            background: var(--gradient-elegant);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-            cursor: pointer;
-        }
+#navbar .logo {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    background: var(--gradient-elegant);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    cursor: pointer;
+}
 
 
 
@@ -51,7 +56,7 @@
 .nav-links {
     display: flex;
     list-style: none;
-    gap: 2.5rem;
+    gap: 1.5rem;
     align-items: center;
 }
 
@@ -91,8 +96,8 @@
     width: 100%;
 }
 
-/* Navigation */
-nav {
+/* Navigation — barra unificada en toda la app */
+#navbar {
     position: fixed;
     top: 0;
     width: 100%;
@@ -101,10 +106,10 @@ nav {
     z-index: 1000;
     padding: 1rem 0;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
 }
 
-nav.scrolled {
+#navbar.scrolled {
     background: rgba(255, 255, 255, 0.98);
     box-shadow: var(--shadow-lg);
     padding: 0.75rem 0;
@@ -369,4 +374,73 @@ nav.scrolled {
 
 .mobile-nav-links a:hover {
     transform: scale(1.05);
+}
+
+/* ---------- App shell (paneles, citas, auth) ---------- */
+.site-messages {
+    max-width: 1080px;
+    margin: 1rem auto 0;
+    padding: 0 1.5rem;
+}
+
+.site-messages .alert {
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.site-messages .alert.success,
+.site-messages .alert.info {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.site-messages .alert.error,
+.site-messages .alert.warning {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+body.auth-layout,
+body.app-layout {
+    padding-top: var(--navbar-offset);
+}
+
+body.auth-layout {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+body.auth-layout main {
+    min-height: calc(100vh - var(--navbar-offset));
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+body.auth-layout.auth-center main {
+    align-items: center;
+}
+
+body.app-layout {
+    background: #f4f5fb;
+    min-height: 100vh;
+}
+
+main.page .site-messages {
+    max-width: none;
+    margin: 0 0 1rem;
+    padding: 0;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --navbar-offset: 4.5rem;
+    }
+
+    .nav-links {
+        gap: 1.25rem;
+    }
 }
