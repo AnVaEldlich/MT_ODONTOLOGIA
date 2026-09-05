@@ -22,19 +22,24 @@
     --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     --glass: rgba(255, 255, 255, 0.15);
     --glass-border: rgba(255, 255, 255, 0.2);
+    --white: #ffffff;
+    --green: #15b37a;
+    --green-dark: #0da569;
+    --shadow: 0 6px 20px rgba(7, 22, 26, 0.15);
+    --navbar-offset: 6.5rem;
 }
 
-.logo {
-            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
-            font-size: 1.75rem;
-            font-weight: 700;
-            background: var(--gradient-elegant);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-            cursor: pointer;
-        }
+#navbar .logo {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    background: var(--gradient-elegant);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    cursor: pointer;
+}
 
 
 
@@ -51,7 +56,7 @@
 .nav-links {
     display: flex;
     list-style: none;
-    gap: 2.5rem;
+    gap: 1.5rem;
     align-items: center;
 }
 
@@ -91,7 +96,7 @@
     width: 100%;
 }
 
-/* Navigation — solo el landing (#navbar), no el topnav de la app */
+/* Navigation — barra unificada en toda la app */
 #navbar {
     position: fixed;
     top: 0;
@@ -101,7 +106,7 @@
     z-index: 1000;
     padding: 1rem 0;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
 }
 
 #navbar.scrolled {
@@ -372,80 +377,6 @@
 }
 
 /* ---------- App shell (paneles, citas, auth) ---------- */
-.topbar {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
-    padding: 1rem 0;
-    box-shadow: 0 2px 10px rgba(76, 70, 168, 0.08);
-}
-
-.topbar-inner {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.topbar .brand {
-    font-size: 1.25rem;
-    font-weight: 800;
-    letter-spacing: -0.3px;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    background: none;
-    -webkit-text-fill-color: #fff;
-}
-
-.topbar .brand .dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25);
-}
-
-.topnav {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    flex-wrap: wrap;
-}
-
-.topnav a {
-    color: rgba(255, 255, 255, 0.92);
-    font-weight: 500;
-    font-size: 0.92rem;
-    padding: 0.5rem 0.9rem;
-    border-radius: 10px;
-    text-decoration: none;
-    transition: background 0.2s ease;
-}
-
-.topnav a:hover {
-    background: rgba(255, 255, 255, 0.18);
-    color: #fff;
-    transform: none;
-}
-
-.topnav a::after {
-    display: none;
-}
-
-.topnav a.logout {
-    background: rgba(255, 255, 255, 0.16);
-}
-
-.topnav a.logout:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
 .site-messages {
     max-width: 1080px;
     margin: 1rem auto 0;
@@ -471,13 +402,18 @@
     color: #991b1b;
 }
 
+body.auth-layout,
+body.app-layout {
+    padding-top: var(--navbar-offset);
+}
+
 body.auth-layout {
     min-height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 body.auth-layout main {
-    min-height: calc(100vh - 72px);
+    min-height: calc(100vh - var(--navbar-offset));
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -500,12 +436,11 @@ main.page .site-messages {
 }
 
 @media (max-width: 768px) {
-    .topnav {
-        width: 100%;
+    :root {
+        --navbar-offset: 4.5rem;
     }
 
-    .topnav a {
-        font-size: 0.85rem;
-        padding: 0.4rem 0.7rem;
+    .nav-links {
+        gap: 1.25rem;
     }
 }
