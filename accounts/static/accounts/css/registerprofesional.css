@@ -13,8 +13,7 @@ body {
 }
 
 .bg-gradient {
-  background: linear-gradient(135deg, #eff6ff 0%, #f3e8ff 50%, #fce7f3 100%);
-  min-height: 100vh;
+  background: transparent;
   padding: 2rem 1rem;
 }
 
@@ -24,26 +23,22 @@ body {
   width: 100%;
 }
 
-/* Header Styles */
-.title-brand {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #6B5CE7;
-  margin-bottom: 0.5rem;
-  margin-top: 40px;
+.welcome-text {
+  text-align: center;
+  margin-bottom: 1.75rem;
 }
 
-.title-main {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #1f2937;
+.welcome-text h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
 }
 
-.subtitle {
-  color: #6b7280;
-  font-size: 1.125rem;
-  margin-bottom: 2rem;
+.welcome-text p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 /* Grid Layout */
@@ -61,10 +56,10 @@ body {
 
 /* Form Section */
 .form-section {
-  background: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  background: var(--bg-card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  padding: 2rem 2rem 2.25rem;
 }
 
 .form-content {
@@ -254,6 +249,25 @@ select.form-input {
   font-size: 0.875rem;
   color: #6b7280;
   line-height: 1.5;
+}
+
+.login-link {
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.login-link a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link a:hover {
+  text-decoration: none;
+  color: var(--secondary-color);
 }
 
 .link {
@@ -453,18 +467,10 @@ select.form-input {
     padding: 1rem 0.5rem;
   }
 
-  .title-brand {
-    font-size: 2rem;
+  .welcome-text h1 {
+    font-size: 1.35rem;
   }
-  
-  .title-main {
-    font-size: 1.5rem;
-  }
-  
-  .subtitle {
-    font-size: 1rem;
-  }
-  
+
   .form-section, .preview-card {
     padding: 1.5rem;
   }

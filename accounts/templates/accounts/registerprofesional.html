@@ -13,18 +13,13 @@
 {% block content %}
 <div class="min-h-screen bg-gradient py-12 px-4">
   <div class="max-w-6xl mx-auto">
-    <!-- Header -->
-    <div class="text-center mb-12">
-      <h1 class="title-brand mb-3">MT ODONTOLOGIA INTEGRAL</h1>
-      <h2 class="title-main mb-4">Crea tu perfil profesional gratuito</h2>
-      <p class="subtitle">
-        Únete a nuestra red de especialistas. Conecta con pacientes que necesitan tus servicios.
-      </p>
-    </div>
-
     <div class="grid-container">
       <!-- Formulario -->
       <div class="form-section">
+        <div class="welcome-text">
+          <h1>Crea tu perfil profesional gratuito</h1>
+          <p>Únete a nuestra red de especialistas. Conecta con pacientes que necesitan tus servicios.</p>
+        </div>
         <form method="post" id="registerForm" class="form-content">
           {% csrf_token %}
 
@@ -188,12 +183,10 @@
           </button>
 
           <!-- Link a login -->
-          <div class="text-center mt-4">
-            <p class="text-sm text-gray-600">
-              ¿Ya tienes una cuenta?
-              <a href="{% url 'login' %}" class="link">Inicia sesión aquí</a>
-            </p>
-          </div>
+          <p class="login-link">
+            ¿Ya tienes una cuenta?
+            <a href="{% url 'login' %}">Inicia sesión aquí</a>
+          </p>
         </form>
       </div>
 
