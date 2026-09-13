@@ -118,7 +118,7 @@
                 <option value="+52">+52</option>
                 <option value="+34">+34</option>
               </select>
-              <input <input type="tel" name="telefono" id="telefono" required class="form-input flex-1"
+              <input type="tel" name="telefono" id="telefono" required class="form-input flex-1"
                 placeholder="+57 300 123 4567" pattern="^\+?57[ -]?[0-9]{10}$"
                 value="{{ form.telefono.value|default:'' }}" />
             </div>
@@ -127,24 +127,14 @@
             </p>
           </div>
 
-          <!-- Email y Usuario -->
-          <div class="grid-2">
-            <div class="form-group">
-              <label class="form-label">Email *</label>
-              <input type="email" name="email" id="email" required class="form-input" placeholder="tu@email.com"
-                value="{{ form.email.value|default:'' }}" />
-              <p class="form-hint">
-                Se usará para acceder a tu cuenta
-              </p>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Nombre de usuario *</label>
-              <input type="text" name="username" id="username" required class="form-input" placeholder="usuario123"
-                value="{{ form.username.value|default:'' }}" />
-              <p class="form-hint">
-                Solo letras, números y @/./+/-/_
-              </p>
-            </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Email *</label>
+            <input type="email" name="email" id="email" required class="form-input" placeholder="tu@email.com"
+              value="{{ form.email.value|default:'' }}" />
+            <p class="form-hint">
+              Se usará para acceder a tu cuenta
+            </p>
+            {% if form.email.errors %}<p class="form-hint">{{ form.email.errors.0 }}</p>{% endif %}
           </div>
 
           <!-- Contraseñas -->

@@ -2,7 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from accounts.roles import dashboard_url_name, user_role
+from accounts.roles import dashboard_url_name
+
+from .decorators import paciente_required, profesional_required
 
 
 @login_required
@@ -11,15 +13,9 @@ def dashboard(request):
     return redirect(dashboard_url_name(request.user))
 
 
-@login_required
+@paciente_required
 def perfil_paciente(request):
-    if user_role(request.user) == "profesional":
-        return redirect("perfil_profesional")
-    try:
-        paciente = request.user.paciente
-    except Exception:
-        return redirect("home")
-
+    paciente = request.user.paciente
     citas_qs = paciente.citas.select_related("profesional__user")
     proximas = citas_qs.filter(
         estado__in=["pendiente", "confirmada"],
@@ -52,15 +48,9 @@ def perfil_paciente(request):
     )
 
 
-@login_required
+@profesional_required
 def perfil_profesional(request):
-    if user_role(request.user) == "paciente":
-        return redirect("perfil")
-    try:
-        profesional = request.user.profesional
-    except Exception:
-        return redirect("home")
-
+    profesional = request.user.profesional
     citas_qs = profesional.citas.select_related("paciente")
     stats = {
         "pendientes": citas_qs.filter(estado="pendiente").count(),

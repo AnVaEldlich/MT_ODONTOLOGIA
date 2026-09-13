@@ -43,7 +43,12 @@
                 {% else %}
                 <li><a href="{% url 'dashboard' %}">Mi panel</a></li>
                 {% endif %}
-                <li><a href="{% url 'logout' %}">Salir</a></li>
+                <li>
+                    <form method="post" action="{% url 'logout' %}" class="nav-logout">
+                        {% csrf_token %}
+                        <button type="submit">Salir</button>
+                    </form>
+                </li>
             {% else %}
                 <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
                 <li class="dropdown" id="dd1">
@@ -93,7 +98,12 @@
             {% else %}
             <li><a href="{% url 'dashboard' %}">Mi panel</a></li>
             {% endif %}
-            <li><a href="{% url 'logout' %}">Salir</a></li>
+            <li>
+                <form method="post" action="{% url 'logout' %}" class="nav-logout">
+                    {% csrf_token %}
+                    <button type="submit">Salir</button>
+                </form>
+            </li>
         {% else %}
             <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
             <li><a href="{% url 'registro_pro' %}">Soy especialista</a></li>

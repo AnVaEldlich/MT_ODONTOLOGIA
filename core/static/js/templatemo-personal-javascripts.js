@@ -4,7 +4,7 @@ TemplateMo 593 personal shape
 
 https://templatemo.com/tm-593-personal-shape
 
-Landing-page animations and contact form UX.
+Landing-page animations.
 Navbar / mobile menu live in navbar.js (loaded from base.html).
 
 */
@@ -51,38 +51,6 @@ Navbar / mobile menu live in navbar.js (loaded from base.html).
             portfolioObserver.observe(portfolioSection);
         }
     });
-
-    const contactForm = document.querySelector(".contact-form");
-    if (contactForm) {
-        contactForm.addEventListener("submit", (event) => {
-            event.preventDefault();
-            const submitBtn = contactForm.querySelector(".submit-btn");
-            if (!submitBtn) {
-                return;
-            }
-            const originalText = submitBtn.textContent;
-
-            submitBtn.textContent = "Sending...";
-            submitBtn.disabled = true;
-            submitBtn.style.background = "linear-gradient(135deg, #94a3b8, #64748b)";
-
-            setTimeout(() => {
-                submitBtn.textContent = "Message Sent! ✓";
-                submitBtn.style.background = "linear-gradient(135deg, #10b981, #059669)";
-                submitBtn.style.transform = "scale(1.05)";
-                setTimeout(() => {
-                    submitBtn.style.transform = "scale(1)";
-                }, 200);
-
-                setTimeout(() => {
-                    submitBtn.textContent = originalText;
-                    submitBtn.disabled = false;
-                    submitBtn.style.background = "";
-                    contactForm.reset();
-                }, 3000);
-            }, 2000);
-        });
-    }
 
     let ticking = false;
 

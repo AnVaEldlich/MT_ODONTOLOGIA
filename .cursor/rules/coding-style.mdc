@@ -1,0 +1,26 @@
+---
+description: Estilo de código Python y convenciones del repo
+alwaysApply: true
+---
+
+# Estilo de código
+
+- Identificadores en inglés, como el código existente (`solicitar_cita`, `Paciente`). Textos de UI y `messages.*` en español.
+- Al editar un archivo, copia comillas y formato de ese archivo. En módulos nuevos: comillas dobles, funciones pequeñas, retornos tempranos.
+- Nombres que digan el rol: `paciente_required`, no `check` ni `data2`.
+- No añadir abstracciones de un solo uso. Tres líneas claras valen más que un helper especulativo.
+- Imports al inicio. Sin `import *`.
+- Comentarios solo para una restricción no obvia (dato clínico, rol, CSRF). No narrar el código.
+
+```python
+# ❌
+def do(request):
+    if request.user.is_authenticated:
+        if user_role(request.user) == "paciente":
+            ...
+
+# ✅
+@paciente_required
+def mis_citas(request):
+    ...
+```

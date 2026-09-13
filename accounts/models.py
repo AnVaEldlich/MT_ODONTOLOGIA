@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinLengthValidator
-from django.utils import timezone
 
 
 class Paciente(models.Model):
@@ -15,8 +13,6 @@ class Paciente(models.Model):
     birth_date = models.DateField()
     gender = models.CharField(max_length=20)
 
-    # Información de contacto
-    # email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
@@ -37,9 +33,6 @@ class Paciente(models.Model):
 
     medications = models.TextField(blank=True, null=True)
     dental_history = models.TextField(blank=True, null=True)
-
-    # Contraseña
-    # password = models.CharField(max_length=255)
 
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.OneToOneField(
@@ -189,8 +182,4 @@ class ClinicCenter(models.Model):
     
     def __str__(self):
         return f"{self.clinic_name} - {self.city}"
-    
-    def get_specialists_display_range(self):
-        """Retorna el rango de especialistas de forma legible"""
-        return self.get_specialists_range_display()
-    
+
