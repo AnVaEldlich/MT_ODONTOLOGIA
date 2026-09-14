@@ -1,9 +1,9 @@
 from django.contrib.auth.models import User
-
+from django.db import transaction
 from .models import Paciente, Profesional
 from .roles import assign_paciente_group, assign_profesional_group
 
-
+@transaction.atomic
 def create_paciente(cleaned):
     conditions = set(cleaned.get("conditions") or [])
     email = cleaned["email"]
@@ -41,7 +41,7 @@ def create_paciente(cleaned):
     assign_paciente_group(user)
     return user, paciente
 
-
+@transaction.atomic
 def create_profesional(cleaned):
     email = cleaned["email"]
     user = User.objects.create_user(
