@@ -39,14 +39,15 @@
 
 #navbar .logo {
     font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
-    font-size: 1.75rem;
+    font-size: 1.35rem;
     font-weight: 700;
     background: var(--gradient-elegant);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    letter-spacing: -0.5px;
-    cursor: pointer;
+    letter-spacing: -0.4px;
+    text-decoration: none;
+    flex-shrink: 0;
 }
 
 
@@ -82,14 +83,65 @@
 
 .nav-links a:hover {
     color: var(--primary-color);
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: 0.5rem;
+    padding-left: 1.25rem;
+    border-left: 1px solid var(--line);
+}
+
+.nav-primary,
+.nav-secondary,
+.nav-actions .nav-logout button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0.45rem 1.05rem;
+    border-radius: 999px;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+
+.nav-primary {
+    background: var(--gradient-primary);
+    color: var(--text-light);
+    box-shadow: var(--shadow-md);
+}
+
+.nav-primary:hover {
+    color: var(--text-light);
     transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+}
+
+.nav-secondary,
+.nav-actions .nav-logout button {
+    background: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--line);
+}
+
+.nav-secondary:hover,
+.nav-actions .nav-logout button:hover {
+    color: var(--primary-color);
+    background: var(--bg-secondary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 .nav-logout {
     margin: 0;
 }
 
-.nav-links .nav-logout button,
 .mobile-nav-links .nav-logout button {
     font: inherit;
     font-weight: 500;
@@ -97,11 +149,7 @@
     border: none;
     cursor: pointer;
     padding: 0.5rem 0;
-    color: var(--text-primary);
-}
-
-.nav-links .nav-logout button:hover {
-    color: var(--primary-color);
+    color: var(--text-light);
 }
 
 .mobile-nav-links .nav-logout button {
@@ -220,13 +268,9 @@
     transform: translateY(0);
 }
 
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
 @media (max-width: 768px) {
-    .nav-links {
+    .nav-links,
+    .nav-actions {
         display: none;
     }
 
@@ -271,114 +315,6 @@
         margin-top: 2rem;
     }
 }
-
-.menu {
-    position: absolute;
-    right: 0;
-    top: calc(100% + 10px);
-    background: var(--white);
-    border-radius: 8px;
-    min-width: 220px;
-    padding: 8px 0;
-    box-shadow: var(--shadow);
-    z-index: 30;
-    display: none;
-    border: 1px solid rgba(10, 10, 10, 0.06);
-}
-
-.menu.show {
-    display: block
-}
-
-.menu-item {
-
-    display: block;
-    padding: 10px 16px;
-    font-size: 14px;
-    color: #0b2b26;
-    text-decoration: none;
-    cursor: pointer;
-    white-space: nowrap;
-    text-align: center;
-
-}
-
-.menu-item:hover {
-    background: #f6f8f7;
-}
-
-/* Menu para especialistas */
-
-
-
-.dd-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: var(--green);
-    color: var(--white);
-    cursor: pointer;
-    border: none;
-    box-shadow: var(--shadow);
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 1;
-    min-width: 180px;
-    justify-content: space-between;
-}
-
-.dd-toggle:focus {
-    outline: 3px solid rgba(21, 179, 122, 0.18)
-}
-
-.dd-label {
-    flex: 1;
-    text-align: left;
-}
-
-.chev {
-    width: 18px;
-    height: 18px;
-    border-left: 2px solid rgba(255, 255, 255, 0.9);
-    border-bottom: 2px solid rgba(255, 255, 255, 0.9);
-    transform: rotate(-45deg);
-    margin-left: 6px;
-    opacity: 0.95;
-}
-
-
-/* simple responsive */
-@media (max-width:420px) {
-    .dd-toggle {
-        min-width: 150px;
-        font-size: 13px
-    }
-
-    .menu {
-        min-width: 180px
-    }
-}
-
-/* End menu especialistas */
-
-
-/* small caret notch like screenshot */
-.menu::before {
-
-    content: '';
-    position: absolute;
-    right: 18px;
-    top: -7px;
-    width: 12px;
-    height: 12px;
-    background: var(--white);
-    transform: rotate(45deg);
-    box-shadow: -1px -1px 0 rgba(0, 0, 0, 0.02);
-
-}
-
 
 .mobile-menu.active .mobile-nav-links li:nth-child(1) {
     transition-delay: 0.1s;
