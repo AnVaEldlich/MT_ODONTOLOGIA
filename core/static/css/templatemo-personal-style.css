@@ -1085,6 +1085,37 @@ section {
     box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
 }
 
+.contact-lead {
+    display: block;
+    max-width: 36rem;
+    margin: 0 auto 1.75rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 0;
+}
+
+.contact-actions .submit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    text-decoration: none;
+}
+
+.contact-actions .submit-btn:hover,
+.contact-actions .submit-btn:focus,
+.contact-actions .submit-btn:visited {
+    text-decoration: none;
+}
+
 /* Animation Classes */
 .fade-in {
     opacity: 0;

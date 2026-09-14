@@ -1,0 +1,22 @@
+---
+description: Arquitectura Django de MT Odontología y límites de escalado
+alwaysApply: true
+---
+
+# Arquitectura
+
+Sistema server-rendered. Apps por dominio: `core`, `accounts`, `perfiles`, `citas`. Configuración en `Web_odontologia/`.
+
+- No mover el código a `src/`. En Django la raíz del repo es el layout correcto.
+- Un dominio nuevo es una app nueva: `startapp`, `INSTALLED_APPS` y `include()` en `Web_odontologia/urls.py`. No acumular features en `core`.
+- Plantillas en `app/templates/app/`. Estáticos compartidos en `core/static/`; los de una app en `app/static/app/`.
+- Vistas delgadas. Validación en forms. Reglas de negocio que crezcan van a `app/services.py`, no al template.
+- Rutas con `name` y `{% url %}` / `reverse()`. No hardcodear paths.
+- Documentación durable en `docs/`. Una decisión de stack nueva requiere un ADR en `docs/decisions/` antes de instalar dependencias.
+- Backend: Django 5. No añadir FastAPI, DRF ni un segundo backend sin ADR aceptado.
+- Frontend: plantillas Django. No introducir React, Vue, Next ni Tailwind hasta que `docs/decisions/0001-frontend-framework.md` pase a Accepted.
+
+```text
+# ❌ citas/views.py con HTML y SQL suelto
+# ✅ citas/forms.py + citas/services.py + citas/templates/citas/
+```

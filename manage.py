@@ -3,13 +3,6 @@
 import os
 import sys
 
-try:
-    import MySQLdb  # noqa: F401
-except ImportError:
-    import pymysql
-
-    pymysql.install_as_MySQLdb()
-
 
 def main():
     """Run administrative tasks."""
@@ -22,6 +15,6 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
-        # 
+
 if __name__ == '__main__':
     main()

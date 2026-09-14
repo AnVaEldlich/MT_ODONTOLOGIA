@@ -39,7 +39,7 @@ def paciente_user(db):
 @pytest.fixture
 def profesional_user(db):
     user = User.objects.create_user(
-        username="pro_doc",
+        username="pro@test.com",
         email="pro@test.com",
         password="pass12345",
         first_name="Pro",
@@ -89,3 +89,74 @@ def test_cancelar_cita(client, paciente_user, profesional_user):
     assert response.status_code == 200
     cita.refresh_from_db()
     assert cita.estado == Cita.ESTADO_CANCELADA
+
+
+@pytest.mark.django_db
+def test_anonimo_no_cancela(client, paciente_user, profesional_user):
+    cita = Cita.objects.create(
+        paciente=paciente_user.paciente,
+        profesional=profesional_user.profesional,
+        fecha_hora=timezone.now() + timedelta(days=2),
+    )
+    response = client.post(reverse("cancelar_cita", args=[cita.pk]))
+    assert response.status_code == 302
+    assert reverse("login") in response["Location"]
+    cita.refresh_from_db()
+    assert cita.estado == Cita.ESTADO_PENDIENTE
+
+
+@pytest.mark.django_db
+def test_extraño_no_cancela_ni_confirma(client, paciente_user, profesional_user):
+    cita = Cita.objects.create(
+        paciente=paciente_user.paciente,
+        profesional=profesional_user.profesional,
+        fecha_hora=timezone.now() + timedelta(days=2),
+    )
+    otro = User.objects.create_user(
+        username="otro@test.com",
+        email="otro@test.com",
+        password="pass12345",
+    )
+    assign_paciente_group(otro)
+    Paciente.objects.create(
+        user=otro,
+        first_name="Otro",
+        last_name="Paciente",
+        id_type="cc",
+        id_number="999888777",
+        birth_date="1992-02-02",
+        gender="masculino",
+        phone="301",
+        address="y",
+        city="Cali",
+        department="valle",
+    )
+    client.force_login(otro)
+    cancel = client.post(reverse("cancelar_cita", args=[cita.pk]))
+    assert cancel.status_code == 404
+    confirm = client.post(reverse("confirmar_cita", args=[cita.pk]))
+    assert confirm.status_code in (302, 403, 404)
+    cita.refresh_from_db()
+    assert cita.estado == Cita.ESTADO_PENDIENTE
+
+
+@pytest.mark.django_db
+def test_no_confirma_cita_cancelada(client, paciente_user, profesional_user):
+    cita = Cita.objects.create(
+        paciente=paciente_user.paciente,
+        profesional=profesional_user.profesional,
+        fecha_hora=timezone.now() + timedelta(days=2),
+        estado=Cita.ESTADO_CANCELADA,
+    )
+    client.force_login(profesional_user)
+    response = client.post(reverse("confirmar_cita", args=[cita.pk]))
+    assert response.status_code == 302
+    cita.refresh_from_db()
+    assert cita.estado == Cita.ESTADO_CANCELADA
+
+
+@pytest.mark.django_db
+def test_paciente_no_ve_agenda(client, paciente_user):
+    client.force_login(paciente_user)
+    response = client.get(reverse("agenda_profesional"))
+    assert response.status_code in (302, 403)

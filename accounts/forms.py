@@ -1,8 +1,19 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 from .models import ClinicCenter, Paciente, Profesional
+from .services import create_paciente, create_profesional
+
+
+def _password_errors(password):
+    try:
+        validate_password(password)
+    except ValidationError as exc:
+        return exc.messages
+    return []
 
 
 class LoginForm(forms.Form):
@@ -81,6 +92,13 @@ class PatientRegisterForm(forms.Form):
             raise forms.ValidationError("Este documento ya está registrado.")
         return id_number
 
+    def clean_password(self):
+        password = self.cleaned_data["password"]
+        errors = _password_errors(password)
+        if errors:
+            raise forms.ValidationError(errors)
+        return password
+
     def clean(self):
         cleaned = super().clean()
         if cleaned.get("password") != cleaned.get("confirm_password"):
@@ -88,47 +106,10 @@ class PatientRegisterForm(forms.Form):
         return cleaned
 
     def save(self):
-        conditions = set(self.cleaned_data.get("conditions") or [])
-        email = self.cleaned_data["email"]
-        user = User.objects.create_user(
-            username=email,
-            email=email,
-            password=self.cleaned_data["password"],
-            first_name=self.cleaned_data["first_name"],
-            last_name=self.cleaned_data["last_name"],
-        )
-        paciente = Paciente.objects.create(
-            user=user,
-            first_name=self.cleaned_data["first_name"],
-            last_name=self.cleaned_data["last_name"],
-            id_type=self.cleaned_data["id_type"],
-            id_number=self.cleaned_data["id_number"],
-            birth_date=self.cleaned_data["birth_date"],
-            gender=self.cleaned_data["gender"],
-            phone=self.cleaned_data["phone"],
-            address=self.cleaned_data["address"],
-            city=self.cleaned_data["city"],
-            department=self.cleaned_data["department"],
-            emergency_contact=self.cleaned_data.get("emergency_contact") or None,
-            emergency_phone=self.cleaned_data.get("emergency_phone") or None,
-            eps=self.cleaned_data.get("eps") or None,
-            diabetes="diabetes" in conditions,
-            hipertension="hipertension" in conditions,
-            cardiopatia="cardiopatia" in conditions,
-            alergias="alergias" in conditions,
-            embarazo="embarazo" in conditions,
-            ninguna="ninguna" in conditions,
-            medications=self.cleaned_data.get("medications"),
-            dental_history=self.cleaned_data.get("dental_history"),
-        )
-        from .roles import assign_paciente_group
-
-        assign_paciente_group(user)
-        return user, paciente
+        return create_paciente(self.cleaned_data)
 
 
 class ProfessionalRegisterForm(forms.Form):
-    username = forms.CharField(max_length=150)
     email = forms.EmailField()
     password1 = forms.CharField(min_length=8, widget=forms.PasswordInput)
     password2 = forms.CharField(widget=forms.PasswordInput)
@@ -141,17 +122,24 @@ class ProfessionalRegisterForm(forms.Form):
     codigo_pais = forms.CharField(max_length=5, initial="+57")
     telefono = forms.CharField(max_length=20)
 
-    def clean_username(self):
-        username = self.cleaned_data["username"]
-        if User.objects.filter(username=username).exists():
-            raise forms.ValidationError("Este nombre de usuario ya existe.")
-        return username
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        if User.objects.filter(username=email).exists() or User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Ya existe una cuenta con este correo.")
+        return email
 
     def clean_id_number(self):
         id_number = self.cleaned_data["id_number"]
         if Profesional.objects.filter(id_number=id_number).exists():
             raise forms.ValidationError("Este documento ya está registrado.")
         return id_number
+
+    def clean_password1(self):
+        password = self.cleaned_data["password1"]
+        errors = _password_errors(password)
+        if errors:
+            raise forms.ValidationError(errors)
+        return password
 
     def clean(self):
         cleaned = super().clean()
@@ -160,40 +148,18 @@ class ProfessionalRegisterForm(forms.Form):
         return cleaned
 
     def save(self):
-        user = User.objects.create_user(
-            username=self.cleaned_data["username"],
-            email=self.cleaned_data["email"],
-            password=self.cleaned_data["password1"],
-            first_name=self.cleaned_data["first_name"],
-            last_name=self.cleaned_data["last_name"],
-        )
-        profesional = Profesional.objects.create(
-            user=user,
-            id_type=self.cleaned_data["id_type"],
-            id_number=self.cleaned_data["id_number"],
-            especialidad=self.cleaned_data["especialidad"],
-            ubicacion=self.cleaned_data["ubicacion"],
-            codigo_pais=self.cleaned_data["codigo_pais"],
-            telefono=self.cleaned_data["telefono"],
-        )
-        from .roles import assign_profesional_group
-
-        assign_profesional_group(user)
-        return user, profesional
+        return create_profesional(self.cleaned_data)
 
 
 class ClinicCenterForm(forms.ModelForm):
     class Meta:
         model = ClinicCenter
         fields = ("clinic_name", "specialists_range", "city")
-        widgets = {
-            "clinic_name": forms.TextInput(attrs={"name": "clinicName"}),
-            "specialists_range": forms.Select(attrs={"name": "specialists"}),
-            "city": forms.TextInput(attrs={"name": "city"}),
-        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["clinic_name"].widget.attrs["name"] = "clinicName"
-        self.fields["specialists_range"].widget.attrs["name"] = "specialists"
-        self.fields["city"].widget.attrs["name"] = "city"
+        self.fields["specialists_range"].choices = [
+            ("", "--- Elegir ---"),
+            *self.fields["specialists_range"].choices,
+        ]
+        self.fields["city"].widget.attrs["placeholder"] = "Introducir la ciudad"

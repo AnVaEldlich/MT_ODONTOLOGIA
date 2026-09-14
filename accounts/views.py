@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.decorators.http import require_POST
 
 from .forms import (
     ClinicCenterForm,
@@ -23,7 +25,11 @@ def login_view(request):
         login(request, user)
         messages.success(request, "Sesión iniciada correctamente.")
         next_url = request.GET.get("next")
-        if next_url:
+        if next_url and url_has_allowed_host_and_scheme(
+            next_url,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        ):
             return redirect(next_url)
         return redirect(dashboard_url_name(user))
 
@@ -31,6 +37,7 @@ def login_view(request):
 
 
 @login_required
+@require_POST
 def logout_view(request):
     logout(request)
     messages.info(request, "Has cerrado sesión.")
@@ -61,6 +68,9 @@ def registro_pro(request):
 
 
 def registerprofesional(request):
+    if request.user.is_authenticated:
+        return redirect(dashboard_url_name(request.user))
+
     if request.method == "POST":
         form = ProfessionalRegisterForm(request.POST)
         if form.is_valid():
@@ -77,19 +87,10 @@ def registerprofesional(request):
 
 
 def formclinic(request):
-    if request.method == "POST":
-        form = ClinicCenterForm(
-            {
-                "clinic_name": request.POST.get("clinicName"),
-                "specialists_range": request.POST.get("specialists"),
-                "city": request.POST.get("city"),
-            }
-        )
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Centro médico registrado exitosamente.")
-            return redirect("formclinic")
-    else:
-        form = ClinicCenterForm()
+    form = ClinicCenterForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Centro médico registrado exitosamente.")
+        return redirect("formclinic")
 
     return render(request, "accounts/formclinic.html", {"form": form})

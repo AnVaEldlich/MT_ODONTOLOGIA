@@ -1,0 +1,24 @@
+---
+description: Plantillas, CSS y JS del frontend Django
+globs: "**/*.html,**/*.css,**/*.js"
+alwaysApply: false
+---
+
+# Frontend
+
+Server-rendered. Toda página extiende `core/templates/core/base.html` y deja el navbar del bloque `navbar`.
+
+- CSS de página en `{% block extra_css %}`. JS de página en `{% block extra_js %}`.
+- Estáticos con `{% load static %}` y `{% static '...' %}`. Enlaces con `{% url 'name' %}`.
+- CSS compartido solo en `core/static/css/base.css`. CSS de una pantalla en `app/static/app/css/`.
+- JS mínimo y progresivo. Un comportamiento nuevo va en el JS de la app, no inline en el HTML (salvo un handler ya existente del navbar).
+- No añadir un bundler, React, Vue ni Tailwind en este cambio. Interactividad rica espera el ADR 0001 (propuesta: HTMX + Alpine.js).
+- Textos visibles en español. Botones e inputs con nombre accesible (`label`, `aria-label`).
+
+```django
+{% extends "core/base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'citas/css/agenda.css' %}">
+{% endblock %}
+```

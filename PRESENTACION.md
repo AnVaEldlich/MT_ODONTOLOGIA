@@ -62,12 +62,6 @@ Usuarios (password: `demo1234`):
 python -m pytest -q
 ```
 
-### Prueba manual del registro
-
-```bash
-python scripts/test_registro.py
-```
-
 ## 6) Mejoras realizadas para esta entrega
 
 - Migracion inicial de `citas` para evitar error `no such table: citas_cita`.
@@ -78,7 +72,5 @@ python scripts/test_registro.py
 
 ## 7) Que mostraria como siguiente iteracion
 
-- API REST (DRF) para app movil.
-- Permisos basados en roles mas estrictos por decorador.
-- Observabilidad (Sentry + logs estructurados).
-- CI con cobertura minima y quality gates.
+- Horarios, duración y estados de cita atendida, documentados en `docs/requirements.md`. No hay tablas nuevas en esta entrega.
+- Sin API REST ni otro frontend hasta que un ADR lo acepte.

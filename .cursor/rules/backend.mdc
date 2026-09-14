@@ -1,0 +1,24 @@
+---
+description: Vistas, modelos, forms y URLs de Django
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Backend
+
+Django 5. Apps actuales: `core` (shell público), `accounts` (auth y registro), `perfiles` (paneles), `citas` (agenda).
+
+- Vista: autorizar, validar form, llamar servicio o queryset, `render` / `redirect` + `messages`.
+- Input de usuario solo vía `ModelForm` / `Form`. No leer `request.POST` suelto para persistir.
+- Roles con `accounts.roles.user_role` y decoradores de `perfiles.decorators`. Grupos: `Paciente`, `Profesional`.
+- Querysets acotados al actor (`filter(paciente=request.user.paciente)` o equivalente). `get_object_or_404` sobre ese queryset.
+- Migraciones reversibles y pequeñas. No editar una migración ya aplicada; crear otra.
+- Settings leen entorno (`SECRET_KEY`, `DEBUG`, `USE_SQLITE`). No hardcodear hosts ni credenciales.
+- Si la vista supera ~40 líneas de reglas, extraer a `services.py` de esa app.
+
+```python
+@paciente_required
+def cancelar_cita(request, pk):
+    cita = get_object_or_404(Cita, pk=pk, paciente=request.user.paciente)
+    ...
+```
