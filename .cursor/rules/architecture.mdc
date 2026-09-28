@@ -13,8 +13,8 @@ Sistema server-rendered. Apps por dominio: `core`, `accounts`, `perfiles`, `cita
 - Vistas delgadas. Validación en forms. Reglas de negocio que crezcan van a `app/services.py`, no al template.
 - Rutas con `name` y `{% url %}` / `reverse()`. No hardcodear paths.
 - Documentación durable en `docs/`. Una decisión de stack nueva requiere un ADR en `docs/decisions/` antes de instalar dependencias.
-- Backend: Django 5. No añadir FastAPI, DRF ni un segundo backend sin ADR aceptado.
-- Frontend: plantillas Django. No introducir React, Vue, Next ni Tailwind hasta que `docs/decisions/0001-frontend-framework.md` pase a Accepted.
+- Backend: Django 5.2, ORM, forms y pytest. Ver `.cursor/rules/backend-stack.mdc`.
+- Frontend: plantillas Django y tokens de `base.css`. La única vía extra es HTMX + Alpine.js, y solo con el ADR 0001 en Accepted. Ver `.cursor/rules/frontend-stack.mdc`.
 
 ```text
 # ❌ citas/views.py con HTML y SQL suelto

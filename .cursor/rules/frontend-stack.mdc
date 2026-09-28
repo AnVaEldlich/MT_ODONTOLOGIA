@@ -1,0 +1,19 @@
+---
+description: Stack de frontend permitido en MT Odontología
+alwaysApply: true
+---
+
+# Stack de frontend
+
+Server-rendered. Django pinta el HTML. No hay SPA ni bundler.
+
+- Plantillas Django que extienden `core/templates/core/base.html`.
+- Estilo: tokens de `core/static/css/base.css`. CSS de una pantalla en `app/static/app/css/`.
+- Interactividad, solo cuando `docs/decisions/0001-frontend-framework.md` pase a Accepted: HTMX para fragmentos (agenda, estado de cita, errores de form) y Alpine.js para estado local (menú, desplegable, toggle).
+- Hasta ese estado, JS progresivo en el archivo de la app. No instalar HTMX ni Alpine en el cambio.
+- Prohibido: React, Vue, Next, Nuxt, Tailwind, Vite, Webpack y CSS-in-JS.
+
+```html
+<!-- ❌ <script src="react.production.min.js"></script> -->
+<!-- ✅ {% extends "core/base.html" %} y color: var(--primary-color); -->
+```

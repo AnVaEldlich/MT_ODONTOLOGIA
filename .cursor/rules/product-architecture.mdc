@@ -1,0 +1,21 @@
+---
+description: Límites de dominio, invariantes y cambios completos en MT Odontología
+alwaysApply: true
+---
+
+# Arquitectura de producto
+
+Cada cambio vive en la app dueña del caso de uso. `accounts` autentica, `perfiles` muestra el panel del rol, `citas` agenda. `core` solo es chrome público.
+
+- Una regla de negocio (quién cancela, qué estado sigue, qué fecha vale) vive en `forms.py` o `services.py` de esa app. La vista autoriza, llama al servicio y responde.
+- Otra app no importa modelos ajenos para mutarlos. Un caso cruzado es una función en el `services.py` dueño.
+- `Cita.estado` solo cambia en el servicio: `pendiente` → `confirmada` o `cancelada`. No asignar el estado en la vista ni en la plantilla.
+- No adelantar la fase posterior de `docs/requirements.md` (horarios, duración, doble reserva, `atendida`, `no_asistio`, sede real). Si el cambio las necesita, detenerse y decirlo.
+- Un caso de uso nuevo incluye su prueba en `app/tests/`: camino feliz y rechazo (rol incorrecto, otro dueño, estado inválido).
+- No crear capas de un solo llamador (`repositories`, `dto`, `use_cases`). El patrón del repo es vista → form → service.
+- Un cambio de producto cierra el corte: regla, pantalla, mensaje y prueba. No dejar la regla solo en la vista.
+
+```python
+# ❌ cita.estado = "confirmada"; cita.save()
+# ✅ confirm_cita(cita)
+```

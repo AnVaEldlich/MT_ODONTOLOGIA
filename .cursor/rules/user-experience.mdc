@@ -1,0 +1,23 @@
+---
+description: Flujos, mensajes y pantallas claras para paciente y profesional
+alwaysApply: true
+---
+
+# Experiencia de uso
+
+Cada pantalla tiene un solo paso siguiente, en español, y devuelve al usuario donde ve el resultado.
+
+- Tras un POST exitoso: `messages.success` concreto y `redirect` a la lista del rol (`mis_citas` o `agenda_profesional`). No reenviar el formulario vacío.
+- Errores junto al campo (`field.errors`), formulario con `novalidate`, y conservar lo ya escrito.
+- Lista vacía: una frase y el enlace a la acción (sin citas → Agendar cita). No una tabla en blanco.
+- Cancelar es POST con `{% csrf_token %}`, copia que dice el efecto ("La cita quedará cancelada") y vuelta a la lista del rol. No un enlace GET.
+- Navbar y página muestran solo el rol activo: el paciente no ve Agenda; el profesional no ve Mis citas.
+- El estado se lee en español (`Pendiente`, `Confirmada`, `Cancelada`) sin abrir otro menú.
+- Página nueva: extiende `core/base.html`, usa tokens de `base.css` y el mismo flujo en móvil.
+- Un botón principal por vista (`btn-primary`). Lo demás es `btn-ghost` o un enlace de salida.
+- Un fallo del usuario se explica en la pantalla (`messages.error`). No un 500 ni un "Error" genérico.
+
+```django
+{# ❌ <a href="{% url 'cancelar_cita' cita.pk %}">Cancelar</a> #}
+{# ✅ <form method="post" action="{% url 'cancelar_cita' cita.pk %}">{% csrf_token %}<button type="submit">Cancelar cita</button></form> #}
+```

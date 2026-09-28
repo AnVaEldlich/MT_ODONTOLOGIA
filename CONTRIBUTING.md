@@ -19,7 +19,10 @@
 pytest
 ```
 
-Las pruebas van en `app/tests/` y usan `reverse()`.
+Las pruebas van en `app/tests/` (por ejemplo `accounts/tests/`) y usan `reverse()`.
+Se versionan en Git. No ignores esos archivos: solo la caché (`.pytest_cache/`) y reportes de cobertura.
+
+En desarrollo (`DEBUG=True`), el registro de paciente muestra «Rellenar datos de prueba» para completar la interfaz al instante.
 
 ## Secretos
 
