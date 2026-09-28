@@ -380,6 +380,10 @@ body.app-layout {
     padding-top: var(--navbar-offset);
 }
 
+html:has(body.auth-layout) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
 body.auth-layout {
     min-height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

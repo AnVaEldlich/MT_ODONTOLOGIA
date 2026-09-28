@@ -278,10 +278,20 @@
         <div class="login-link">
             ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a>
         </div>
+        {% if show_dev_fill %}
+        <div class="dev-fill">
+            <button type="button" id="devFillRegister" class="btn-dev-fill">
+                Rellenar datos de prueba
+            </button>
+        </div>
+        {% endif %}
     </div>
 </form>
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'accounts/js/register.js' %}"></script>
+{% if show_dev_fill %}
+<script src="{% static 'accounts/js/register_dev_fill.js' %}?v=1"></script>
+{% endif %}
 {% endblock %}
