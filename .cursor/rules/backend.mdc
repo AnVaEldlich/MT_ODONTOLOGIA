@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Backend
 
-Django 5. Apps actuales: `core` (shell público), `accounts` (auth y registro), `perfiles` (paneles), `citas` (agenda).
+Django 5.2. Apps actuales: `core` (shell público), `accounts` (auth y registro), `perfiles` (paneles), `citas` (agenda). Stack cerrado en `.cursor/rules/backend-stack.mdc`.
 
 - Vista: autorizar, validar form, llamar servicio o queryset, `render` / `redirect` + `messages`.
 - Input de usuario solo vía `ModelForm` / `Form`. No leer `request.POST` suelto para persistir.

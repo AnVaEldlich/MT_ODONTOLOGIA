@@ -12,7 +12,7 @@ Server-rendered. Toda página extiende `core/templates/core/base.html` y deja el
 - Estáticos con `{% load static %}` y `{% static '...' %}`. Enlaces con `{% url 'name' %}`.
 - CSS compartido solo en `core/static/css/base.css`. CSS de una pantalla en `app/static/app/css/`.
 - JS mínimo y progresivo. Un comportamiento nuevo va en el JS de la app, no inline en el HTML (salvo un handler ya existente del navbar).
-- No añadir un bundler, React, Vue ni Tailwind en este cambio. Interactividad rica espera el ADR 0001 (propuesta: HTMX + Alpine.js).
+- Stack cerrado: plantillas Django, tokens de `base.css`, y HTMX + Alpine.js solo con el ADR 0001 en Accepted. No bundler, React, Vue ni Tailwind.
 - Textos visibles en español. Botones e inputs con nombre accesible (`label`, `aria-label`).
 
 ```django
