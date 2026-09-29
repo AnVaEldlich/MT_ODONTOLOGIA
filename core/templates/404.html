@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+{% block title %}Página no encontrada — MT Odontología{% endblock %}
+{% block content %}
+<div class="page">
+    <section class="card">
+        <h1>No encontramos esa página</h1>
+        <p>La dirección no existe o el enlace quedó desactualizado.</p>
+        <p>
+            <a class="btn btn-brand" href="{% url 'home' %}">Volver al inicio</a>
+            <a class="btn btn-book" href="{% url 'buscar_profesionales' %}">Buscar especialistas</a>
+        </p>
+    </section>
+</div>
+{% endblock %}

@@ -4,9 +4,6 @@
 
 {% block body_class %}auth-layout{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'accounts/css/registerprofesional.css' %}">
-{% endblock %}
 
 {% block messages %}{% endblock %}
 
@@ -213,14 +210,7 @@
               <span id="previewEspecialidad">Tu Especialidad</span>
               <span id="previewUbicacionText"></span>
             </p>
-            <div class="preview-rating">
-              <span class="star">★</span>
-              <span class="star">★</span>
-              <span class="star">★</span>
-              <span class="star">★</span>
-              <span class="star">★</span>
-              <span class="rating-text">5.0</span>
-            </div>
+            <p class="stars"><span class="stars-count">Sin opiniones todavía</span></p>
           </div>
 
           <div class="preview-details">
@@ -251,7 +241,7 @@
 
           <div class="preview-cta">
             <p class="cta-text">
-              <strong>Tu perfil será visible</strong> para miles de pacientes buscando especialistas como tú
+              <strong>Tu perfil verificado</strong> aparecerá cuando los pacientes busquen un especialista.
             </p>
           </div>
         </div>

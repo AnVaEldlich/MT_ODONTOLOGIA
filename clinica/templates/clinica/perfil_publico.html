@@ -1,0 +1,94 @@
+{% extends "core/base.html" %}
+{% block title %}{{ tarjeta.nombre }} — MT Odontología{% endblock %}
+{% block content %}
+<div class="profile">
+    <p class="meta"><a href="{% url 'buscar_profesionales' %}">Especialistas</a> / {{ tarjeta.nombre }}</p>
+    <div class="profile-grid">
+        <div>
+            <section class="card">
+                <div class="pro-card flush">
+                    <div class="avatar lg" aria-hidden="true">{{ tarjeta.iniciales }}</div>
+                    <div>
+                        <h1>{{ tarjeta.nombre }}</h1>
+                        <p class="meta">{{ tarjeta.especialidad }}</p>
+                        {% include "core/includes/stars.html" with opiniones=tarjeta.opiniones promedio=tarjeta.promedio estrellas=tarjeta.estrellas %}
+                        {% if tarjeta.verificado %}<p><span class="badge ok">Perfil verificado</span></p>{% endif %}
+                    </div>
+                </div>
+                {% if tarjeta.especialidades %}
+                <h2>Especialidades</h2>
+                <p>
+                    {% for especialidad in tarjeta.especialidades %}
+                    <a class="badge" href="{% url 'buscar_profesionales' %}?especialidad={{ especialidad.codigo }}">{{ especialidad.nombre }}</a>
+                    {% endfor %}
+                </p>
+                {% endif %}
+            </section>
+            <section class="card">
+                <h2>Dónde atiende</h2>
+                {% for sede in tarjeta.sedes %}
+                <p><strong>{{ sede.nombre }}</strong><br>{{ sede.direccion }}, {{ sede.ciudad }}</p>
+                {% if sede.horario_atencion %}<p class="meta">{{ sede.horario_atencion }}</p>{% endif %}
+                {% empty %}
+                <p>{{ tarjeta.direccion }}</p>
+                {% endfor %}
+            </section>
+            {% if tarjeta.servicios %}
+            <section class="card">
+                <h2>Servicios</h2>
+                <ul class="cita-list">
+                    {% for servicio in tarjeta.servicios %}
+                    <li>
+                        <div>
+                            <div class="when">{{ servicio.nombre }}</div>
+                            <div class="who">{{ servicio.duracion_minutos }} min</div>
+                        </div>
+                        {% if servicio.precio %}<span class="price">${{ servicio.precio|floatformat:0 }}</span>{% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+            <section class="card" id="opiniones">
+                <h2>Opiniones</h2>
+                {% for resena in tarjeta.resenas %}
+                <article>
+                    {% include "core/includes/stars.html" with opiniones=1 promedio=resena.calificacion estrellas=resena.calificacion %}
+                    <p>{{ resena.comentario }}</p>
+                    <p class="meta">{{ resena.paciente.first_name }} · {{ resena.created_at|date:"d/m/Y" }}</p>
+                </article>
+                {% empty %}
+                <p>Este especialista todavía no tiene opiniones publicadas.</p>
+                {% endfor %}
+            </section>
+        </div>
+        <aside class="card profile-book" aria-label="Reservar">
+            <h2>Reserva una hora</h2>
+            {% if tarjeta.precio %}<p class="price"><span>Consulta desde</span>{{ tarjeta.precio }}</p>{% endif %}
+            {% if tarjeta.calendario %}
+            <div class="calendar">
+                {% for dia in tarjeta.calendario %}
+                <div class="day-col">
+                    <h3>{{ dia.fecha|date:"D j M" }}</h3>
+                    <div class="chip-row">
+                        {% for hueco in dia.huecos %}
+                        {% include "clinica/includes/chip_hora.html" %}
+                        {% empty %}
+                        <span class="meta">Sin cupo</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>Aún no hay una sede publicada para mostrar el calendario.</p>
+            {% endif %}
+            {% if user_role == 'paciente' and tarjeta.sede_principal %}
+            <p><a class="btn btn-book" href="{% url 'solicitar_cita' %}?paso=horario&profesional={{ tarjeta.profesional.pk }}&sede={{ tarjeta.sede_principal.pk }}">Elegir otra hora</a></p>
+            {% elif not user.is_authenticated %}
+            <p class="meta">Ingresa con tu cuenta de paciente para confirmar la reserva.</p>
+            {% endif %}
+        </aside>
+    </div>
+</div>
+{% endblock %}

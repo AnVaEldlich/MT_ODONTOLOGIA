@@ -1,0 +1,11 @@
+{% extends "core/base.html" %}
+{% block title %}Error del servidor — MT Odontología{% endblock %}
+{% block content %}
+<div class="page">
+    <section class="card">
+        <h1>Tuvimos un problema</h1>
+        <p>No pudimos completar la solicitud. Inténtalo de nuevo en unos minutos.</p>
+        <p><a class="btn btn-brand" href="{% url 'home' %}">Volver al inicio</a></p>
+    </section>
+</div>
+{% endblock %}

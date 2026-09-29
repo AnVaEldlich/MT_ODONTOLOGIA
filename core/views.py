@@ -2,8 +2,8 @@ from urllib.parse import quote
 
 from django.shortcuts import render
 
-from accounts.models import Profesional
 from clinica.models import Sede, Tratamiento
+from clinica.services import directorio
 from comunicacion.models import Resena
 
 IMAGENES_TRATAMIENTO = {
@@ -27,12 +27,7 @@ def home(request):
                 "imagen": IMAGENES_TRATAMIENTO.get(tratamiento.codigo),
             }
         )
-    profesionales = (
-        Profesional.objects.filter(is_verified=True)
-        .select_related("user")
-        .prefetch_related("especialidades_asignadas__especialidad", "sedes_asignadas__sede")
-        .order_by("user__last_name")
-    )
+    listado = directorio({}, limite_horas=3)
     resenas = (
         Resena.objects.filter(publicada=True)
         .select_related("paciente", "profesional__user")
@@ -44,7 +39,8 @@ def home(request):
         "core/index.html",
         {
             "tratamientos": tratamientos,
-            "profesionales": profesionales,
+            "tarjetas": listado["tarjetas"][:4],
+            "especialidades": listado["especialidades"],
             "resenas": resenas,
             "sedes": sedes,
         },

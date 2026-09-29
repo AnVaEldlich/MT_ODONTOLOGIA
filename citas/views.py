@@ -263,6 +263,12 @@ def _confirmar_solicitud(request):
 
 def _mostrar_paso(request, paso):
     borrador = request.session.get(BORRADOR) or {}
+    if request.GET.get("profesional"):
+        borrador = _sembrar_reserva(request, borrador)
+        request.session[BORRADOR] = borrador
+        request.session.modified = True
+        if request.GET.get("hora"):
+            paso = "confirmar"
     if paso == "sede":
         sede_id = request.GET.get("sede") or borrador.get("sede_id")
         form = PasoSedeForm(sede_id=sede_id, initial={
@@ -332,6 +338,29 @@ def _inicial_confirmacion(borrador):
         "duracion_minutos": borrador.get("duracion") or 30,
         "motivo": borrador.get("motivo") or "",
     }
+
+
+def _sembrar_reserva(request, borrador):
+    """Completa el borrador cuando la reserva llega desde el perfil público."""
+    profesional = _instancia(Profesional, request.GET.get("profesional"))
+    if profesional is None:
+        return borrador
+    borrador = dict(borrador)
+    borrador["profesional_id"] = profesional.pk
+    sede = _instancia(Sede, request.GET.get("sede"))
+    if sede is not None:
+        borrador["sede_id"] = sede.pk
+    consultorio = _instancia(Consultorio, request.GET.get("consultorio"))
+    if consultorio is not None:
+        borrador["consultorio_id"] = consultorio.pk
+    tratamiento = _instancia(Tratamiento, request.GET.get("tratamiento"))
+    if tratamiento is not None:
+        borrador["tratamiento_id"] = tratamiento.pk
+        borrador["duracion"] = tratamiento.duracion_minutos
+    hora = _parse_fecha_hora(request.GET.get("hora"))
+    if hora is not None:
+        borrador["fecha_hora"] = hora.isoformat()
+    return borrador
 
 
 def _resolver_borrador(borrador):

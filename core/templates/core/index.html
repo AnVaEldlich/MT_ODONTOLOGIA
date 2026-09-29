@@ -1,169 +1,146 @@
 {% extends "core/base.html" %}
 {% load static %}
 
-{% block title %}MT Odontología · Clínica odontológica{% endblock %}
-{% block body_class %}public-layout{% endblock %}
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/public.css' %}">
-{% endblock %}
+{% block title %}MT Odontología · Encuentra especialista y agenda{% endblock %}
 
 {% block content %}
-<section class="hero-clinic" id="inicio">
-    <div>
-        <p class="kicker">Clínica odontológica</p>
-        <h1>Cuida tu sonrisa con un equipo que te explica cada paso.</h1>
-        <p class="lede">Agenda en minutos, elige sede y especialista, y consulta tu historia, odontograma y facturas desde el mismo lugar.</p>
-        <div class="hero-actions">
-            {% if user_role == 'paciente' %}
-            <a class="btn btn-primary" href="{% url 'solicitar_cita' %}">Agendar cita</a>
-            {% elif user_role == 'profesional' %}
-            <a class="btn btn-primary" href="{% url 'agenda_profesional' %}">Ver mi agenda</a>
-            {% else %}
-            <a class="btn btn-primary" href="{% url 'login' %}?next={% url 'solicitar_cita' %}">Agendar cita</a>
-            <a class="btn btn-ghost" href="{% url 'register' %}">Crear cuenta de paciente</a>
-            {% endif %}
+<section class="hero" id="inicio">
+    <div class="hero-grid">
+        <div>
+            <p class="kicker">Clínica odontológica</p>
+            <h1>Encuentra a tu especialista y reserva una hora.</h1>
+            <p class="lede">Busca por especialidad o tratamiento y por ciudad. Eliges el horario, sin llamar.</p>
+            {% include "core/includes/finder.html" with prefix="hero" %}
+            <p class="hero-cta">
+                {% if user_role == 'paciente' %}
+                <a class="btn btn-book" href="{% url 'solicitar_cita' %}">Agendar cita</a>
+                {% elif user_role == 'profesional' %}
+                <a class="btn btn-book" href="{% url 'agenda_profesional' %}">Ver mi agenda</a>
+                {% else %}
+                <a class="btn btn-book" href="{% url 'buscar_profesionales' %}">Agendar cita</a>
+                {% endif %}
+            </p>
+        </div>
+        <div class="hero-art">
+            <img src="{% static 'images/hero-clinica.svg' %}" alt="Ilustración de un consultorio: sillón, diente y cruz de atención.">
         </div>
     </div>
-    <div class="hero-art">
-        <img src="{% static 'images/hero-clinica.svg' %}" alt="Ilustración de un consultorio: sillón, diente y cruz de atención.">
+</section>
+
+<section class="band alt" id="especialidades">
+    <div class="wrap">
+        <h2>Especialidades</h2>
+        <p class="intro">Entra al listado ya filtrado.</p>
+        <div class="card-grid services">
+            {% for especialidad in especialidades %}
+            <a class="choice" href="{% url 'buscar_profesionales' %}?especialidad={{ especialidad.codigo }}">
+                <h3>{{ especialidad.nombre }}</h3>
+                <p class="meta">{{ especialidad.descripcion|default:"Ver especialistas" }}</p>
+            </a>
+            {% empty %}
+            <p>El catálogo de especialidades aparecerá cuando la clínica lo publique.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="band" id="equipo">
+    <div class="wrap">
+        <h2>Especialistas con perfil verificado</h2>
+        <p class="intro">Opiniones de pacientes y los próximos horarios publicados.</p>
+        {% for tarjeta in tarjetas %}
+        {% include "clinica/includes/pro_card.html" %}
+        {% empty %}
+        <div class="card"><p>Aún no hay especialistas publicados.</p></div>
+        {% endfor %}
+        <p><a class="btn btn-brand" href="{% url 'buscar_profesionales' %}">Ver todos</a></p>
     </div>
 </section>
 
 <section class="band alt" id="tratamientos">
     <div class="wrap">
         <h2>Tratamientos</h2>
-        <p class="intro">Servicios publicados por la clínica. La duración es una referencia para agendar.</p>
-        {% if tratamientos %}
+        <p class="intro">Servicios de la clínica. La duración es una referencia para agendar.</p>
         <div class="card-grid services">
             {% for item in tratamientos %}
-            <article class="soft-card">
+            <article class="card service-card">
                 {% if item.imagen %}
                 <img src="{% static item.imagen %}" alt="">
                 {% else %}
                 <div class="swatch" aria-hidden="true"></div>
                 {% endif %}
-                <div class="body">
-                    <h3>{{ item.nombre }}</h3>
-                    <p>{{ item.descripcion|default:"Consulta con el especialista para conocer el plan." }}</p>
-                    <p class="meta">{{ item.duracion }} minutos de referencia</p>
-                </div>
+                <h3>{{ item.nombre }}</h3>
+                <p>{{ item.descripcion|default:"Consulta con el especialista para conocer el plan." }}</p>
+                <p class="meta">{{ item.duracion }} minutos de referencia</p>
+                <a href="{% url 'buscar_profesionales' %}?q={{ item.nombre|urlencode }}">Ver especialistas</a>
             </article>
+            {% empty %}
+            <div class="card">
+                <p>Pronto publicaremos el catálogo de tratamientos.</p>
+                <a class="btn btn-book" href="{% url 'buscar_profesionales' %}">Agendar cita</a>
+            </div>
             {% endfor %}
         </div>
-        {% else %}
-        <div class="plain-card soft-card">
-            <p>Pronto publicaremos el catálogo de tratamientos.</p>
-            <a class="btn btn-primary" href="{% url 'login' %}?next={% url 'solicitar_cita' %}">Agendar cita</a>
-        </div>
-        {% endif %}
     </div>
 </section>
 
-<section class="band" id="equipo">
+<section class="band" id="testimonios">
     <div class="wrap">
-        <h2>Equipo de especialistas</h2>
-        <p class="intro">Profesionales con el perfil verificado en la plataforma.</p>
-        {% if profesionales %}
-        <div class="card-grid three">
-            {% for profesional in profesionales %}
-            <article class="soft-card plain-card">
-                <div class="person">
-                    <div class="initials" aria-hidden="true">{{ profesional.user.first_name|first }}{{ profesional.user.last_name|first }}</div>
-                    <div>
-                        <h3>{{ profesional.get_full_name }}</h3>
-                        <p class="meta">{{ profesional.etiqueta_especialidad }}</p>
-                        {% for asignacion in profesional.sedes_asignadas.all %}
-                        {% if forloop.first %}<p class="meta">{{ asignacion.sede.nombre }}</p>{% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-            </article>
-            {% endfor %}
-        </div>
-        {% else %}
-        <p>Aún no hay especialistas publicados.</p>
-        {% endif %}
-    </div>
-</section>
-
-<section class="band alt" id="testimonios">
-    <div class="wrap">
-        <h2>Lo que cuentan los pacientes</h2>
-        <p class="intro">Reseñas publicadas desde el portal. Son opiniones de quienes ya tuvieron una cita.</p>
-        {% if resenas %}
+        <h2>Opiniones de pacientes</h2>
         <div class="card-grid three">
             {% for resena in resenas %}
-            <article class="soft-card plain-card">
-                <p class="stars" aria-label="{{ resena.calificacion }} de 5">{% for punto in "12345" %}{% if forloop.counter <= resena.calificacion %}★{% else %}☆{% endif %}{% endfor %}</p>
+            <article class="card">
+                {% include "core/includes/stars.html" with opiniones=1 promedio=resena.calificacion estrellas=resena.calificacion %}
                 <p>{{ resena.comentario }}</p>
-                <p class="meta">{{ resena.paciente.first_name }}{% if resena.profesional %} · {{ resena.profesional.etiqueta_especialidad }}{% endif %}</p>
+                <p class="meta">{{ resena.paciente.first_name }}{% if resena.profesional %} · {{ resena.profesional.get_full_name }}{% endif %}</p>
             </article>
+            {% empty %}
+            <p>Cuando los pacientes dejen su reseña, aparecerán aquí.</p>
             {% endfor %}
         </div>
-        {% else %}
-        <p>Cuando los pacientes dejen su reseña, aparecerán aquí.</p>
-        {% endif %}
     </div>
 </section>
 
-<section class="band" id="sedes">
+<section class="band alt" id="sedes">
     <div class="wrap">
         <h2>Sedes</h2>
-        <p class="intro">Dirección y horario de atención. El mapa abre en OpenStreetMap.</p>
-        {% if sedes %}
+        <p class="intro">Dirección y horario. El mapa abre en OpenStreetMap.</p>
         <div class="card-grid two">
             {% for item in sedes %}
-            <article class="soft-card plain-card">
+            <article class="card">
                 <h3>{{ item.sede.nombre }}</h3>
                 <p>{{ item.sede.direccion }}<br>{{ item.sede.ciudad }}, {{ item.sede.departamento }}</p>
                 {% if item.sede.telefono %}<p class="meta">Teléfono {{ item.sede.telefono }}</p>{% endif %}
                 {% if item.sede.horario_atencion %}<p class="meta">{{ item.sede.horario_atencion }}</p>{% endif %}
                 <p><a href="{{ item.mapa }}" rel="noopener noreferrer">Ver en el mapa</a></p>
+                <p><a href="{% url 'buscar_profesionales' %}?ciudad={{ item.sede.ciudad|urlencode }}">Especialistas en {{ item.sede.ciudad }}</a></p>
             </article>
+            {% empty %}
+            <p>Las sedes se publicarán cuando el equipo las registre.</p>
             {% endfor %}
         </div>
-        {% else %}
-        <p>Las sedes se publicarán cuando el equipo las registre.</p>
-        {% endif %}
     </div>
 </section>
 
-<section class="band alt" id="preguntas">
+<section class="band" id="preguntas">
     <div class="wrap faq">
         <h2>Preguntas frecuentes</h2>
         <details>
-            <summary>¿Cómo agendo una cita?</summary>
-            <p>Crea tu cuenta de paciente o ingresa. Elige el tratamiento, la sede, el especialista y una hora libre. La cita queda pendiente hasta que el profesional la confirme.</p>
+            <summary>¿Cómo reservo una cita?</summary>
+            <p>Busca la especialidad y la ciudad, elige un horario en la ficha del especialista e ingresa con tu cuenta de paciente. La cita queda pendiente hasta que el profesional la confirme.</p>
         </details>
         <details>
             <summary>¿Puedo cancelar o cambiar la hora?</summary>
-            <p>Sí. En Mis citas puedes cancelar o reprogramar mientras la cita esté pendiente o confirmada. La cancelación deja el cupo libre para otra persona.</p>
+            <p>Sí. En Citas puedes cancelar o reprogramar mientras la cita esté pendiente o confirmada. El cupo vuelve a quedar libre.</p>
         </details>
         <details>
             <summary>¿Quién ve mi historia clínica?</summary>
             <p>Solo tú y los especialistas con los que tienes citas. Otro paciente no puede abrir tu odontograma, tus facturas ni tus recetas.</p>
         </details>
         <details>
-            <summary>¿Qué medios de pago registran?</summary>
-            <p>Efectivo, transferencia, tarjeta y PSE. El saldo queda visible en tu factura.</p>
+            <summary>¿La reserva tiene costo?</summary>
+            <p>Reservar en la plataforma no tiene costo. El valor de la consulta lo ves como «consulta desde» y queda en tu factura.</p>
         </details>
     </div>
 </section>
-
-<footer class="site-footer">
-    <div class="footer-grid">
-        <div>
-            <h2>MT Odontología</h2>
-            <p>Atención odontológica para pacientes y especialistas. Datos de demostración cuando ejecutas seed_demo.</p>
-        </div>
-        <div>
-            <h2>Accesos</h2>
-            <p><a href="{% url 'login' %}">Ingresar</a></p>
-            <p><a href="{% url 'register' %}">Registro de paciente</a></p>
-            <p><a href="{% url 'registro_pro' %}">Soy especialista</a></p>
-            <p><a href="{% url 'formclinic' %}">Registrar un centro</a></p>
-        </div>
-    </div>
-    <p class="legal">Bogotá, Colombia · Atención de lunes a sábado según la sede.</p>
-</footer>
 {% endblock %}

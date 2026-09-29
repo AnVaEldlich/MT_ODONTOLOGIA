@@ -1,0 +1,7 @@
+{% if user_role == 'paciente' %}
+<a class="chip chip-time" href="{% url 'solicitar_cita' %}?paso=confirmar&profesional={{ tarjeta.profesional.pk }}&sede={{ hueco.sede.pk }}{% if hueco.consultorio %}&consultorio={{ hueco.consultorio.pk }}{% endif %}&hora={{ hueco.iso|urlencode }}">{{ hueco.hora }}</a>
+{% elif user.is_authenticated %}
+<span class="chip chip-time">{{ hueco.hora }}</span>
+{% else %}
+<a class="chip chip-time" href="{% url 'login' %}?next={% url 'solicitar_cita' %}?paso=confirmar%26profesional={{ tarjeta.profesional.pk }}%26sede={{ hueco.sede.pk }}{% if hueco.consultorio %}%26consultorio={{ hueco.consultorio.pk }}{% endif %}%26hora={{ hueco.iso|urlencode }}">{{ hueco.hora }}</a>
+{% endif %}

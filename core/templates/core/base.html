@@ -7,87 +7,78 @@
     <title>{% block title %}MT Odontología{% endblock %}</title>
     <link rel="icon" href="{% static 'images/Teeth.png' %}" type="image/png">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    {% block extra_css %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
 {% block navbar %}
-{% with is_home=request.resolver_match.url_name|default:'' %}
-<nav id="navbar" aria-label="Principal">
-    <div class="nav-container">
-        <a class="logo" href="{% url 'home' %}">MT Odontología</a>
-        <ul class="nav-links">
-            {% if user_role == 'paciente' %}
-            <li><a href="{% url 'perfil' %}">Mi perfil</a></li>
-            <li><a href="{% url 'mis_citas' %}">Mis citas</a></li>
-            <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} ({{ notificaciones_sin_leer }}){% endif %}</a></li>
-            {% elif user_role == 'profesional' %}
-            <li><a href="{% url 'perfil_profesional' %}">Mi panel</a></li>
-            <li><a href="{% url 'disponibilidad' %}">Horarios</a></li>
-            <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} ({{ notificaciones_sin_leer }}){% endif %}</a></li>
-            {% else %}
-            <li><a href="{% if is_home == 'home' %}#inicio{% else %}{% url 'home' %}#inicio{% endif %}">Inicio</a></li>
-            <li><a href="{% if is_home == 'home' %}#tratamientos{% else %}{% url 'home' %}#tratamientos{% endif %}">Tratamientos</a></li>
-            <li><a href="{% if is_home == 'home' %}#sedes{% else %}{% url 'home' %}#sedes{% endif %}">Sedes</a></li>
-            {% endif %}
-        </ul>
-        <div class="nav-actions">
+<header class="topbar" id="navbar">
+    <div class="topbar-inner">
+        <a class="logo" href="{% url 'home' %}">MT <span>Odontología</span></a>
+        <div class="topbar-search">
+            {% include "core/includes/finder.html" with prefix="nav" %}
+        </div>
+        <div class="topbar-access">
+            <ul class="topbar-links">
+                {% if user_role == 'paciente' %}
+                <li><a href="{% url 'perfil' %}">Mi salud</a></li>
+                <li><a href="{% url 'mis_citas' %}">Citas</a></li>
+                <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} ({{ notificaciones_sin_leer }}){% endif %}</a></li>
+                {% elif user_role == 'profesional' %}
+                <li><a href="{% url 'perfil_profesional' %}">Mi panel</a></li>
+                <li><a href="{% url 'disponibilidad' %}">Horarios</a></li>
+                <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} ({{ notificaciones_sin_leer }}){% endif %}</a></li>
+                {% else %}
+                <li><a href="{% url 'login' %}">Ingresar</a></li>
+                <li><a href="{% url 'registro_pro' %}">Soy especialista</a></li>
+                {% endif %}
+            </ul>
             {% if user_role == 'profesional' %}
-            <a class="nav-primary" href="{% url 'agenda_profesional' %}">Agenda</a>
+            <a class="btn btn-primary btn-sm" href="{% url 'agenda_profesional' %}">Agenda</a>
             {% elif user_role == 'paciente' %}
-            <a class="nav-primary" href="{% url 'solicitar_cita' %}">Agendar cita</a>
+            <a class="btn btn-primary btn-sm" href="{% url 'solicitar_cita' %}">Agendar cita</a>
             {% else %}
-            <a class="nav-primary" href="{% url 'login' %}?next={% url 'solicitar_cita' %}">Agendar cita</a>
-            <a class="nav-secondary" href="{% url 'login' %}">Ingresar</a>
+            <a class="btn btn-primary btn-sm" href="{% url 'buscar_profesionales' %}">Agendar cita</a>
             {% endif %}
             {% if user.is_authenticated %}
             <form method="post" action="{% url 'logout' %}" class="nav-logout">
                 {% csrf_token %}
                 <button type="submit">Salir</button>
             </form>
-            {% else %}
-            <a class="nav-secondary" href="{% url 'registro_pro' %}">Soy especialista</a>
             {% endif %}
         </div>
-        <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileMenu">
-            <span class="hamburger"></span>
-            <span class="hamburger"></span>
-            <span class="hamburger"></span>
+        <button type="button" class="menu-toggle" id="mobileMenuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileMenu">
+            <span></span><span></span><span></span>
         </button>
     </div>
-</nav>
-
-<div class="mobile-menu" id="mobileMenu">
-    <ul class="mobile-nav-links">
-        {% if user_role == 'paciente' %}
-        <li><a href="{% url 'perfil' %}">Mi perfil</a></li>
-        <li><a href="{% url 'mis_citas' %}">Mis citas</a></li>
-        <li><a href="{% url 'solicitar_cita' %}">Agendar cita</a></li>
-        {% elif user_role == 'profesional' %}
-        <li><a href="{% url 'perfil_profesional' %}">Mi panel</a></li>
-        <li><a href="{% url 'agenda_profesional' %}">Agenda</a></li>
-        <li><a href="{% url 'disponibilidad' %}">Horarios</a></li>
-        {% else %}
-        <li><a href="{% url 'home' %}#inicio">Inicio</a></li>
-        <li><a href="{% url 'home' %}#tratamientos">Tratamientos</a></li>
-        <li><a href="{% url 'home' %}#sedes">Sedes</a></li>
-        <li><a href="{% url 'login' %}?next={% url 'solicitar_cita' %}">Agendar cita</a></li>
-        <li><a href="{% url 'login' %}">Ingresar</a></li>
-        <li><a href="{% url 'registro_pro' %}">Soy especialista</a></li>
-        {% endif %}
-        {% if user.is_authenticated %}
-        <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} ({{ notificaciones_sin_leer }}){% endif %}</a></li>
-        <li>
-            <form method="post" action="{% url 'logout' %}" class="nav-logout">
-                {% csrf_token %}
-                <button type="submit">Salir</button>
-            </form>
-        </li>
-        {% endif %}
-    </ul>
-</div>
-{% endwith %}
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="mobile-nav-links">
+            {% if user_role == 'paciente' %}
+            <li><a href="{% url 'perfil' %}">Mi salud</a></li>
+            <li><a href="{% url 'mis_citas' %}">Citas</a></li>
+            <li><a href="{% url 'solicitar_cita' %}">Agendar cita</a></li>
+            {% elif user_role == 'profesional' %}
+            <li><a href="{% url 'perfil_profesional' %}">Mi panel</a></li>
+            <li><a href="{% url 'agenda_profesional' %}">Agenda</a></li>
+            <li><a href="{% url 'disponibilidad' %}">Horarios</a></li>
+            {% else %}
+            <li><a href="{% url 'buscar_profesionales' %}">Buscar especialista</a></li>
+            <li><a href="{% url 'login' %}">Ingresar</a></li>
+            <li><a href="{% url 'register' %}">Crear cuenta</a></li>
+            <li><a href="{% url 'registro_pro' %}">Soy especialista</a></li>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} ({{ notificaciones_sin_leer }}){% endif %}</a></li>
+            <li>
+                <form method="post" action="{% url 'logout' %}" class="nav-logout">
+                    {% csrf_token %}
+                    <button type="submit">Salir</button>
+                </form>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</header>
 {% endblock %}
 
 <main id="contenido" class="{% block main_class %}{% endblock %}">
@@ -100,9 +91,35 @@
     </div>
     {% endif %}
     {% endblock %}
-
     {% block content %}{% endblock %}
 </main>
+
+<footer class="site-footer">
+    <div class="footer-grid">
+        <div>
+            <h2>MT Odontología</h2>
+            <p>Encuentra un especialista, compara opiniones y reserva una hora sin llamar.</p>
+        </div>
+        <div>
+            <h2>Pacientes</h2>
+            <p><a href="{% url 'buscar_profesionales' %}">Buscar especialistas</a></p>
+            <p><a href="{% url 'register' %}">Crear cuenta</a></p>
+            <p><a href="{% url 'login' %}">Ingresar</a></p>
+        </div>
+        <div>
+            <h2>Especialistas</h2>
+            <p><a href="{% url 'registro_pro' %}">Unirme como especialista</a></p>
+            <p><a href="{% url 'formclinic' %}">Registrar un centro</a></p>
+            <p><a href="{% url 'home' %}#sedes">Sedes</a></p>
+        </div>
+        <div>
+            <h2>Ayuda</h2>
+            <p><a href="{% url 'home' %}#preguntas">Preguntas frecuentes</a></p>
+            <p><a href="{% url 'home' %}#tratamientos">Tratamientos</a></p>
+        </div>
+    </div>
+    <p class="legal">Bogotá, Colombia. La reserva en línea no tiene costo de plataforma.</p>
+</footer>
 
 <script src="{% static 'js/navbar.js' %}"></script>
 {% block extra_js %}{% endblock %}

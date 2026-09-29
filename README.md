@@ -1,6 +1,8 @@
 # MT Odontología
 
-Aplicación Django para una clínica odontológica: página pública, portal del paciente y panel del profesional. Cubre citas (con sede, consultorio, duración y control de solape), historia clínica, odontograma, recetas, facturas y avisos.
+Aplicación Django para una clínica odontológica: página pública, búsqueda de especialistas, portal del paciente y panel del profesional. Cubre citas (con sede, consultorio, duración y control de solape), historia clínica, odontograma, recetas, facturas y avisos.
+
+La búsqueda pública está en `/especialistas/`. El perfil de cada profesional verificado permite reservar un horario publicado.
 
 La arquitectura, el esquema y las rutas están en [docs/](docs/). El diagrama de tablas está en [docs/esquema.md](docs/esquema.md). Cómo contribuir: [CONTRIBUTING.md](CONTRIBUTING.md).
 

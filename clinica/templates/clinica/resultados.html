@@ -1,0 +1,51 @@
+{% extends "core/base.html" %}
+{% block title %}Especialistas — MT Odontología{% endblock %}
+{% block content %}
+<div class="results">
+    <aside class="filters" aria-label="Filtros">
+        <h2>Filtros</h2>
+        <form method="get">
+            <input type="hidden" name="q" value="{{ filtros.q }}">
+            <input type="hidden" name="ciudad" value="{{ filtros.ciudad }}">
+            <fieldset>
+                <legend>Especialidad</legend>
+                <label><input type="radio" name="especialidad" value="" {% if not filtros.especialidad %}checked{% endif %}> Todas</label>
+                {% for especialidad in especialidades %}
+                <label>
+                    <input type="radio" name="especialidad" value="{{ especialidad.codigo }}" {% if filtros.especialidad == especialidad.codigo %}checked{% endif %}>
+                    {{ especialidad.nombre }}
+                </label>
+                {% endfor %}
+            </fieldset>
+            <div class="field">
+                <label for="filtro-sede">Sede</label>
+                <select id="filtro-sede" name="sede">
+                    <option value="">Todas las sedes</option>
+                    {% for sede in sedes %}
+                    <option value="{{ sede.pk }}" {% if filtros.sede == sede.pk|stringformat:"s" %}selected{% endif %}>{{ sede.nombre }} · {{ sede.ciudad }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="btn btn-brand" type="submit">Aplicar filtros</button>
+        </form>
+    </aside>
+    <div>
+        <div class="page-head">
+            <h1>{{ total }} especialista{{ total|pluralize }}</h1>
+            <p>
+                {% if filtros.q %}«{{ filtros.q }}»{% endif %}
+                {% if filtros.ciudad %} en {{ filtros.ciudad }}{% endif %}
+                {% if not filtros.q and not filtros.ciudad %}Perfiles verificados de la clínica.{% endif %}
+            </p>
+        </div>
+        {% for tarjeta in tarjetas %}
+        {% include "clinica/includes/pro_card.html" %}
+        {% empty %}
+        <div class="card empty">
+            <p>No hay especialistas con esos filtros.</p>
+            <a class="btn btn-ghost" href="{% url 'buscar_profesionales' %}">Quitar filtros</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

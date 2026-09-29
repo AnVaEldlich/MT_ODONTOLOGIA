@@ -1,10 +1,42 @@
 from django.contrib import messages
+from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404, redirect, render
 
+from accounts.models import Profesional
+from comunicacion.models import Resena
 from perfiles.decorators import profesional_required
 
 from .forms import BloqueoForm, DisponibilidadForm
 from .models import BloqueoHorario, Disponibilidad
+from .services import directorio, ficha_publica
+
+
+def buscar_profesionales(request):
+    datos = directorio(request.GET)
+    return render(request, "clinica/resultados.html", datos)
+
+
+def perfil_publico(request, pk):
+    resenas = Prefetch(
+        "resenas",
+        queryset=Resena.objects.filter(publicada=True).select_related("paciente"),
+        to_attr="resenas_publicas",
+    )
+    profesional = get_object_or_404(
+        Profesional.objects.filter(is_verified=True)
+        .select_related("user")
+        .prefetch_related(
+            "especialidades_asignadas__especialidad",
+            "sedes_asignadas__sede",
+            resenas,
+        ),
+        pk=pk,
+    )
+    return render(
+        request,
+        "clinica/perfil_publico.html",
+        {"tarjeta": ficha_publica(profesional)},
+    )
 
 
 @profesional_required

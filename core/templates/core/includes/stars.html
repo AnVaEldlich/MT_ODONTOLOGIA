@@ -1,0 +1,8 @@
+<p class="stars" aria-label="{% if opiniones %}Calificación {{ promedio }} de 5, {{ opiniones }} opiniones{% else %}Sin opiniones{% endif %}">
+    {% if opiniones %}
+    {% for punto in "12345" %}<span class="{% if forloop.counter <= estrellas %}star-on{% else %}star-off{% endif %}" aria-hidden="true">★</span>{% endfor %}
+    <span class="stars-count">{{ promedio }} · {{ opiniones }} {% if opiniones == 1 %}opinión{% else %}opiniones{% endif %}</span>
+    {% else %}
+    <span class="stars-count">Sin opiniones</span>
+    {% endif %}
+</p>
