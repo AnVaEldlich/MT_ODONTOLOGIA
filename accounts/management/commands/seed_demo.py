@@ -22,7 +22,8 @@ from clinica.models import (
     Tratamiento,
 )
 from clinica.services import asignar_especialidad_principal
-from comunicacion.models import Notificacion, Resena
+from comunicacion.models import Comentario, MeGusta, Mensaje, Notificacion, Publicacion, Resena, Seguimiento
+from comunicacion.services import abrir_conversacion, enviar_mensaje
 from facturacion.models import Factura, Pago
 from historia.models import Odontograma, Receta, RecetaItem
 from historia.services import obtener_historia, registrar_evolucion
@@ -137,6 +138,7 @@ class Command(BaseCommand):
         pacientes = self._pacientes()
         self._citas(profesionales, pacientes, sedes, consultorios, tratamientos)
         self._clinica_demo(profesionales, pacientes, tratamientos)
+        self._social(profesionales, pacientes)
         self.stdout.write(self.style.SUCCESS(
             "Demo lista. No se borró información existente.\n"
             f"Contraseña de las cuentas nuevas: {DEMO_PASSWORD}\n"
@@ -423,6 +425,36 @@ class Command(BaseCommand):
                     "enlace": "/citas/agenda/",
                 },
             )
+
+    def _social(self, profesionales, pacientes):
+        ana = profesionales[0]
+        sofia = pacientes[0]
+        textos = [
+            "DEMO · Recuerda traer el retenedor al control. Publicación ficticia, no es un caso real.",
+            "DEMO · El cepillado nocturno de dos minutos ayuda a toda la familia. Consejo general de ejemplo.",
+        ]
+        publicaciones = []
+        for texto in textos:
+            publicacion, _created = Publicacion.objects.get_or_create(profesional=ana, texto=texto)
+            publicaciones.append(publicacion)
+        Seguimiento.objects.get_or_create(paciente=sofia, profesional=ana)
+        MeGusta.objects.get_or_create(publicacion=publicaciones[0], paciente=sofia)
+        Comentario.objects.get_or_create(
+            publicacion=publicaciones[1],
+            paciente=sofia,
+            texto="DEMO · Gracias por el recordatorio. Comentario ficticio.",
+            defaults={"estado": Comentario.ESTADO_PUBLICADO},
+        )
+        conversacion = abrir_conversacion(sofia, ana)
+        if conversacion is None:
+            return
+        mensajes = [
+            (sofia.user, "DEMO · Hola. ¿El control sigue a las 9? Mensaje ficticio."),
+            (ana.user, "DEMO · Sí. Te espero en el consultorio 1. Respuesta de ejemplo."),
+        ]
+        for remitente, texto in mensajes:
+            if not Mensaje.objects.filter(conversacion=conversacion, texto=texto).exists():
+                enviar_mensaje(conversacion=conversacion, remitente=remitente, texto=texto)
 
     def _fecha(self, dias, hora):
         base = timezone.localtime() + timedelta(days=dias)

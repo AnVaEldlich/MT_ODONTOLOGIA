@@ -987,9 +987,79 @@ textarea { min-height: 6rem; resize: vertical; }
     .grid-container { grid-template-columns: 1.4fr 0.8fr; }
 }
 
+.cover-card { padding: 0 0 1rem; overflow: hidden; }
+.cover {
+    height: 7.5rem;
+    background: linear-gradient(120deg, var(--brand) 0%, #12815c 100%);
+}
+.profile-hero {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-end;
+    padding: 0 1rem;
+    margin-top: -2.2rem;
+}
+.who-row { display: flex; gap: 0.7rem; align-items: center; }
+.post-image { border-radius: var(--radius-sm); margin: 0.5rem 0; max-height: 16rem; object-fit: cover; }
+.note { padding: 0.35rem 0 0.6rem; border-bottom: 1px solid var(--line); }
+.note h3 { font-size: 1rem; margin-bottom: 0.2rem; }
+.comment { background: var(--bg); border-radius: var(--radius-sm); padding: 0.55rem 0.7rem; margin: 0.4rem 0; }
+.feed-card { transition: transform 0.16s ease, box-shadow 0.16s ease; }
+.feed-card:hover { transform: translateY(-2px); }
+.like-btn:active { transform: scale(0.98); }
+.chat-log {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    max-height: 28rem;
+    overflow-y: auto;
+    margin-bottom: 0.8rem;
+}
+.bubble {
+    max-width: min(34rem, 85%);
+    padding: 0.55rem 0.75rem;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid var(--line);
+}
+.bubble.propia { margin-left: auto; background: var(--brand-soft); border-color: transparent; }
+.bubble .meta { margin: 0.2rem 0 0; }
+.tabbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+    .feed-card { transition: none; }
+}
+
 @media (max-width: 799px) {
     .topbar-access .btn-ghost,
     .topbar-access .nav-logout { display: none; }
+    .tabbar {
+        display: flex;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 60;
+        background: #fff;
+        border-top: 1px solid var(--line);
+        justify-content: space-around;
+        gap: 0.2rem;
+        padding: 0.35rem 0.3rem calc(0.4rem + env(safe-area-inset-bottom));
+    }
+    .tabbar a {
+        flex: 1;
+        text-align: center;
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.25rem;
+    }
+    .tabbar a[aria-current="page"] { color: var(--brand-dark); }
+    body.rol-paciente,
+    body.rol-profesional { padding-bottom: 4.4rem; }
+    .portal-nav { display: none; }
+    .portal { grid-template-columns: 1fr; }
     .table thead { display: none; }
     .table tr {
         display: grid;

@@ -7,15 +7,27 @@
 <div class="portal">
     {% include "core/includes/portal_nav_profesional.html" %}
     <div>
-        <div class="page-head">
-            <h1>{{ profesional.get_full_name }}</h1>
-            <p>{{ profesional.etiqueta_especialidad }} · {{ profesional.ubicacion }}</p>
-        </div>
-        <div class="stats">
-            <div class="stat"><div class="num">{{ stats.hoy }}</div><div class="label">Citas de hoy</div></div>
-            <div class="stat warn"><div class="num">{{ stats.pendientes }}</div><div class="label">Pendientes</div></div>
-            <div class="stat ok"><div class="num">{{ stats.confirmadas }}</div><div class="label">Confirmadas</div></div>
-        </div>
+        <section class="card cover-card">
+            <div class="cover" aria-hidden="true"></div>
+            <div class="profile-hero">
+                <div class="avatar lg" aria-hidden="true">{{ profesional.user.first_name|first }}{{ profesional.user.last_name|first }}</div>
+                <div>
+                    <h1>{{ profesional.get_full_name }}</h1>
+                    <p class="meta">{{ profesional.etiqueta_especialidad }} · {{ profesional.ubicacion }}</p>
+                    <p>
+                        {% for insignia in resumen.insignias %}
+                        <span class="badge ok">{{ insignia }}</span>
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat"><div class="num">{{ resumen.atendidos }}</div><div class="label">Pacientes atendidos</div></div>
+                <div class="stat"><div class="num">{% if resumen.promedio %}{{ resumen.promedio }}{% else %}—{% endif %}</div><div class="label">Calificación</div></div>
+                <div class="stat"><div class="num">{{ resumen.seguidores }}</div><div class="label">Seguidores</div></div>
+                <div class="stat"><div class="num">{{ stats.hoy }}</div><div class="label">Citas de hoy</div></div>
+            </div>
+        </section>
         <section class="card">
             <div class="card-title-row">
                 <h2>Pacientes de hoy</h2>
@@ -52,9 +64,23 @@
                 {% endfor %}
             </ul>
             {% else %}
-            <div class="empty"><p>No hay citas próximas.</p></div>
+            <div class="empty"><p>No hay citas próximas. Cuando alguien reserve, la verás en este inicio.</p></div>
             {% endif %}
         </section>
+        <section class="card feed-card">
+            <h2>Nueva publicación</h2>
+            <p class="meta">Un consejo o un aviso general. Sin nombres de pacientes ni datos clínicos.</p>
+            <form method="post" action="{% url 'crear_publicacion' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% include "core/includes/fields.html" with form=form_publicacion %}
+                <button class="btn btn-book" type="submit">Publicar</button>
+            </form>
+        </section>
+        {% for publicacion in publicaciones %}
+        {% include "comunicacion/includes/publicacion.html" %}
+        {% empty %}
+        <div class="card empty"><p>Aún no publicas. Un consejo corto ayuda a que te encuentren.</p></div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

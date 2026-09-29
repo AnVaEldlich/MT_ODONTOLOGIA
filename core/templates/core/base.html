@@ -8,7 +8,7 @@
     <link rel="icon" href="{% static 'images/Teeth.png' %}" type="image/png">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% block body_class %}{% endblock %}{% if user_role %} rol-{{ user_role }}{% endif %}">
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
 {% block navbar %}
@@ -24,10 +24,12 @@
                 <li><a href="{% url 'perfil' %}">Mi salud</a></li>
                 <li><a href="{% url 'mis_citas' %}">Citas</a></li>
                 <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} ({{ notificaciones_sin_leer }}){% endif %}</a></li>
+                <li><a href="{% url 'chat_lista' %}">Mensajes{% if mensajes_sin_leer %} ({{ mensajes_sin_leer }}){% endif %}</a></li>
                 {% elif user_role == 'profesional' %}
                 <li><a href="{% url 'perfil_profesional' %}">Mi panel</a></li>
                 <li><a href="{% url 'disponibilidad' %}">Horarios</a></li>
                 <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} ({{ notificaciones_sin_leer }}){% endif %}</a></li>
+                <li><a href="{% url 'chat_lista' %}">Mensajes{% if mensajes_sin_leer %} ({{ mensajes_sin_leer }}){% endif %}</a></li>
                 {% else %}
                 <li><a href="{% url 'login' %}">Ingresar</a></li>
                 <li><a href="{% url 'registro_pro' %}">Soy especialista</a></li>
@@ -69,6 +71,7 @@
             {% endif %}
             {% if user.is_authenticated %}
             <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} ({{ notificaciones_sin_leer }}){% endif %}</a></li>
+            <li><a href="{% url 'chat_lista' %}">Mensajes{% if mensajes_sin_leer %} ({{ mensajes_sin_leer }}){% endif %}</a></li>
             <li>
                 <form method="post" action="{% url 'logout' %}" class="nav-logout">
                     {% csrf_token %}
@@ -121,6 +124,23 @@
     <p class="legal">Bogotá, Colombia. La reserva en línea no tiene costo de plataforma.</p>
 </footer>
 
+{% if user_role == 'paciente' or user_role == 'profesional' %}
+<nav class="tabbar" aria-label="Navegación de la aplicación">
+    {% if user_role == 'paciente' %}
+    <a href="{% url 'perfil' %}" {% if request.resolver_match.url_name == 'perfil' %}aria-current="page"{% endif %}>Inicio</a>
+    <a href="{% url 'buscar_profesionales' %}">Buscar</a>
+    <a href="{% url 'mis_citas' %}">Citas</a>
+    <a href="{% url 'chat_lista' %}">Chat{% if mensajes_sin_leer %} <span class="badge">{{ mensajes_sin_leer }}</span>{% endif %}</a>
+    <a href="{% url 'editar_perfil' %}">Perfil</a>
+    {% else %}
+    <a href="{% url 'perfil_profesional' %}" {% if request.resolver_match.url_name == 'perfil_profesional' %}aria-current="page"{% endif %}>Inicio</a>
+    <a href="{% url 'agenda_profesional' %}">Agenda</a>
+    <a href="{% url 'chat_lista' %}">Chat{% if mensajes_sin_leer %} <span class="badge">{{ mensajes_sin_leer }}</span>{% endif %}</a>
+    <a href="{% url 'disponibilidad' %}">Horarios</a>
+    <a href="{% url 'perfil_profesional' %}">Perfil</a>
+    {% endif %}
+</nav>
+{% endif %}
 <script src="{% static 'js/navbar.js' %}"></script>
 {% block extra_js %}{% endblock %}
 </body>

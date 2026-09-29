@@ -12,6 +12,8 @@ from accounts.models import Paciente
 from accounts.roles import dashboard_url_name
 from citas.models import Cita
 from citas.services import profesional_atiende
+from comunicacion.forms import PublicacionForm
+from comunicacion.services import feed_paciente, publicaciones_de, resumen_profesional, tiene_cita_para_chat
 from facturacion.forms import FacturaForm
 from facturacion.services import crear_factura
 from historia.forms import DienteForm, EvolucionForm, HistoriaForm, RecetaForm
@@ -36,22 +38,9 @@ def dashboard(request):
 @paciente_required
 def perfil_paciente(request):
     paciente = request.user.paciente
-    citas_qs = paciente.citas.select_related("profesional__user", "sede", "tratamiento")
-    ahora = timezone.now()
-    proximas = citas_qs.filter(
-        estado__in=[Cita.ESTADO_PENDIENTE, Cita.ESTADO_CONFIRMADA],
-        fecha_hora__gte=ahora,
-    ).order_by("fecha_hora")
-    return render(
-        request,
-        "perfiles/perfiles_paciente.html",
-        {
-            "paciente": paciente,
-            "proxima": proximas.first(),
-            "citas": citas_qs.order_by("-fecha_hora")[:5],
-            "stats": {"proximas": proximas.count(), "total": citas_qs.count()},
-        },
-    )
+    datos = feed_paciente(paciente)
+    datos["paciente"] = paciente
+    return render(request, "perfiles/perfiles_paciente.html", datos)
 
 
 @paciente_required
@@ -89,6 +78,9 @@ def perfil_profesional(request):
                 "pendientes": citas_qs.filter(estado=Cita.ESTADO_PENDIENTE).count(),
                 "confirmadas": citas_qs.filter(estado=Cita.ESTADO_CONFIRMADA).count(),
             },
+            "resumen": resumen_profesional(profesional),
+            "publicaciones": publicaciones_de(profesional),
+            "form_publicacion": PublicacionForm(),
         },
     )
 
@@ -186,6 +178,7 @@ def _render_ficha(request, paciente, profesional, accion=None, form_invalido=Non
             "filas": filas,
             "diente": diente,
             "citas": citas[:8],
+            "puede_chatear": tiene_cita_para_chat(paciente, profesional),
             "recetas": paciente.recetas.filter(profesional=profesional).prefetch_related("items")[:6],
             "historia_form": form_invalido if accion == "historia" else HistoriaForm(instance=historia),
             "evolucion_form": form_invalido if accion == "evolucion" else EvolucionForm(

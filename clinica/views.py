@@ -3,7 +3,8 @@ from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.models import Profesional
-from comunicacion.models import Resena
+from comunicacion.models import Resena, Seguimiento
+from comunicacion.services import publicaciones_de, resumen_profesional, tiene_cita_para_chat
 from perfiles.decorators import profesional_required
 
 from .forms import BloqueoForm, DisponibilidadForm
@@ -32,10 +33,21 @@ def perfil_publico(request, pk):
         ),
         pk=pk,
     )
+    paciente = getattr(request.user, "paciente", None) if request.user.is_authenticated else None
     return render(
         request,
         "clinica/perfil_publico.html",
-        {"tarjeta": ficha_publica(profesional)},
+        {
+            "tarjeta": ficha_publica(profesional),
+            "publicaciones": publicaciones_de(profesional),
+            "resumen": resumen_profesional(profesional, paciente=paciente),
+            "puede_chatear": paciente is not None and tiene_cita_para_chat(paciente, profesional),
+            "seguidos": list(
+                Seguimiento.objects.filter(paciente=paciente).values_list("profesional_id", flat=True)
+            )
+            if paciente is not None
+            else [],
+        },
     )
 
 

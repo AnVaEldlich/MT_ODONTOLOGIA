@@ -1,0 +1,52 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Chat — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block content %}
+<div class="portal">
+    {% if user_role == 'paciente' %}
+    {% include "core/includes/portal_nav_paciente.html" %}
+    {% elif user_role == 'profesional' %}
+    {% include "core/includes/portal_nav_profesional.html" %}
+    {% endif %}
+    <div>
+        <div class="page-head">
+            <h1>
+                {% if user_role == 'paciente' %}
+                {{ conversacion.profesional.get_full_name }}
+                {% else %}
+                {{ conversacion.paciente.first_name }} {{ conversacion.paciente.last_name }}
+                {% endif %}
+            </h1>
+            <p><a href="{% url 'chat_lista' %}">Volver a mensajes</a></p>
+        </div>
+        <p class="alert warning">Este chat no es para urgencias médicas. Si necesitas atención inmediata, acude a un servicio de urgencias.</p>
+        <section class="card chat-panel" id="chat" data-conversacion="{{ conversacion.pk }}" data-usuario="{{ request.user.pk }}" data-ultimo="{{ ultimo_id }}" data-enviar="{% url 'chat_enviar' conversacion.pk %}" data-leer="{% url 'chat_mensajes' conversacion.pk %}">
+            <div class="chat-log" id="chat-log" aria-live="polite">
+                {% for mensaje in mensajes %}
+                <article class="bubble {% if mensaje.remitente_id == request.user.id %}propia{% else %}ajena{% endif %}" data-id="{{ mensaje.pk }}">
+                    <p class="bubble-text">{{ mensaje.texto }}</p>
+                    <p class="meta">
+                        <time datetime="{{ mensaje.created_at|date:'c' }}">{{ mensaje.created_at|date:"H:i" }}</time>
+                        {% if mensaje.remitente_id == request.user.id %}
+                        <span class="lectura">{% if mensaje.leido %}Leído{% else %}Enviado{% endif %}</span>
+                        {% endif %}
+                    </p>
+                </article>
+                {% empty %}
+                <p class="empty" id="chat-vacio">Escribe el primer mensaje. Sé breve y no envíes datos que no quieras compartir.</p>
+                {% endfor %}
+            </div>
+            <form id="chat-form" method="post" action="{% url 'chat_enviar' conversacion.pk %}">
+                {% csrf_token %}
+                <label for="texto">Mensaje</label>
+                <textarea id="texto" name="texto" maxlength="1000" rows="3" required placeholder="Escribe y pulsa Enter para enviar"></textarea>
+                <button class="btn btn-book" type="submit">Enviar</button>
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/chat.js' %}"></script>
+{% endblock %}

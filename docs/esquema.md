@@ -30,6 +30,14 @@ erDiagram
     FACTURA ||--o{ PAGO : abona
     PACIENTE ||--o{ RESENA : opina
     USER ||--o{ NOTIFICACION : recibe
+    PROFESIONAL ||--o{ PUBLICACION : escribe
+    PACIENTE ||--o{ SEGUIMIENTO : sigue
+    PROFESIONAL ||--o{ SEGUIMIENTO : recibe
+    PUBLICACION ||--o{ MEGUSTA : suma
+    PUBLICACION ||--o{ COMENTARIO : recibe
+    PACIENTE ||--o| CONVERSACION : habla
+    PROFESIONAL ||--o| CONVERSACION : responde
+    CONVERSACION ||--o{ MENSAJE : contiene
 ```
 
 ## Tablas
@@ -58,6 +66,12 @@ erDiagram
 | `facturacion_pago` | Abono (efectivo, transferencia, tarjeta o PSE). |
 | `comunicacion_notificacion` | Aviso de cita para el usuario. No guarda la historia clínica. |
 | `comunicacion_resena` | Calificación y comentario publicados en la página de inicio. |
+| `comunicacion_publicacion` | Nota corta del especialista. Solo texto y, si quiere, una imagen. No guarda historia clínica. |
+| `comunicacion_megusta` | Un paciente marca una publicación. En la interfaz solo se muestra el conteo, no la lista de personas. |
+| `comunicacion_comentario` | Comentario de un paciente. Nace en revisión y solo se ve en público si el especialista lo publica. |
+| `comunicacion_seguimiento` | El paciente sigue a un profesional. |
+| `comunicacion_conversacion` | Chat entre un paciente y un profesional. Solo existe si hay una cita no cancelada. |
+| `comunicacion_mensaje` | Texto del chat, con remitente, fecha y si ya fue leído. Sin adjuntos. |
 
 ## Migraciones de datos
 

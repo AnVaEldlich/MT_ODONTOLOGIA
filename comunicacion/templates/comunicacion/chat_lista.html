@@ -1,0 +1,44 @@
+{% extends "core/base.html" %}
+{% block title %}Mensajes — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block content %}
+<div class="portal">
+    {% if user_role == 'paciente' %}
+    {% include "core/includes/portal_nav_paciente.html" %}
+    {% elif user_role == 'profesional' %}
+    {% include "core/includes/portal_nav_profesional.html" %}
+    {% endif %}
+    <div>
+        <div class="page-head">
+            <h1>Mensajes</h1>
+            <p>Solo aparecen las conversaciones con una cita que no esté cancelada.</p>
+        </div>
+        {% if conversaciones %}
+        <ul class="cita-list">
+            {% for item in conversaciones %}
+            <li>
+                <a href="{% url 'chat_detalle' item.conversacion.pk %}">
+                    <div class="when">
+                        {% if user_role == 'paciente' %}
+                        {{ item.conversacion.profesional.get_full_name }}
+                        {% else %}
+                        {{ item.conversacion.paciente.first_name }} {{ item.conversacion.paciente.last_name }}
+                        {% endif %}
+                        {% if item.sin_leer %}<span class="badge">{{ item.sin_leer }} sin leer</span>{% endif %}
+                    </div>
+                    <div class="who">{% if item.ultimo %}{{ item.ultimo.texto|truncatechars:80 }}{% else %}Aún no hay mensajes.{% endif %}</div>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="card empty">
+            <p>Cuando tengas una cita confirmada o pendiente, aquí podrás escribirle a esa persona.</p>
+            {% if user_role == 'paciente' %}
+            <a class="btn btn-book" href="{% url 'buscar_profesionales' %}">Buscar especialista</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

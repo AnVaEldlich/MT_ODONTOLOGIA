@@ -57,6 +57,7 @@ CSRF_TRUSTED_ORIGINS = _env_list(
 )
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -71,6 +72,7 @@ INSTALLED_APPS = [
     "historia",
     "facturacion",
     "comunicacion",
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -103,6 +105,22 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "Web_odontologia.wsgi.application"
+ASGI_APPLICATION = "Web_odontologia.asgi.application"
+
+_redis_url = os.getenv("REDIS_URL", "").strip()
+if _redis_url:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {"hosts": [_redis_url]},
+        }
+    }
+else:
+    # Un solo proceso (runserver). Con varios procesos hace falta REDIS_URL.
+    CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 _use_sqlite = _under_pytest or _env_bool("USE_SQLITE", True)
 

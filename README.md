@@ -71,6 +71,23 @@ python manage.py makemigrations --check
 
 `pytest` fuerza SQLite aunque tu `.env` tenga `USE_SQLITE=False`, para no escribir en la base real. En CI pasa lo mismo.
 
+## Chat
+
+El chat solo se abre si el paciente tiene una cita con ese profesional y la cita no está cancelada. Esa regla vive en el servidor: sin cita no se crea la conversación y un tercero recibe 404.
+
+La tecnología es Django Channels. `python manage.py runserver` (con `daphne` instalado) atiende HTTP y WebSocket en el mismo proceso. La capa de canales queda en memoria. Si el navegador no logra el WebSocket, la ventana de chat sigue enviando y leyendo por HTTP cada pocos segundos.
+
+Con varios procesos hace falta Redis. Define `REDIS_URL` (por ejemplo `redis://127.0.0.1:6379/0`) y el proyecto usa `channels_redis`. Sin esa variable no hace falta Redis.
+
+Para probarlo con los datos de demostración, abre dos navegadores (o una ventana normal y una de incógnito):
+
+1. `python manage.py seed_demo`
+2. En uno entra como `paciente@demo.com` / `demo1234` y abre Mensajes.
+3. En el otro entra como `ana.torres@demo.com` / `demo1234` y abre Mensajes.
+4. Escribe en uno y pulsa Enter. El otro ve el mensaje al instante si el WebSocket conectó, o a los pocos segundos si solo hay sondeo.
+
+El aviso de la ventana recuerda que el chat no es para urgencias.
+
 ## Despliegue en Render
 
 Render **no ofrece MySQL administrado**. Su base relacional gestionada es PostgreSQL; también tiene Key Value. Lo confirma la [FAQ de datastores](https://render.com/docs/faq) y la guía [Deploy MySQL](https://render.com/docs/deploy-mysql): MySQL en Render es un contenedor que uno mismo opera, con un disco persistente montado en `/var/lib/mysql`, no un producto administrado como Render Postgres. El pedido de MySQL/MariaDB gestionado sigue abierto en el foro de Render desde 2019.
