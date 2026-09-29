@@ -15,7 +15,11 @@ Este documento te ayuda a mostrar el proyecto en 8-12 minutos, con enfoque en ar
 - `core`: landing y base de UI.
 - `accounts`: autenticacion y registro de pacientes/profesionales.
 - `perfiles`: paneles por rol.
+- `clinica`: sedes, consultorios, tratamientos y horarios.
 - `citas`: dominio de citas (modelo, formularios, vistas, templates).
+- `historia`: historia clínica, odontograma y recetas.
+- `facturacion`: facturas y pagos.
+- `comunicacion`: avisos y reseñas.
 
 ### Capas
 
@@ -36,8 +40,8 @@ Este documento te ayuda a mostrar el proyecto en 8-12 minutos, con enfoque en ar
 1. Paciente se registra.
 2. El sistema crea `User` + `Paciente` y asigna grupo de rol.
 3. Paciente agenda cita con profesional.
-4. Profesional visualiza agenda (tabla + calendario) y confirma/cancela.
-5. Paciente ve estado actualizado desde su perfil.
+4. Profesional visualiza la agenda del día o de la semana y confirma, atiende o cancela.
+5. Paciente ve el estado, la historia y el odontograma desde su portal.
 
 ## 4) Datos demo listos (1 min)
 
@@ -67,10 +71,11 @@ python -m pytest -q
 - Migracion inicial de `citas` para evitar error `no such table: citas_cita`.
 - Rediseño visual del dashboard (paciente/profesional/citas).
 - Comando `seed_demo` para demostracion inmediata.
-- Flujo de citas con estados: pendiente, confirmada, cancelada.
+- Flujo de citas con estados: pendiente, confirmada, cancelada, atendida y no asistió.
+- Horarios, duración, sede, consultorio y validación de solape.
 - Verificacion de despliegue y estaticos en Render.
 
-## 7) Que mostraria como siguiente iteracion
+## 7) Que queda fuera
 
-- Horarios, duración y estados de cita atendida, documentados en `docs/requirements.md`. No hay tablas nuevas en esta entrega.
 - Sin API REST ni otro frontend hasta que un ADR lo acepte.
+- Render no tiene MySQL administrado: la base de producción es un MySQL externo o uno propio con disco. Ver el README.

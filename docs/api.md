@@ -19,17 +19,33 @@ No hay API JSON. El contrato actual son vistas HTML y nombres de URL. Usar siemp
 | Nombre | Path | Regla |
 | --- | --- | --- |
 | `perfil` | `/perfiles/perfil/` | solo paciente |
-| `solicitar_cita` | `/citas/solicitar/` | solo paciente |
+| `editar_perfil` | `/perfiles/perfil/editar/` | solo su ficha de contacto |
+| `solicitar_cita` | `/citas/solicitar/` | solo paciente. También acepta el POST directo de siempre (`profesional`, `fecha_hora`, `motivo`) |
 | `mis_citas` | `/citas/mis-citas/` | solo sus citas |
 | `cancelar_cita` | `/citas/<pk>/cancelar/` | POST. Solo la cita del paciente o de la agenda del profesional |
+| `reprogramar_cita` | `/citas/<pk>/reprogramar/` | GET/POST. Mismo dueño |
+| `mi_historia` | `/historia/mi-historia/` | solo la suya, lectura |
+| `mi_odontograma` | `/historia/odontograma/` | solo el suyo, lectura |
+| `mis_recetas` | `/historia/recetas/` | solo las suyas |
+| `mis_facturas` | `/facturacion/mis-facturas/` | solo las suyas |
+| `detalle_factura` | `/facturacion/<pk>/` | 404 si la factura es de otro paciente |
+| `notificaciones` | `/comunicacion/notificaciones/` | solo las del usuario autenticado |
+| `marcar_notificacion` | `/comunicacion/notificaciones/<pk>/leer/` | POST. 404 si el aviso es de otro |
+| `crear_resena` | `/comunicacion/resenas/nueva/` | solo paciente |
 
 ## Profesional
 
 | Nombre | Path | Regla |
 | --- | --- | --- |
 | `perfil_profesional` | `/perfiles/profesional/` | solo profesional |
-| `agenda_profesional` | `/citas/agenda/` | solo su agenda |
+| `agenda_profesional` | `/citas/agenda/` | solo su agenda. `?vista=dia` o `semana` |
 | `confirmar_cita` | `/citas/<pk>/confirmar/` | POST. Solo citas pendientes de su agenda |
+| `atender_cita` | `/citas/<pk>/atender/` | POST. Solo una confirmada de su agenda |
+| `inasistencia_cita` | `/citas/<pk>/no-asistio/` | POST. Pendiente o confirmada de su agenda |
+| `disponibilidad` | `/clinica/disponibilidad/` | solo sus franjas y bloqueos |
+| `desactivar_disponibilidad` | `/clinica/disponibilidad/<pk>/desactivar/` | POST. No borra citas ya pedidas |
+| `ficha_paciente` | `/perfiles/profesional/pacientes/<paciente_id>/` | 404 si ese paciente no tiene citas con él |
+| `detalle_factura_profesional` | `/facturacion/profesional/<pk>/` | solo facturas que él emitió. POST registra un pago |
 
 ## Compartido
 
@@ -37,4 +53,4 @@ No hay API JSON. El contrato actual son vistas HTML y nombres de URL. Usar siemp
 | --- | --- | --- |
 | `dashboard` | `/perfiles/dashboard/` | redirige según `accounts.roles.dashboard_url_name` |
 
-Un endpoint JSON nuevo se documenta aquí en la misma PR y requiere ADR si cambia el modelo server-rendered.
+Un endpoint JSON nuevo se documenta aquí y requiere ADR si cambia el modelo server-rendered.

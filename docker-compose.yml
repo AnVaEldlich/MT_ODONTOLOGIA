@@ -1,0 +1,18 @@
+# MySQL opcional para desarrollo. No lo uses si ya tienes una base local con datos:
+# ese compose crea un volumen nuevo y no toca tu servidor MySQL existente.
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: odontologia_ejemplo
+      MYSQL_USER: odontologia_app
+      MYSQL_PASSWORD: clave-inventada-ejemplo
+      MYSQL_ROOT_PASSWORD: root-inventada-ejemplo
+    ports:
+      - "3306:3306"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - odontologia_mysql:/var/lib/mysql
+
+volumes:
+  odontologia_mysql:

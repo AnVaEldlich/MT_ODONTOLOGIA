@@ -1,9 +1,17 @@
 # Blueprint para deploy en Render (https://render.com)
+#
+# Render no ofrece MySQL administrado. El datastore gestionado es Postgres
+# (y Key Value). MySQL en Render es un servicio que uno mismo despliega con
+# Docker y un disco persistente: https://render.com/docs/deploy-mysql
+# Este blueprint no crea esa base. Apunta DB_* a un MySQL externo o a ese
+# servicio propio. El build no migra (SKIP_MIGRATE_ON_BUILD) porque el build
+# no alcanza una base privada; preDeployCommand sí corre en la red del servicio.
 services:
   - type: web
     name: mt-odontologia
     runtime: python
     buildCommand: chmod +x build.sh && ./build.sh
+    preDeployCommand: python manage.py migrate --noinput
     startCommand: gunicorn Web_odontologia.wsgi:application
     envVars:
       - key: SECRET_KEY
@@ -11,7 +19,19 @@ services:
       - key: DEBUG
         value: "False"
       - key: USE_SQLITE
+        value: "False"
+      - key: SKIP_MIGRATE_ON_BUILD
         value: "True"
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_HOST
+        sync: false
       - key: ALLOWED_HOSTS
         value: ".onrender.com"
       - key: CSRF_TRUSTED_ORIGINS
