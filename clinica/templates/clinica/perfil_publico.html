@@ -5,9 +5,12 @@
     <p class="meta"><a href="{% url 'buscar_profesionales' %}">Especialistas</a> / {{ tarjeta.nombre }}</p>
     <div class="profile-grid">
         <div>
-            <section class="card">
+            <section class="card cover-card">
+                <div class="cover">
+                    {% if tarjeta.profesional.portada %}<img src="{{ tarjeta.profesional.portada.url }}" alt="">{% endif %}
+                </div>
                 <div class="pro-card flush">
-                    <div class="avatar lg" aria-hidden="true">{{ tarjeta.iniciales }}</div>
+                    {% include "core/includes/avatar.html" with foto=tarjeta.profesional.foto iniciales=tarjeta.iniciales tamano="lg" alt="" %}
                     <div>
                         <h1>{{ tarjeta.nombre }}</h1>
                         <p class="meta">{{ tarjeta.especialidad }}</p>

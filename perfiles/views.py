@@ -3,11 +3,13 @@ from datetime import datetime, timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 from django.utils import timezone
 
 from accounts.forms import PacientePerfilForm
+from accounts.imagenes import guardar_foto, quitar_foto
 from accounts.models import Paciente
 from accounts.roles import dashboard_url_name
 from citas.models import Cita
@@ -41,6 +43,45 @@ def perfil_paciente(request):
     datos = feed_paciente(paciente)
     datos["paciente"] = paciente
     return render(request, "perfiles/perfiles_paciente.html", datos)
+
+
+@paciente_required
+@require_POST
+def actualizar_foto_paciente(request):
+    return _actualizar_foto(request, request.user.paciente, "perfil")
+
+
+@profesional_required
+@require_POST
+def actualizar_foto_profesional(request):
+    return _actualizar_foto(request, request.user.profesional, "perfil_profesional")
+
+
+def _actualizar_foto(request, perfil, destino):
+    campo = request.POST.get("campo") or ""
+    etiqueta = "la foto" if campo == "foto" else "la portada"
+    try:
+        if request.POST.get("accion") == "eliminar":
+            quitar_foto(perfil, campo)
+            texto = f"Quitamos {etiqueta}. Volviste a la imagen de siempre."
+            return _respuesta_foto(request, destino, ok=True, texto=texto)
+        guardar_foto(perfil, campo, request.FILES.get("imagen"))
+        return _respuesta_foto(request, destino, ok=True, texto=f"Actualizamos {etiqueta}.")
+    except ValidationError as exc:
+        texto = " ".join(exc.messages)
+        return _respuesta_foto(request, destino, ok=False, texto=texto)
+
+
+def _respuesta_foto(request, destino, *, ok, texto):
+    if request.headers.get("X-Requested-With") == "fetch":
+        if ok:
+            return JsonResponse({"ok": True, "mensaje": texto})
+        return JsonResponse({"ok": False, "error": texto}, status=400)
+    if ok:
+        messages.success(request, texto)
+    else:
+        messages.error(request, texto)
+    return redirect(destino)
 
 
 @paciente_required

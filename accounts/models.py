@@ -1,5 +1,27 @@
+import uuid
+from pathlib import Path
+
 from django.db import models
 from django.contrib.auth.models import User
+
+
+def _ruta_perfil(instance, clase, filename):
+    """Nombre aleatorio. El nombre original del archivo no se conserva."""
+    ext = Path(filename or "").suffix.lower()
+    if ext == ".jpeg":
+        ext = ".jpg"
+    if ext not in {".jpg", ".png", ".webp"}:
+        ext = ".jpg"
+    rol = "pacientes" if instance._meta.model_name == "paciente" else "profesionales"
+    return f"perfiles/{rol}/{clase}/{uuid.uuid4().hex}{ext}"
+
+
+def ruta_foto(instance, filename):
+    return _ruta_perfil(instance, "foto", filename)
+
+
+def ruta_portada(instance, filename):
+    return _ruta_perfil(instance, "portada", filename)
 
 
 class Paciente(models.Model):
@@ -36,6 +58,19 @@ class Paciente(models.Model):
     medications = models.TextField(blank=True, null=True, verbose_name="Medicamentos")
     dental_history = models.TextField(blank=True, null=True, verbose_name="Antecedentes odontológicos")
 
+    foto = models.ImageField(
+        upload_to=ruta_foto,
+        blank=True,
+        null=True,
+        verbose_name="Foto de perfil",
+    )
+    portada = models.ImageField(
+        upload_to=ruta_portada,
+        blank=True,
+        null=True,
+        verbose_name="Foto de portada",
+    )
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de registro")
     user = models.OneToOneField(
         User,
@@ -53,6 +88,10 @@ class Paciente(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.id_number}"
+
+    def iniciales(self):
+        letras = f"{(self.first_name or '')[:1]}{(self.last_name or '')[:1]}".upper()
+        return letras or "MT"
 
 
 class Profesional(models.Model):
@@ -122,6 +161,18 @@ class Profesional(models.Model):
         default=False, 
         verbose_name="Perfil verificado"
     )
+    foto = models.ImageField(
+        upload_to=ruta_foto,
+        blank=True,
+        null=True,
+        verbose_name="Foto de perfil",
+    )
+    portada = models.ImageField(
+        upload_to=ruta_portada,
+        blank=True,
+        null=True,
+        verbose_name="Foto de portada",
+    )
 
     class Meta:
         verbose_name = "Profesional"
@@ -136,6 +187,11 @@ class Profesional(models.Model):
 
     def get_full_phone(self):
         return f"{self.codigo_pais} {self.telefono}"
+
+    def iniciales(self):
+        nombre = (self.user.first_name or "").strip()
+        apellido = (self.user.last_name or "").strip()
+        return f"{nombre[:1]}{apellido[:1]}".upper() or "MT"
 
     def etiqueta_especialidad(self):
         for relacion in self.especialidades_asignadas.all():

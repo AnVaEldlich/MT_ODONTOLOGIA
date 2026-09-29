@@ -8,9 +8,15 @@
     {% include "core/includes/portal_nav_profesional.html" %}
     <div>
         <section class="card cover-card">
-            <div class="cover" aria-hidden="true"></div>
+            <div class="cover">
+                {% if profesional.portada %}<img src="{{ profesional.portada.url }}" alt="">{% endif %}
+                <button type="button" class="media-edit" data-foto-open="portada" data-tiene="{% if profesional.portada %}1{% else %}0{% endif %}">Editar portada</button>
+            </div>
             <div class="profile-hero">
-                <div class="avatar lg" aria-hidden="true">{{ profesional.user.first_name|first }}{{ profesional.user.last_name|first }}</div>
+                <div class="avatar-wrap">
+                    {% include "core/includes/avatar.html" with foto=profesional.foto iniciales=profesional.iniciales tamano="lg" alt="" %}
+                    <button type="button" class="media-edit media-edit-avatar" data-foto-open="foto" data-tiene="{% if profesional.foto %}1{% else %}0{% endif %}" aria-label="Editar foto de perfil">Editar</button>
+                </div>
                 <div>
                     <h1>{{ profesional.get_full_name }}</h1>
                     <p class="meta">{{ profesional.etiqueta_especialidad }} · {{ profesional.ubicacion }}</p>
@@ -83,4 +89,9 @@
         {% endfor %}
     </div>
 </div>
+{% url 'foto_profesional' as foto_url %}
+{% include "perfiles/includes/foto_dialog.html" with accion=foto_url %}
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/foto.js' %}"></script>
 {% endblock %}

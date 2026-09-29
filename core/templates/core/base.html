@@ -42,6 +42,11 @@
             {% else %}
             <a class="btn btn-primary btn-sm" href="{% url 'buscar_profesionales' %}">Agendar cita</a>
             {% endif %}
+            {% if user.is_authenticated and avatar_iniciales %}
+            <a class="nav-avatar" href="{% if user_role == 'profesional' %}{% url 'perfil_profesional' %}{% else %}{% url 'perfil' %}{% endif %}" aria-label="Tu perfil">
+                {% include "core/includes/avatar.html" with foto=avatar_foto iniciales=avatar_iniciales tamano="sm" alt="" %}
+            </a>
+            {% endif %}
             {% if user.is_authenticated %}
             <form method="post" action="{% url 'logout' %}" class="nav-logout">
                 {% csrf_token %}

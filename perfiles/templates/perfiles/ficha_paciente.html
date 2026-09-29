@@ -8,7 +8,10 @@
     {% include "core/includes/portal_nav_profesional.html" %}
     <div>
         <div class="page-head">
-            <h1>{{ paciente.first_name }} {{ paciente.last_name }}</h1>
+            <div class="who-row">
+                {% include "core/includes/avatar.html" with foto=paciente.foto iniciales=paciente.iniciales tamano="sm" alt="" %}
+                <h1>{{ paciente.first_name }} {{ paciente.last_name }}</h1>
+            </div>
             <p>{{ paciente.id_type|upper }} {{ paciente.id_number }} · {{ paciente.phone }} · {{ paciente.city }}</p>
             {% if puede_chatear %}
             <p><a class="btn btn-book btn-sm" href="{% url 'chat_con_paciente' paciente.pk %}">Escribir en el chat</a></p>

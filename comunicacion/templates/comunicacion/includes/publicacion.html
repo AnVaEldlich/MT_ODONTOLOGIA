@@ -1,7 +1,7 @@
 <article class="card feed-card">
     <div class="card-title-row">
         <div class="who-row">
-            <div class="avatar" aria-hidden="true">{{ publicacion.profesional.user.first_name|first }}{{ publicacion.profesional.user.last_name|first }}</div>
+            {% include "core/includes/avatar.html" with foto=publicacion.profesional.foto iniciales=publicacion.profesional.iniciales alt="" %}
             <div>
                 <strong><a href="{% url 'perfil_publico' publicacion.profesional_id %}">{{ publicacion.profesional.get_full_name }}</a></strong>
                 <p class="meta">{{ publicacion.profesional.etiqueta_especialidad }} · {{ publicacion.created_at|date:"d/m/Y H:i" }}</p>

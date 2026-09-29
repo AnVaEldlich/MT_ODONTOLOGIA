@@ -17,16 +17,23 @@
         <ul class="cita-list">
             {% for item in conversaciones %}
             <li>
-                <a href="{% url 'chat_detalle' item.conversacion.pk %}">
-                    <div class="when">
-                        {% if user_role == 'paciente' %}
-                        {{ item.conversacion.profesional.get_full_name }}
-                        {% else %}
-                        {{ item.conversacion.paciente.first_name }} {{ item.conversacion.paciente.last_name }}
-                        {% endif %}
-                        {% if item.sin_leer %}<span class="badge">{{ item.sin_leer }} sin leer</span>{% endif %}
+                <a class="who-row" href="{% url 'chat_detalle' item.conversacion.pk %}">
+                    {% if user_role == 'paciente' %}
+                    {% include "core/includes/avatar.html" with foto=item.conversacion.profesional.foto iniciales=item.conversacion.profesional.iniciales tamano="sm" alt="" %}
+                    {% else %}
+                    {% include "core/includes/avatar.html" with foto=item.conversacion.paciente.foto iniciales=item.conversacion.paciente.iniciales tamano="sm" alt="" %}
+                    {% endif %}
+                    <div>
+                        <div class="when">
+                            {% if user_role == 'paciente' %}
+                            {{ item.conversacion.profesional.get_full_name }}
+                            {% else %}
+                            {{ item.conversacion.paciente.first_name }} {{ item.conversacion.paciente.last_name }}
+                            {% endif %}
+                            {% if item.sin_leer %}<span class="badge">{{ item.sin_leer }} sin leer</span>{% endif %}
+                        </div>
+                        <div class="who">{% if item.ultimo %}{{ item.ultimo.texto|truncatechars:80 }}{% else %}Aún no hay mensajes.{% endif %}</div>
                     </div>
-                    <div class="who">{% if item.ultimo %}{{ item.ultimo.texto|truncatechars:80 }}{% else %}Aún no hay mensajes.{% endif %}</div>
                 </a>
             </li>
             {% endfor %}

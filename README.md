@@ -88,6 +88,20 @@ Para probarlo con los datos de demostración, abre dos navegadores (o una ventan
 
 El aviso de la ventana recuerda que el chat no es para urgencias.
 
+## Fotos de perfil y portada
+
+En el inicio del paciente y en el panel del profesional hay un botón sobre la foto y otro sobre la portada. El cuadro tiene dos pestañas: **Subir imagen** y **Tomar foto**. La segunda pide la cámara del navegador, muestra la vista previa y deja capturar o repetir. Si el permiso está bloqueado, explica cómo seguir con un archivo. En el teléfono, esa pestaña también ofrece la cámara del sistema (`capture`).
+
+Se puede arrastrar y acercar el recorte: la foto queda cuadrada (se ve en círculo) y la portada, panorámica. **Quitar y volver a la imagen de siempre** borra el archivo y deja las iniciales o el degradado.
+
+Solo la persona dueña del perfil puede cambiarlas. El servidor acepta JPG, PNG o WebP de hasta 5 MB, comprueba que Pillow abra el archivo, recorta, reescala, recomprime en JPEG y no guarda el EXIF. El nombre en disco es aleatorio. Al reemplazar, se borra el archivo anterior.
+
+Los archivos viven en `MEDIA_ROOT` (`media/` junto al proyecto, ya ignorado por git). Con `DEBUG=True`, `runserver` los sirve en `/media/`. `seed_demo` no mete retratos.
+
+En producción no conviene que Django sirva `/media/`. Apunta el disco persistente a `MEDIA_ROOT` y publica esa carpeta con el servidor web (nginx, `alias` hacia `media/`) o con el almacenamiento del hosting. En Render el disco del servicio web es efímero: sin un disco persistente, las fotos se pierden al redesplegar.
+
+Para probarlo: entra con `paciente@demo.com` o `ana.torres@demo.com` (`demo1234`), abre Inicio y pulsa **Editar** o **Editar portada**.
+
 ## Despliegue en Render
 
 Render **no ofrece MySQL administrado**. Su base relacional gestionada es PostgreSQL; también tiene Key Value. Lo confirma la [FAQ de datastores](https://render.com/docs/faq) y la guía [Deploy MySQL](https://render.com/docs/deploy-mysql): MySQL en Render es un contenedor que uno mismo opera, con un disco persistente montado en `/var/lib/mysql`, no un producto administrado como Render Postgres. El pedido de MySQL/MariaDB gestionado sigue abierto en el foro de Render desde 2019.

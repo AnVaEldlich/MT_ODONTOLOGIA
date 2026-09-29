@@ -1076,3 +1076,103 @@ textarea { min-height: 6rem; resize: vertical; }
         font-weight: 700;
     }
 }
+
+img.avatar {
+    object-fit: cover;
+    display: block;
+    padding: 0;
+    border: 2px solid #fff;
+}
+.avatar.sm { width: 2.25rem; height: 2.25rem; font-size: 0.72rem; }
+.nav-avatar { display: inline-flex; line-height: 0; }
+a.who-row { color: inherit; text-decoration: none; }
+.avatar-wrap { position: relative; width: 6.5rem; height: 6.5rem; flex: 0 0 auto; }
+.avatar-wrap .avatar.lg { width: 100%; height: 100%; }
+.cover { position: relative; }
+.cover img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.cover-card .stats,
+.cover-card .pro-card,
+.cover-card > h2,
+.cover-card > p { padding-left: 1rem; padding-right: 1rem; }
+.media-edit {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 2;
+    border: 0;
+    background: rgba(255, 255, 255, 0.94);
+    color: var(--brand-dark);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 0.35rem 0.75rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+}
+.media-edit-avatar { right: 0; bottom: 0; padding: 0.2rem 0.5rem; font-size: 0.72rem; }
+.foto-dialog {
+    width: min(34rem, calc(100vw - 1.5rem));
+    border: 0;
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem 1.15rem;
+    box-shadow: var(--shadow-card);
+    color: var(--text);
+}
+.foto-dialog::backdrop { background: rgba(16, 42, 51, 0.45); }
+.foto-tabs { display: flex; gap: 0.4rem; margin: 0.75rem 0; }
+.foto-tabs button {
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+.foto-tabs button[aria-selected="true"] {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+}
+.foto-acciones { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; align-items: center; }
+.foto-captura-movil { display: none; position: relative; overflow: hidden; }
+.foto-captura-movil input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+.crop-stage {
+    margin-top: 0.8rem;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem;
+    display: grid;
+    justify-items: center;
+    gap: 0.45rem;
+}
+#foto-lienzo {
+    max-width: 100%;
+    background: #d5e3e8;
+    touch-action: none;
+    cursor: grab;
+}
+.crop-stage.circular #foto-lienzo { border-radius: 50%; }
+#foto-video {
+    width: 100%;
+    max-height: 16rem;
+    background: #102a33;
+    border-radius: var(--radius-sm);
+}
+
+@media (max-width: 799px) {
+    .foto-captura-movil { display: inline-flex; }
+}

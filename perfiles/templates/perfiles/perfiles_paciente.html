@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block title %}Inicio — MT Odontología{% endblock %}
 {% block body_class %}app-layout{% endblock %}
 {% block main_class %}page{% endblock %}
@@ -7,9 +8,15 @@
     {% include "core/includes/portal_nav_paciente.html" %}
     <div class="feed">
         <section class="card cover-card">
-            <div class="cover" aria-hidden="true"></div>
+            <div class="cover">
+                {% if paciente.portada %}<img src="{{ paciente.portada.url }}" alt="">{% endif %}
+                <button type="button" class="media-edit" data-foto-open="portada" data-tiene="{% if paciente.portada %}1{% else %}0{% endif %}">Editar portada</button>
+            </div>
             <div class="profile-hero">
-                <div class="avatar lg" aria-hidden="true">{{ paciente.first_name|first }}{{ paciente.last_name|first }}</div>
+                <div class="avatar-wrap">
+                    {% include "core/includes/avatar.html" with foto=paciente.foto iniciales=paciente.iniciales tamano="lg" alt="" %}
+                    <button type="button" class="media-edit media-edit-avatar" data-foto-open="foto" data-tiene="{% if paciente.foto %}1{% else %}0{% endif %}" aria-label="Editar foto de perfil">Editar</button>
+                </div>
                 <div>
                     <h1>{{ paciente.first_name }} {{ paciente.last_name }}</h1>
                     <p class="meta">{{ paciente.city }} · Paciente</p>
@@ -91,4 +98,9 @@
         </section>
     </div>
 </div>
+{% url 'foto_paciente' as foto_url %}
+{% include "perfiles/includes/foto_dialog.html" with accion=foto_url %}
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/foto.js' %}"></script>
 {% endblock %}

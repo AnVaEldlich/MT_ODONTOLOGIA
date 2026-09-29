@@ -1,5 +1,5 @@
 <article class="pro-card">
-    <div class="avatar" aria-hidden="true">{{ tarjeta.iniciales }}</div>
+    {% include "core/includes/avatar.html" with foto=tarjeta.profesional.foto iniciales=tarjeta.iniciales alt="" %}
     <div>
         <h2><a href="{% url 'perfil_publico' tarjeta.profesional.pk %}">{{ tarjeta.nombre }}</a></h2>
         <p class="meta">{{ tarjeta.especialidad }}</p>

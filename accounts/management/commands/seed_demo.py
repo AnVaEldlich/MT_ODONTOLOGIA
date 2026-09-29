@@ -1,6 +1,7 @@
 """Crea datos de demostración claramente ficticios.
 
 No borra ni reemplaza filas que ya existan: solo inserta lo que falta.
+No carga fotos de perfil ni de portada: las cuentas demo siguen con iniciales.
 Contraseña de las cuentas nuevas: demo1234
 """
 from datetime import datetime, time, timedelta

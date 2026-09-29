@@ -11,13 +11,20 @@
     {% endif %}
     <div>
         <div class="page-head">
-            <h1>
+            <div class="who-row">
                 {% if user_role == 'paciente' %}
-                {{ conversacion.profesional.get_full_name }}
+                {% include "core/includes/avatar.html" with foto=conversacion.profesional.foto iniciales=conversacion.profesional.iniciales tamano="sm" alt="" %}
                 {% else %}
-                {{ conversacion.paciente.first_name }} {{ conversacion.paciente.last_name }}
+                {% include "core/includes/avatar.html" with foto=conversacion.paciente.foto iniciales=conversacion.paciente.iniciales tamano="sm" alt="" %}
                 {% endif %}
-            </h1>
+                <h1>
+                    {% if user_role == 'paciente' %}
+                    {{ conversacion.profesional.get_full_name }}
+                    {% else %}
+                    {{ conversacion.paciente.first_name }} {{ conversacion.paciente.last_name }}
+                    {% endif %}
+                </h1>
+            </div>
             <p><a href="{% url 'chat_lista' %}">Volver a mensajes</a></p>
         </div>
         <p class="alert warning">Este chat no es para urgencias médicas. Si necesitas atención inmediata, acude a un servicio de urgencias.</p>

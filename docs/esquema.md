@@ -45,8 +45,8 @@ erDiagram
 | Tabla | Para qué sirve |
 | --- | --- |
 | `auth_user` | Cuenta de acceso (correo y contraseña). El paciente ya no guarda clave propia. |
-| `accounts_paciente` | Identidad, contacto, EPS y antecedentes del registro. |
-| `accounts_profesional` | Identidad profesional. El texto `especialidad` se conserva y se copia al catálogo. |
+| `accounts_paciente` | Identidad, contacto, EPS y antecedentes del registro. `foto` y `portada` son opcionales y quedan nulas si no hay imagen. |
+| `accounts_profesional` | Identidad profesional. El texto `especialidad` se conserva y se copia al catálogo. `foto` y `portada` son opcionales y nulas. |
 | `accounts_cliniccenter` | Solicitud pública de un centro. No es una sede de atención. |
 | `clinica_especialidad` | Catálogo de especialidades (ortodoncia, endodoncia, etc.). |
 | `clinica_profesionalespecialidad` | Relación profesional–especialidad, con una marcada como principal. |

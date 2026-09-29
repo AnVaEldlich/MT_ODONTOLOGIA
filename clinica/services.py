@@ -165,10 +165,7 @@ def _precio_desde(tratamientos, especialidad_ids):
 
 
 def _iniciales(profesional):
-    nombre = (profesional.user.first_name or "").strip()
-    apellido = (profesional.user.last_name or "").strip()
-    letras = f"{nombre[:1]}{apellido[:1]}".upper()
-    return letras or "MT"
+    return profesional.iniciales()
 
 
 def _proximos_huecos(profesional, sede, limite):
