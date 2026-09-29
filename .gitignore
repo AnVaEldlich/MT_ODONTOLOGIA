@@ -11,7 +11,10 @@ dist/
 build/
 
 # Django
-db.sqlite3
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
 *.log
 local_settings.py
 media/
@@ -19,7 +22,8 @@ media/
 # Entorno
 venv/
 .env
-.env.local
+.env.*
+!.env.example
 
 # IDE
 .idea/
