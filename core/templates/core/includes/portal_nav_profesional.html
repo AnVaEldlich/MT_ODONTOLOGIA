@@ -1,0 +1,6 @@
+<nav class="portal-nav" aria-label="Panel del profesional">
+    <a href="{% url 'perfil_profesional' %}" {% if request.resolver_match.url_name == 'perfil_profesional' %}aria-current="page"{% endif %}>Inicio</a>
+    <a href="{% url 'agenda_profesional' %}" {% if request.resolver_match.url_name == 'agenda_profesional' %}aria-current="page"{% endif %}>Agenda</a>
+    <a href="{% url 'disponibilidad' %}" {% if request.resolver_match.url_name == 'disponibilidad' %}aria-current="page"{% endif %}>Horarios</a>
+    <a href="{% url 'notificaciones' %}" {% if request.resolver_match.url_name == 'notificaciones' %}aria-current="page"{% endif %}>Avisos</a>
+</nav>

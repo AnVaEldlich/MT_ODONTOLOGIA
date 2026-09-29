@@ -2,7 +2,10 @@
 # Python 3.10+
 
 Django==5.2.7
+# Driver MySQL en Python puro (sin compilar mysqlclient). cryptography
+# habilita el cifrado caching_sha2_password de MySQL 8.
 PyMySQL==1.1.0
+cryptography==44.0.2
 
 # Producción
 gunicorn==23.0.0

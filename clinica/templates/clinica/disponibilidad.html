@@ -1,0 +1,69 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Horarios — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/portal.css' %}">{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_profesional.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Disponibilidad</h1>
+            <p>Publica las franjas en las que se pueden agendar citas. Desactivar una franja no borra las citas ya pedidas.</p>
+        </div>
+        <section class="card">
+            <h2>Franjas activas</h2>
+            {% if franjas %}
+            <ul class="cita-list">
+                {% for franja in franjas %}
+                <li>
+                    <div>
+                        <div class="when">{{ franja.get_dia_semana_display }} · {{ franja.hora_inicio|time:"H:i" }} a {{ franja.hora_fin|time:"H:i" }}</div>
+                        <div class="who">{{ franja.sede.nombre }}{% if franja.consultorio %} · {{ franja.consultorio.nombre }}{% endif %}</div>
+                    </div>
+                    <form method="post" action="{% url 'desactivar_disponibilidad' franja.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-ghost btn-sm" type="submit">Dejar de publicar</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty"><p>Todavía no publicas horarios. Mientras no haya franjas, el paciente puede proponer cualquier hora futura.</p></div>
+            {% endif %}
+        </section>
+        <form class="card form-narrow" method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="franja">
+            <h2>Nueva franja</h2>
+            {% include "core/includes/fields.html" with form=form %}
+            <button class="btn btn-primary" type="submit">Publicar horario</button>
+        </form>
+        <section class="card">
+            <h2>Bloqueos</h2>
+            {% if bloqueos %}
+            <ul class="cita-list">
+                {% for bloqueo in bloqueos %}
+                <li>
+                    <div>
+                        <div class="when">{{ bloqueo.inicio|date:"d/m/Y H:i" }} – {{ bloqueo.fin|date:"d/m/Y H:i" }}</div>
+                        <div class="who">{{ bloqueo.motivo }}</div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No hay bloqueos.</p>
+            {% endif %}
+        </section>
+        <form class="card form-narrow" method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="bloqueo">
+            <h2>Bloquear un horario</h2>
+            {% include "core/includes/fields.html" with form=bloqueo_form %}
+            <button class="btn btn-primary" type="submit">Guardar bloqueo</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

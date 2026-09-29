@@ -1,83 +1,61 @@
-{% extends 'core/base.html' %}
-
-{% block title %}Mi perfil — MT Odontología{% endblock %}
-
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Mi portal — MT Odontología{% endblock %}
 {% block body_class %}app-layout{% endblock %}
-
 {% block main_class %}page{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/portal.css' %}">{% endblock %}
 
 {% block content %}
-<div class="page-head">
-    <h1>Hola, {{ paciente.first_name }}</h1>
-    <p>{{ paciente.city }}, {{ paciente.department }}</p>
-</div>
-
-<div class="stats">
-    <div class="stat">
-        <div class="num">{{ stats.proximas }}</div>
-        <div class="label">Citas próximas</div>
-    </div>
-    <div class="stat ok">
-        <div class="num">{{ stats.total }}</div>
-        <div class="label">Citas en total</div>
-    </div>
-    <div class="stat warn">
-        <div class="num">{{ condiciones|length }}</div>
-        <div class="label">Condiciones médicas</div>
-    </div>
-</div>
-
-<div class="card">
-    <div class="profile-top">
-        <div class="avatar">{{ paciente.first_name|first }}{{ paciente.last_name|first }}</div>
-        <div>
-            <h2>{{ paciente.first_name }} {{ paciente.last_name }}</h2>
-            <div class="sub">{{ user.email }}</div>
-            <div class="sub">Documento: {{ paciente.id_type|upper }} {{ paciente.id_number }}</div>
+<div class="portal">
+    {% include "core/includes/portal_nav_paciente.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Hola, {{ paciente.first_name }}</h1>
+            <p>Este es tu resumen. El siguiente paso es tu próxima cita o agendar una nueva.</p>
         </div>
-    </div>
-
-    <div class="info-grid">
-        <div class="info-item"><div class="k">Teléfono</div><div class="v">{{ paciente.phone }}</div></div>
-        <div class="info-item"><div class="k">Dirección</div><div class="v">{{ paciente.address }}</div></div>
-        <div class="info-item"><div class="k">Fecha de nacimiento</div><div class="v">{{ paciente.birth_date|date:"d/m/Y" }}</div></div>
-        <div class="info-item"><div class="k">Género</div><div class="v">{{ paciente.gender|capfirst }}</div></div>
-        {% if paciente.eps %}<div class="info-item"><div class="k">EPS</div><div class="v">{{ paciente.eps }}</div></div>{% endif %}
-        <div class="info-item full-width">
-            <div class="k">Condiciones médicas</div>
-            {% if condiciones %}
-            <div class="chips">{% for c in condiciones %}<span class="chip">{{ c }}</span>{% endfor %}</div>
-            {% else %}<div class="v">Ninguna registrada</div>{% endif %}
+        <div class="stats">
+            <div class="stat warn"><div class="num">{{ stats.proximas }}</div><div class="label">Citas próximas</div></div>
+            <div class="stat"><div class="num">{{ stats.total }}</div><div class="label">Citas en total</div></div>
         </div>
-        {% if paciente.dental_history %}
-        <div class="info-item full-width"><div class="k">Historia dental</div><div class="v">{{ paciente.dental_history }}</div></div>
-        {% endif %}
-    </div>
-</div>
-
-<div class="card">
-    <div class="card-title-row">
-        <h2>Mis citas</h2>
-        <a href="{% url 'solicitar_cita' %}" class="btn btn-primary btn-sm">+ Agendar cita</a>
-    </div>
-    {% if citas %}
-    <ul class="cita-list">
-        {% for cita in citas %}
-        <li>
-            <div>
-                <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
-                <div class="who">Dr(a). {{ cita.profesional.get_full_name }} — {{ cita.profesional.get_especialidad_display }}</div>
+        <section class="card">
+            <div class="card-title-row">
+                <h2>Próxima cita</h2>
+                <a class="btn btn-primary btn-sm" href="{% url 'solicitar_cita' %}">Agendar cita</a>
             </div>
-            <span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span>
-        </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <div class="empty">
-        <div class="icon">🦷</div>
-        <p>Aún no tienes citas.</p>
-        <a href="{% url 'solicitar_cita' %}" class="btn btn-primary" style="margin-top:1rem">Agenda tu primera cita</a>
+            {% if proxima %}
+            <p class="when"><strong>{{ proxima.fecha_hora|date:"l d/m/Y · H:i" }}</strong></p>
+            <p>{{ proxima.profesional.get_full_name }} · {{ proxima.profesional.etiqueta_especialidad }}</p>
+            {% if proxima.sede %}<p class="meta">{{ proxima.sede.nombre }}{% if proxima.consultorio %} · {{ proxima.consultorio.nombre }}{% endif %}</p>{% endif %}
+            <p><span class="badge {{ proxima.estado }}">{{ proxima.get_estado_display }}</span></p>
+            {% else %}
+            <div class="empty">
+                <p>No tienes citas próximas.</p>
+                <a class="btn btn-primary" href="{% url 'solicitar_cita' %}">Agendar cita</a>
+            </div>
+            {% endif %}
+        </section>
+        <section class="card">
+            <h2>Actividad reciente</h2>
+            {% if citas %}
+            <ul class="cita-list">
+                {% for cita in citas %}
+                <li>
+                    <div>
+                        <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
+                        <div class="who">{{ cita.profesional.get_full_name }}{% if cita.tratamiento %} · {{ cita.tratamiento.nombre }}{% endif %}</div>
+                    </div>
+                    <span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            <p><a href="{% url 'mis_citas' %}">Ver historial de citas</a></p>
+            {% else %}
+            <div class="empty">
+                <p>Aún no tienes citas.</p>
+                <a class="btn btn-primary" href="{% url 'solicitar_cita' %}">Agendar cita</a>
+            </div>
+            {% endif %}
+        </section>
     </div>
-    {% endif %}
 </div>
 {% endblock %}

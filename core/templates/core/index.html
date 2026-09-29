@@ -1,211 +1,169 @@
-{% extends 'core/base.html' %}
+{% extends "core/base.html" %}
 {% load static %}
 
+{% block title %}MT Odontología · Clínica odontológica{% endblock %}
+{% block body_class %}public-layout{% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/templatemo-personal-style.css' %}?v=3">
+<link rel="stylesheet" href="{% static 'css/public.css' %}">
 {% endblock %}
 
 {% block content %}
-
-
-<!-- Hero Section -->
-
-<section id="home" class="hero">
-    <div class="floating-shapes">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
-        <div class="shape shape-4"></div>
-        <div class="shape shape-5"></div>
-        <div class="shape shape-6"></div>
-    </div>
-    <div class="hero-content">
-        <div class="hero-subtitle">MT ODONTOLOGIA INTEGRAL</div>
-        <h1>Tu Sonrisa Perfecta Nos Inspira</h1>
-        <p class="subtitle">Odontología integral con la más alta tecnología y el cuidado humano que mereces.
-            Transformamos sonrisas, cambiamos vidas.</p>
-        <a href="{% url 'login' %}" class="cta-button">Iniciar Sesión</a>
-    </div>
-    <div class="scroll-indicator" onclick="document.getElementById('about').scrollIntoView()"></div>
-</section>
-
-<!-- About Section -->
-
-<section id="about" class="about">
-    <div class="container">
-        <h2 class="section-title fade-in">Sobre Nosotros - MT ODONTOLOGIA INTEGRAL</h2>
-        <div class="about-content">
-            <div class="about-image slide-in-left">
-                <img src="{% static 'images/About.jpg' %}" alt="Consultorio odontológico MT Odontología">
-            </div>
-            <div class="about-text slide-in-right">
-                <h3>Nos apasiona transformar sonrisas y mejorar la salud bucal de nuestros pacientes.</h3>
-                <p>Somos un equipo de profesionales altamente calificados, dedicados a brindar servicios odontológicos
-                    integrales con un enfoque centrado en el bienestar, la comodidad y la satisfacción de quienes
-                    confían en nosotros.</p>
-                <p>Nuestra misión es ofrecer tratamientos odontológicos de vanguardia, utilizando tecnología avanzada y
-                    técnicas innovadoras para garantizar resultados excepcionales. Desde limpiezas y blanqueamientos
-                    hasta ortodoncia, implantes y odontología estética, cada procedimiento se realiza con precisión,
-                    cuidado y un trato humano que marca la diferencia. </p>
-                <p>En MT ODONTOLOGIA INTEGRAL, creemos que una sonrisa saludable es el reflejo de una vida plena y feliz. Por eso, nos
-                    comprometemos a acompañarte en cada paso de tu cuidado dental, brindándote un ambiente cálido,
-                    seguro y profesional.</p>
-                <div class="skills">
-                    <span class="skill-tag">Blanqueamientos</span>
-                    <span class="skill-tag">Ortodoncia</span>
-                    <span class="skill-tag">Implantes</span>
-                    <span class="skill-tag">Odontología Estética</span>
-                    <span class="skill-tag">Limpiezas</span>
-                    <span class="skill-tag">Cuidado Dental</span>
-                </div>
-            </div>
+<section class="hero-clinic" id="inicio">
+    <div>
+        <p class="kicker">Clínica odontológica</p>
+        <h1>Cuida tu sonrisa con un equipo que te explica cada paso.</h1>
+        <p class="lede">Agenda en minutos, elige sede y especialista, y consulta tu historia, odontograma y facturas desde el mismo lugar.</p>
+        <div class="hero-actions">
+            {% if user_role == 'paciente' %}
+            <a class="btn btn-primary" href="{% url 'solicitar_cita' %}">Agendar cita</a>
+            {% elif user_role == 'profesional' %}
+            <a class="btn btn-primary" href="{% url 'agenda_profesional' %}">Ver mi agenda</a>
+            {% else %}
+            <a class="btn btn-primary" href="{% url 'login' %}?next={% url 'solicitar_cita' %}">Agendar cita</a>
+            <a class="btn btn-ghost" href="{% url 'register' %}">Crear cuenta de paciente</a>
+            {% endif %}
         </div>
     </div>
-</section>
-
-<!-- Portfolio Section -->
-
-<section id="portfolio" class="portfolio">
-    <div class="container">
-        <h2 class="section-title fade-in">Tratamientos</h2>
-        <div class="portfolio-grid">
-            <div class="portfolio-item">
-                <div class="portfolio-image">
-                    <img src="{% static 'images/Ordotodoncia.jpg' %}" alt="Ortodoncia">
-                </div>
-                <div class="portfolio-content">
-                    <h4>Ortodoncia</h4>
-                    <p>Tratamientos de ortodoncia personalizados para corregir la alineación dental y mejorar la
-                        estética facial, utilizando brackets tradicionales y alineadores transparentes.</p>
-                    <div class="portfolio-tech">
-                        <span class="tech-tag">Brackets</span>
-                        <span class="tech-tag">Alineadores</span>
-                        <span class="tech-tag">Invisalign</span>
-                    </div>
-                </div>
-            </div>
-            <div class="portfolio-item">
-                <div class="portfolio-image">
-                    <img src="{% static 'images/Endodoncia.jpg' %}" alt="Endodoncia">
-                </div>
-                <div class="portfolio-content">
-                    <h4>Endodoncia</h4>
-                    <p>Tratamientos de conducto para salvar dientes dañados o infectados, utilizando técnicas avanzadas
-                        para garantizar la comodidad y el éxito del procedimiento.</p>
-                    <div class="portfolio-tech">
-                        <span class="tech-tag">Microscopio Dental</span>
-                        <span class="tech-tag">Instrumentos Rotatorios</span>
-                        <span class="tech-tag">Obturación Termoplástica</span>
-                    </div>
-                </div>
-            </div>
-            <div class="portfolio-item">
-                <div class="portfolio-image">
-                    <img src="{% static 'images/Implante.jpg' %}" alt="Implantes dentales">
-                </div>
-                <div class="portfolio-content">
-                    <h4>Implantes Dentales</h4>
-                    <p>Soluciones permanentes para reemplazar dientes perdidos con implantes de titanio de alta calidad,
-                        restaurando funcionalidad y estética natural.</p>
-                    <div class="portfolio-tech">
-                        <span class="tech-tag">Cirugía Guiada</span>
-                        <span class="tech-tag">Coronas Personalizadas</span>
-                        <span class="tech-tag">Aseo integración</span>
-                    </div>
-                </div>
-            </div>
-            <div class="portfolio-item">
-                <div class="portfolio-image">
-                    <img src="{% static 'images/Blanqueamiento.jpg' %}" alt="Blanqueamiento dental">
-                </div>
-                <div class="portfolio-content">
-                    <h4>Blanqueamiento Dental</h4>
-                    <p>Tratamientos de blanqueamiento profesional para aclarar el tono de tus dientes de manera segura y
-                        efectiva, logrando una sonrisa más brillante y radiante.</p>
-                    <div class="portfolio-tech">
-                        <span class="tech-tag">Gel Blanqueador</span>
-                        <span class="tech-tag">Peróxido de Hidrógeno</span>
-                        <span class="tech-tag">Sesiones Rápidas</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="portfolio-item">
-                <div class="portfolio-image">
-                    <img src="{% static 'images/Estetica.jpg' %}" alt="Odontología estética">
-                </div>
-                <div class="portfolio-content">
-                    <h4>Odontología Estética</h4>
-                    <p>Diseño de sonrisa integral con carillas de porcelana, resinas estéticas y contorneado dental para
-                        lograr la sonrisa perfecta que siempre has deseado.</p>
-                    <div class="portfolio-tech">
-                        <span class="tech-tag">Carillas de Porcelana</span>
-                        <span class="tech-tag">Resinas Compuestas</span>
-                        <span class="tech-tag">Estética Dental</span>
-                    </div>
-                </div>
-            </div>
-            <div class="portfolio-item">
-                <div class="portfolio-image">
-                    <img src="{% static 'images/Limpieza.jpg' %}" alt="Limpieza dental">
-                </div>
-                <div class="portfolio-content">
-                    <h4>Limpieza y Prevención</h4>
-                    <p>Profilaxis dental profesional, eliminación de sarro y placa bacteriana, aplicación de flúor y
-                        sellantes para mantener tu sonrisa saludable y prevenir enfermedades.</p>
-                    <div class="portfolio-tech">
-                        <span class="tech-tag">Ultrasonido</span>
-                        <span class="tech-tag">Profilaxis</span>
-                        <span class="tech-tag">Control Periodontal</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="hero-art">
+        <img src="{% static 'images/hero-clinica.svg' %}" alt="Ilustración de un consultorio: sillón, diente y cruz de atención.">
     </div>
 </section>
 
-<!-- Contact Section -->
-
-<section id="contact" class="contact">
-    <div class="contact-floating-shapes">
-        <div class="contact-shape contact-shape-1"></div>
-        <div class="contact-shape contact-shape-2"></div>
-        <div class="contact-shape contact-shape-3"></div>
-        <div class="contact-shape contact-shape-4"></div>
-        <div class="contact-shape contact-shape-5"></div>
-        <div class="contact-shape contact-shape-6"></div>
-    </div>
-    <div class="container">
-        <div class="contact-content">
-            <h2 class="section-title fade-in">Agenda Tu Cita</h2>
-            <p class="contact-lead fade-in">¿Listo para transformar tu sonrisa? Reserva con nuestros especialistas en pocos pasos.</p>
-            <div class="contact-actions fade-in">
-                {% if user.is_authenticated %}
-                <a href="{% url 'solicitar_cita' %}" class="submit-btn">Ir a agendar cita</a>
+<section class="band alt" id="tratamientos">
+    <div class="wrap">
+        <h2>Tratamientos</h2>
+        <p class="intro">Servicios publicados por la clínica. La duración es una referencia para agendar.</p>
+        {% if tratamientos %}
+        <div class="card-grid services">
+            {% for item in tratamientos %}
+            <article class="soft-card">
+                {% if item.imagen %}
+                <img src="{% static item.imagen %}" alt="">
                 {% else %}
-                <a href="{% url 'register' %}" class="submit-btn">Registrarme</a>
-                <a href="{% url 'login' %}?next={% url 'solicitar_cita' %}" class="submit-btn">Ya tengo cuenta</a>
+                <div class="swatch" aria-hidden="true"></div>
                 {% endif %}
-            </div>
+                <div class="body">
+                    <h3>{{ item.nombre }}</h3>
+                    <p>{{ item.descripcion|default:"Consulta con el especialista para conocer el plan." }}</p>
+                    <p class="meta">{{ item.duracion }} minutos de referencia</p>
+                </div>
+            </article>
+            {% endfor %}
         </div>
+        {% else %}
+        <div class="plain-card soft-card">
+            <p>Pronto publicaremos el catálogo de tratamientos.</p>
+            <a class="btn btn-primary" href="{% url 'login' %}?next={% url 'solicitar_cita' %}">Agendar cita</a>
+        </div>
+        {% endif %}
     </div>
 </section>
 
-<!-- Footer -->
+<section class="band" id="equipo">
+    <div class="wrap">
+        <h2>Equipo de especialistas</h2>
+        <p class="intro">Profesionales con el perfil verificado en la plataforma.</p>
+        {% if profesionales %}
+        <div class="card-grid three">
+            {% for profesional in profesionales %}
+            <article class="soft-card plain-card">
+                <div class="person">
+                    <div class="initials" aria-hidden="true">{{ profesional.user.first_name|first }}{{ profesional.user.last_name|first }}</div>
+                    <div>
+                        <h3>{{ profesional.get_full_name }}</h3>
+                        <p class="meta">{{ profesional.etiqueta_especialidad }}</p>
+                        {% for asignacion in profesional.sedes_asignadas.all %}
+                        {% if forloop.first %}<p class="meta">{{ asignacion.sede.nombre }}</p>{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Aún no hay especialistas publicados.</p>
+        {% endif %}
+    </div>
+</section>
 
-<footer class="footer">
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-left">
-                <p>&copy; 2026 MT ODONTOLOGIA INTEGRAL. Pide tu cita hoy.</p>
-            </div>
+<section class="band alt" id="testimonios">
+    <div class="wrap">
+        <h2>Lo que cuentan los pacientes</h2>
+        <p class="intro">Reseñas publicadas desde el portal. Son opiniones de quienes ya tuvieron una cita.</p>
+        {% if resenas %}
+        <div class="card-grid three">
+            {% for resena in resenas %}
+            <article class="soft-card plain-card">
+                <p class="stars" aria-label="{{ resena.calificacion }} de 5">{% for punto in "12345" %}{% if forloop.counter <= resena.calificacion %}★{% else %}☆{% endif %}{% endfor %}</p>
+                <p>{{ resena.comentario }}</p>
+                <p class="meta">{{ resena.paciente.first_name }}{% if resena.profesional %} · {{ resena.profesional.etiqueta_especialidad }}{% endif %}</p>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Cuando los pacientes dejen su reseña, aparecerán aquí.</p>
+        {% endif %}
+    </div>
+</section>
 
+<section class="band" id="sedes">
+    <div class="wrap">
+        <h2>Sedes</h2>
+        <p class="intro">Dirección y horario de atención. El mapa abre en OpenStreetMap.</p>
+        {% if sedes %}
+        <div class="card-grid two">
+            {% for item in sedes %}
+            <article class="soft-card plain-card">
+                <h3>{{ item.sede.nombre }}</h3>
+                <p>{{ item.sede.direccion }}<br>{{ item.sede.ciudad }}, {{ item.sede.departamento }}</p>
+                {% if item.sede.telefono %}<p class="meta">Teléfono {{ item.sede.telefono }}</p>{% endif %}
+                {% if item.sede.horario_atencion %}<p class="meta">{{ item.sede.horario_atencion }}</p>{% endif %}
+                <p><a href="{{ item.mapa }}" rel="noopener noreferrer">Ver en el mapa</a></p>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Las sedes se publicarán cuando el equipo las registre.</p>
+        {% endif %}
+    </div>
+</section>
+
+<section class="band alt" id="preguntas">
+    <div class="wrap faq">
+        <h2>Preguntas frecuentes</h2>
+        <details>
+            <summary>¿Cómo agendo una cita?</summary>
+            <p>Crea tu cuenta de paciente o ingresa. Elige el tratamiento, la sede, el especialista y una hora libre. La cita queda pendiente hasta que el profesional la confirme.</p>
+        </details>
+        <details>
+            <summary>¿Puedo cancelar o cambiar la hora?</summary>
+            <p>Sí. En Mis citas puedes cancelar o reprogramar mientras la cita esté pendiente o confirmada. La cancelación deja el cupo libre para otra persona.</p>
+        </details>
+        <details>
+            <summary>¿Quién ve mi historia clínica?</summary>
+            <p>Solo tú y los especialistas con los que tienes citas. Otro paciente no puede abrir tu odontograma, tus facturas ni tus recetas.</p>
+        </details>
+        <details>
+            <summary>¿Qué medios de pago registran?</summary>
+            <p>Efectivo, transferencia, tarjeta y PSE. El saldo queda visible en tu factura.</p>
+        </details>
+    </div>
+</section>
+
+<footer class="site-footer">
+    <div class="footer-grid">
+        <div>
+            <h2>MT Odontología</h2>
+            <p>Atención odontológica para pacientes y especialistas. Datos de demostración cuando ejecutas seed_demo.</p>
+        </div>
+        <div>
+            <h2>Accesos</h2>
+            <p><a href="{% url 'login' %}">Ingresar</a></p>
+            <p><a href="{% url 'register' %}">Registro de paciente</a></p>
+            <p><a href="{% url 'registro_pro' %}">Soy especialista</a></p>
+            <p><a href="{% url 'formclinic' %}">Registrar un centro</a></p>
         </div>
     </div>
+    <p class="legal">Bogotá, Colombia · Atención de lunes a sábado según la sede.</p>
 </footer>
-
-{% endblock %}
-
-{% block extra_js %}
-<script src="{% static 'js/templatemo-personal-javascripts.js' %}"></script>
 {% endblock %}

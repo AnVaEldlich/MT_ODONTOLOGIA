@@ -163,3 +163,29 @@ class ClinicCenterForm(forms.ModelForm):
             *self.fields["specialists_range"].choices,
         ]
         self.fields["city"].widget.attrs["placeholder"] = "Introducir la ciudad"
+
+
+class PacientePerfilForm(forms.ModelForm):
+    class Meta:
+        model = Paciente
+        fields = (
+            "phone",
+            "address",
+            "city",
+            "department",
+            "emergency_contact",
+            "emergency_phone",
+            "eps",
+            "diabetes",
+            "hipertension",
+            "cardiopatia",
+            "alergias",
+            "embarazo",
+            "ninguna",
+            "medications",
+            "dental_history",
+        )
+        widgets = {
+            "medications": forms.Textarea(attrs={"rows": 3}),
+            "dental_history": forms.Textarea(attrs={"rows": 3}),
+        }

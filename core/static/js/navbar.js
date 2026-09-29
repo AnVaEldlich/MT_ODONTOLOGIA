@@ -23,6 +23,14 @@
         mobileMenuToggle.addEventListener("click", (event) => {
             event.stopPropagation();
             toggleMobileMenu();
+            mobileMenuToggle.setAttribute(
+                "aria-expanded",
+                mobileMenu.classList.contains("active") ? "true" : "false"
+            );
+            mobileMenuToggle.setAttribute(
+                "aria-label",
+                mobileMenu.classList.contains("active") ? "Cerrar menú" : "Abrir menú"
+            );
         });
 
         document.querySelectorAll(".mobile-nav-links a").forEach((link) => {

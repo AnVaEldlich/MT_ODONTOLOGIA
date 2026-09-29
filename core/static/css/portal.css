@@ -1,0 +1,158 @@
+.meta {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+}
+
+.scroll-x {
+    overflow-x: auto;
+}
+
+.portal {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.portal-nav {
+    display: flex;
+    gap: 0.45rem;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+}
+
+.portal-nav a {
+    flex: 0 0 auto;
+    text-decoration: none;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.45rem 0.85rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+}
+
+.portal-nav a[aria-current="page"] {
+    background: var(--primary-color);
+    color: var(--text-light);
+    border-color: var(--primary-color);
+}
+
+.steps {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin: 0 0 1rem;
+    padding: 0;
+    list-style: none;
+}
+
+.steps li {
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.steps li[aria-current="step"] {
+    background: var(--primary-color);
+    color: var(--text-light);
+}
+
+.slot-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.slot-list button {
+    background: var(--bg-card);
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 999px;
+    padding: 0.45rem 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.odontograma,
+.boca {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: center;
+}
+
+.arc {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.3rem;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+}
+
+.separador {
+    width: 0.75rem;
+    flex: 0 0 auto;
+}
+
+.diente {
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 800;
+    font-size: 0.68rem;
+    background: var(--ok-bg);
+    flex: 0 0 auto;
+}
+
+.diente.caries,
+.diente.fractura { background: var(--danger-bg); }
+.diente.corona { background: var(--warn-bg); }
+.diente.ausente { background: var(--bg-secondary); color: var(--text-secondary); }
+.diente.obturacion,
+.diente.endodoncia,
+.diente.implante {
+    background: var(--bg-secondary);
+    border-color: var(--primary-color);
+}
+.diente[aria-current="true"] {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.summary {
+    display: grid;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+}
+
+.check-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+}
+
+@media (min-width: 900px) {
+    .portal {
+        grid-template-columns: 220px 1fr;
+        align-items: start;
+    }
+
+    .portal-nav {
+        display: grid;
+        position: sticky;
+        top: calc(var(--navbar-offset) + 0.5rem);
+    }
+
+    .check-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}

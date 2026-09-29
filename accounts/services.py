@@ -1,5 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import transaction
+
+from clinica.services import asignar_especialidad_principal
+
 from .models import Paciente, Profesional
 from .roles import assign_paciente_group, assign_profesional_group
 
@@ -61,4 +64,5 @@ def create_profesional(cleaned):
         telefono=cleaned["telefono"],
     )
     assign_profesional_group(user)
+    asignar_especialidad_principal(profesional, profesional.especialidad)
     return user, profesional
