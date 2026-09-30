@@ -53,6 +53,32 @@
         });
     }
 
+    const CLAVE_TEMA = "mt-tema";
+    const raiz = document.documentElement;
+
+    const temaActual = () => {
+        const fijado = raiz.getAttribute("data-theme");
+        if (fijado) {
+            return fijado;
+        }
+        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    };
+
+    const aplicarTema = (tema) => {
+        raiz.setAttribute("data-theme", tema);
+        try {
+            localStorage.setItem(CLAVE_TEMA, tema);
+        } catch (error) {
+            /* Sin almacenamiento disponible: el tema dura la sesión. */
+        }
+    };
+
+    document.querySelectorAll("[data-tema-toggle]").forEach((boton) => {
+        boton.addEventListener("click", () => {
+            aplicarTema(temaActual() === "dark" ? "light" : "dark");
+        });
+    });
+
     if (navbar) {
         const updateNavbarScroll = () => {
             if (window.scrollY > 50) {

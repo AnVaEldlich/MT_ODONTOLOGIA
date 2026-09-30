@@ -1,7 +1,9 @@
 <form class="finder" action="{% url 'buscar_profesionales' %}" method="get" role="search">
+    {% include "core/includes/icon.html" with name="buscar" %}
     <label class="visually-hidden" for="{{ prefix }}-q">Especialidad, tratamiento o nombre</label>
     <input id="{{ prefix }}-q" type="search" name="q" value="{{ request.GET.q }}" placeholder="Especialidad, tratamiento o nombre" autocomplete="off">
     <span class="finder-split" aria-hidden="true"></span>
+    {% include "core/includes/icon.html" with name="pin" %}
     <label class="visually-hidden" for="{{ prefix }}-ciudad">Ciudad o sede</label>
     <input id="{{ prefix }}-ciudad" type="search" name="ciudad" value="{{ request.GET.ciudad }}" placeholder="Ciudad o sede">
     <button class="btn btn-brand" type="submit">Buscar</button>

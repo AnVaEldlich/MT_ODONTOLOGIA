@@ -1,7 +1,9 @@
+{% with actual=request.resolver_match.url_name %}
 <nav class="portal-nav" aria-label="Panel del profesional">
-    <a href="{% url 'perfil_profesional' %}" {% if request.resolver_match.url_name == 'perfil_profesional' %}aria-current="page"{% endif %}>Inicio</a>
-    <a href="{% url 'agenda_profesional' %}" {% if request.resolver_match.url_name == 'agenda_profesional' %}aria-current="page"{% endif %}>Agenda</a>
-    <a href="{% url 'chat_lista' %}" {% if request.resolver_match.url_name == 'chat_lista' or request.resolver_match.url_name == 'chat_detalle' %}aria-current="page"{% endif %}>Mensajes{% if mensajes_sin_leer %} ({{ mensajes_sin_leer }}){% endif %}</a>
-    <a href="{% url 'disponibilidad' %}" {% if request.resolver_match.url_name == 'disponibilidad' %}aria-current="page"{% endif %}>Horarios</a>
-    <a href="{% url 'notificaciones' %}" {% if request.resolver_match.url_name == 'notificaciones' %}aria-current="page"{% endif %}>Avisos</a>
+    <a href="{% url 'perfil_profesional' %}" {% if actual == 'perfil_profesional' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="inicio" %}Inicio</a>
+    <a href="{% url 'agenda_profesional' %}" {% if actual == 'agenda_profesional' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="agenda" %}Agenda</a>
+    <a href="{% url 'chat_lista' %}" {% if actual == 'chat_lista' or actual == 'chat_detalle' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="chat" %}Mensajes{% if mensajes_sin_leer %} <span class="badge danger sin-punto">{{ mensajes_sin_leer }}</span>{% endif %}</a>
+    <a href="{% url 'disponibilidad' %}" {% if actual == 'disponibilidad' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="reloj" %}Horarios</a>
+    <a href="{% url 'notificaciones' %}" {% if actual == 'notificaciones' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="campana" %}Avisos{% if notificaciones_sin_leer %} <span class="badge danger sin-punto">{{ notificaciones_sin_leer }}</span>{% endif %}</a>
 </nav>
+{% endwith %}

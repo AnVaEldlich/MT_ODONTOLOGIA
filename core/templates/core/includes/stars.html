@@ -1,6 +1,6 @@
 <p class="stars" aria-label="{% if opiniones %}Calificación {{ promedio }} de 5, {{ opiniones }} opiniones{% else %}Sin opiniones{% endif %}">
     {% if opiniones %}
-    {% for punto in "12345" %}<span class="{% if forloop.counter <= estrellas %}star-on{% else %}star-off{% endif %}" aria-hidden="true">★</span>{% endfor %}
+    {% for punto in "12345" %}<svg class="icon {% if forloop.counter <= estrellas %}star-on{% else %}star-off{% endif %}" aria-hidden="true" focusable="false"><use href="#i-estrella"/></svg>{% endfor %}
     <span class="stars-count">{{ promedio }} · {{ opiniones }} {% if opiniones == 1 %}opinión{% else %}opiniones{% endif %}</span>
     {% else %}
     <span class="stars-count">Sin opiniones</span>

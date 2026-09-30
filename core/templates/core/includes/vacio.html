@@ -1,0 +1,6 @@
+<div class="empty{% if compacto %} compact{% endif %}">
+    <div class="empty-art" aria-hidden="true">{% include "core/includes/ilus/vacio.html" with tipo=tipo|default:"general" %}</div>
+    <p class="empty-title">{{ titulo }}</p>
+    {% if texto %}<p>{{ texto }}</p>{% endif %}
+    {% if enlace %}<a class="btn {% if boton_clase %}{{ boton_clase }}{% else %}btn-book{% endif %}" href="{{ enlace }}">{{ accion }}</a>{% endif %}
+</div>
