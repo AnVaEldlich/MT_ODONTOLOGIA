@@ -7,124 +7,193 @@
 <section class="hero" id="inicio">
     <div class="hero-grid">
         <div>
-            <p class="kicker">Clínica odontológica</p>
-            <h1>Encuentra a tu especialista y reserva una hora.</h1>
-            <p class="lede">Busca por especialidad o tratamiento y por ciudad. Eliges el horario, sin llamar.</p>
+            <p class="kicker">{% include "core/includes/icon.html" with name="brillo" %}Clínica odontológica</p>
+            <h1>Encuentra a tu especialista y <em>reserva una hora</em>.</h1>
+            <p class="lede">Busca por especialidad o tratamiento y por ciudad. Eliges el horario que te sirve, sin llamar ni esperar.</p>
             {% include "core/includes/finder.html" with prefix="hero" %}
             <p class="hero-cta">
                 {% if user_role == 'paciente' %}
-                <a class="btn btn-book" href="{% url 'solicitar_cita' %}">Agendar cita</a>
+                <a class="btn btn-book btn-lg" href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="calendario" %}Agendar cita</a>
                 {% elif user_role == 'profesional' %}
-                <a class="btn btn-book" href="{% url 'agenda_profesional' %}">Ver mi agenda</a>
+                <a class="btn btn-book btn-lg" href="{% url 'agenda_profesional' %}">{% include "core/includes/icon.html" with name="agenda" %}Ver mi agenda</a>
                 {% else %}
-                <a class="btn btn-book" href="{% url 'buscar_profesionales' %}">Agendar cita</a>
+                <a class="btn btn-book btn-lg" href="{% url 'buscar_profesionales' %}">{% include "core/includes/icon.html" with name="calendario" %}Agendar cita</a>
+                <a class="btn btn-ghost btn-lg" href="{% url 'registro_pro' %}">Soy especialista</a>
                 {% endif %}
             </p>
+            <ul class="trust">
+                <li>{% include "core/includes/icon.html" with name="check-circulo" %}Perfiles verificados</li>
+                <li>{% include "core/includes/icon.html" with name="check-circulo" %}Reserva sin costo</li>
+                <li>{% include "core/includes/icon.html" with name="check-circulo" %}Cancela o reprograma en línea</li>
+            </ul>
         </div>
         <div class="hero-art">
-            <img src="{% static 'images/hero-clinica.svg' %}" alt="Ilustración de un consultorio: sillón, diente y cruz de atención.">
+            {% include "core/includes/ilus/hero.html" %}
         </div>
     </div>
 </section>
 
 <section class="band alt" id="especialidades">
     <div class="wrap">
-        <h2>Especialidades</h2>
-        <p class="intro">Entra al listado ya filtrado.</p>
+        <div class="band-head">
+            <div>
+                <h2>Especialidades</h2>
+                <p class="intro">Entra al listado ya filtrado por lo que necesitas.</p>
+            </div>
+            <a href="{% url 'buscar_profesionales' %}">Ver todos los especialistas {% include "core/includes/icon.html" with name="flecha" %}</a>
+        </div>
         <div class="card-grid services">
             {% for especialidad in especialidades %}
             <a class="choice" href="{% url 'buscar_profesionales' %}?especialidad={{ especialidad.codigo }}">
-                <h3>{{ especialidad.nombre }}</h3>
-                <p class="meta">{{ especialidad.descripcion|default:"Ver especialistas" }}</p>
+                <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="diente" clase="lg" %}</span>
+                <span>
+                    <h3>{{ especialidad.nombre }}</h3>
+                    <p class="meta">{{ especialidad.descripcion|default:"Ver especialistas" }}</p>
+                </span>
+                {% include "core/includes/icon.html" with name="flecha" clase="arrow" %}
             </a>
             {% empty %}
-            <p>El catálogo de especialidades aparecerá cuando la clínica lo publique.</p>
+            {% include "core/includes/vacio.html" with titulo="Catálogo en preparación" texto="Las especialidades aparecerán cuando la clínica las publique." compacto=True %}
             {% endfor %}
         </div>
     </div>
 </section>
 
-<section class="band" id="equipo">
+<section class="band" id="como-funciona">
     <div class="wrap">
-        <h2>Especialistas con perfil verificado</h2>
-        <p class="intro">Opiniones de pacientes y los próximos horarios publicados.</p>
-        {% for tarjeta in tarjetas %}
-        {% include "clinica/includes/pro_card.html" %}
-        {% empty %}
-        <div class="card"><p>Aún no hay especialistas publicados.</p></div>
-        {% endfor %}
-        <p><a class="btn btn-brand" href="{% url 'buscar_profesionales' %}">Ver todos</a></p>
+        <div class="band-head">
+            <div>
+                <h2>Así de simple</h2>
+                <p class="intro">Tres pasos y la cita queda pedida. El especialista la confirma y te avisamos.</p>
+            </div>
+        </div>
+        <ol class="pasos">
+            <li class="paso">
+                <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="lupa-diente" clase="lg" %}</span>
+                <h3>Busca</h3>
+                <p>Filtra por especialidad, tratamiento o sede y compara opiniones reales de pacientes.</p>
+            </li>
+            <li class="paso">
+                <span class="icon-tile book" aria-hidden="true">{% include "core/includes/icon.html" with name="hora" clase="lg" %}</span>
+                <h3>Elige la hora</h3>
+                <p>Los horarios publicados se ven en la ficha. Toca uno y listo, sin llamadas.</p>
+            </li>
+            <li class="paso">
+                <span class="icon-tile warn" aria-hidden="true">{% include "core/includes/icon.html" with name="chat" clase="lg" %}</span>
+                <h3>Conversa y asiste</h3>
+                <p>Con la cita activa puedes escribirle al especialista y recibir recordatorios.</p>
+            </li>
+        </ol>
     </div>
 </section>
 
-<section class="band alt" id="tratamientos">
+<section class="band alt" id="equipo">
     <div class="wrap">
-        <h2>Tratamientos</h2>
-        <p class="intro">Servicios de la clínica. La duración es una referencia para agendar.</p>
+        <div class="band-head">
+            <div>
+                <h2>Especialistas con perfil verificado</h2>
+                <p class="intro">Opiniones de pacientes y los próximos horarios publicados.</p>
+            </div>
+            <a href="{% url 'buscar_profesionales' %}">Ver todos {% include "core/includes/icon.html" with name="flecha" %}</a>
+        </div>
+        {% for tarjeta in tarjetas %}
+        {% include "clinica/includes/pro_card.html" %}
+        {% empty %}
+        <div class="card">{% include "core/includes/vacio.html" with tipo="busqueda" titulo="Aún no hay especialistas publicados" texto="Cuando el equipo complete sus perfiles, aparecerán aquí." %}</div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="band" id="tratamientos">
+    <div class="wrap">
+        <div class="band-head">
+            <div>
+                <h2>Tratamientos</h2>
+                <p class="intro">Servicios de la clínica. La duración es una referencia para agendar.</p>
+            </div>
+        </div>
         <div class="card-grid services">
             {% for item in tratamientos %}
             <article class="card service-card">
-                {% if item.imagen %}
-                <img src="{% static item.imagen %}" alt="">
-                {% else %}
-                <div class="swatch" aria-hidden="true"></div>
-                {% endif %}
+                <div class="service-art" aria-hidden="true">{% include "core/includes/icon.html" with name=item.icono|default:"diente" %}</div>
                 <h3>{{ item.nombre }}</h3>
                 <p>{{ item.descripcion|default:"Consulta con el especialista para conocer el plan." }}</p>
-                <p class="meta">{{ item.duracion }} minutos de referencia</p>
-                <a href="{% url 'buscar_profesionales' %}?q={{ item.nombre|urlencode }}">Ver especialistas</a>
+                <p class="meta">{% include "core/includes/icon.html" with name="reloj" %} {{ item.duracion }} minutos de referencia</p>
+                <a href="{% url 'buscar_profesionales' %}?q={{ item.nombre|urlencode }}">Ver especialistas {% include "core/includes/icon.html" with name="flecha" %}</a>
             </article>
             {% empty %}
             <div class="card">
-                <p>Pronto publicaremos el catálogo de tratamientos.</p>
-                <a class="btn btn-book" href="{% url 'buscar_profesionales' %}">Agendar cita</a>
+                {% include "core/includes/vacio.html" with titulo="Pronto publicaremos el catálogo" texto="Mientras tanto puedes agendar una valoración." enlace="/especialistas/" accion="Agendar cita" %}
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
 
-<section class="band" id="testimonios">
+<section class="band alt" id="testimonios">
     <div class="wrap">
-        <h2>Opiniones de pacientes</h2>
+        <div class="band-head">
+            <div>
+                <h2>Opiniones de pacientes</h2>
+                <p class="intro">Reseñas publicadas después de una cita atendida.</p>
+            </div>
+        </div>
         <div class="card-grid three">
             {% for resena in resenas %}
-            <article class="card">
+            <article class="card testimonio">
                 {% include "core/includes/stars.html" with opiniones=1 promedio=resena.calificacion estrellas=resena.calificacion %}
                 <p>{{ resena.comentario }}</p>
                 <p class="meta">{{ resena.paciente.first_name }}{% if resena.profesional %} · {{ resena.profesional.get_full_name }}{% endif %}</p>
             </article>
             {% empty %}
-            <p>Cuando los pacientes dejen su reseña, aparecerán aquí.</p>
+            {% include "core/includes/vacio.html" with titulo="Todavía no hay reseñas" texto="Cuando los pacientes cuenten su experiencia, aparecerá aquí." compacto=True %}
             {% endfor %}
         </div>
     </div>
 </section>
 
-<section class="band alt" id="sedes">
+<section class="band" id="sedes">
     <div class="wrap">
-        <h2>Sedes</h2>
-        <p class="intro">Dirección y horario. El mapa abre en OpenStreetMap.</p>
+        <div class="band-head">
+            <div>
+                <h2>Sedes</h2>
+                <p class="intro">Dirección y horario. El mapa abre en OpenStreetMap.</p>
+            </div>
+        </div>
         <div class="card-grid two">
             {% for item in sedes %}
             <article class="card">
-                <h3>{{ item.sede.nombre }}</h3>
-                <p>{{ item.sede.direccion }}<br>{{ item.sede.ciudad }}, {{ item.sede.departamento }}</p>
-                {% if item.sede.telefono %}<p class="meta">Teléfono {{ item.sede.telefono }}</p>{% endif %}
-                {% if item.sede.horario_atencion %}<p class="meta">{{ item.sede.horario_atencion }}</p>{% endif %}
-                <p><a href="{{ item.mapa }}" rel="noopener noreferrer">Ver en el mapa</a></p>
-                <p><a href="{% url 'buscar_profesionales' %}?ciudad={{ item.sede.ciudad|urlencode }}">Especialistas en {{ item.sede.ciudad }}</a></p>
+                <div class="who-row">
+                    <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="pin" clase="lg" %}</span>
+                    <div>
+                        <h3>{{ item.sede.nombre }}</h3>
+                        <p class="meta">{{ item.sede.direccion }} · {{ item.sede.ciudad }}, {{ item.sede.departamento }}</p>
+                    </div>
+                </div>
+                <div class="chips card-chips">
+                    {% if item.sede.telefono %}<span class="chip">{% include "core/includes/icon.html" with name="telefono" %}{{ item.sede.telefono }}</span>{% endif %}
+                    {% if item.sede.horario_atencion %}<span class="chip">{% include "core/includes/icon.html" with name="reloj" %}{{ item.sede.horario_atencion }}</span>{% endif %}
+                </div>
+                <p class="actions card-actions">
+                    <a class="btn btn-ghost btn-sm" href="{{ item.mapa }}" rel="noopener noreferrer">{% include "core/includes/icon.html" with name="mapa" %}Ver en el mapa</a>
+                    <a class="btn btn-brand btn-sm" href="{% url 'buscar_profesionales' %}?ciudad={{ item.sede.ciudad|urlencode }}">Especialistas en {{ item.sede.ciudad }}</a>
+                </p>
             </article>
             {% empty %}
-            <p>Las sedes se publicarán cuando el equipo las registre.</p>
+            {% include "core/includes/vacio.html" with titulo="Sedes por publicar" texto="Las sedes se publicarán cuando el equipo las registre." compacto=True %}
             {% endfor %}
         </div>
     </div>
 </section>
 
-<section class="band" id="preguntas">
+<section class="band alt" id="preguntas">
     <div class="wrap faq">
-        <h2>Preguntas frecuentes</h2>
+        <div class="band-head">
+            <div>
+                <h2>Preguntas frecuentes</h2>
+                <p class="intro">Lo que más nos preguntan antes de la primera cita.</p>
+            </div>
+        </div>
         <details>
             <summary>¿Cómo reservo una cita?</summary>
             <p>Busca la especialidad y la ciudad, elige un horario en la ficha del especialista e ingresa con tu cuenta de paciente. La cita queda pendiente hasta que el profesional la confirme.</p>

@@ -6,13 +6,14 @@ from clinica.models import Sede, Tratamiento
 from clinica.services import directorio
 from comunicacion.models import Resena
 
-IMAGENES_TRATAMIENTO = {
-    "ortodoncia": "images/Ordotodoncia.jpg",
-    "endodoncia": "images/Endodoncia.jpg",
-    "implantes": "images/Implante.jpg",
-    "blanqueamiento": "images/Blanqueamiento.jpg",
-    "limpieza": "images/Limpieza.jpg",
-    "estetica": "images/Estetica.jpg",
+# Nombre del símbolo SVG (core/includes/icons.html) que ilustra cada tratamiento.
+ICONOS_TRATAMIENTO = {
+    "ortodoncia": "cuadricula",
+    "endodoncia": "pastilla",
+    "implantes": "mas",
+    "blanqueamiento": "brillo",
+    "limpieza": "check-circulo",
+    "estetica": "estrella",
 }
 
 
@@ -24,7 +25,7 @@ def home(request):
                 "nombre": tratamiento.nombre,
                 "descripcion": tratamiento.descripcion,
                 "duracion": tratamiento.duracion_minutos,
-                "imagen": IMAGENES_TRATAMIENTO.get(tratamiento.codigo),
+                "icono": ICONOS_TRATAMIENTO.get(tratamiento.codigo, "diente"),
             }
         )
     listado = directorio({}, limite_horas=3)
