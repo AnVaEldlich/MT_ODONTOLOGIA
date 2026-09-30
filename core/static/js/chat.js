@@ -59,10 +59,21 @@
         });
     }
 
+    const estado = document.getElementById("chat-estado");
+
+    function mostrarEstado(modo, texto) {
+        if (!estado) {
+            return;
+        }
+        estado.dataset.modo = modo;
+        estado.textContent = texto;
+    }
+
     function sondear() {
         if (sondeo) {
             return;
         }
+        mostrarEstado("sondeo", "Actualizando cada pocos segundos");
         sondeo = window.setInterval(function () {
             fetch(panel.dataset.leer + "?despues=" + encodeURIComponent(ultimo) + "&leer=1", {
                 headers: { Accept: "application/json" },
@@ -99,6 +110,7 @@
             }
         };
         socket.onopen = function () {
+            mostrarEstado("vivo", "En tiempo real");
             socket.send(JSON.stringify({ accion: "leer" }));
         };
         socket.onerror = function () {

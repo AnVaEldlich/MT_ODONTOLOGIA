@@ -10,25 +10,29 @@
     {% include "core/includes/portal_nav_profesional.html" %}
     {% endif %}
     <div>
-        <div class="page-head">
-            <div class="who-row">
-                {% if user_role == 'paciente' %}
-                {% include "core/includes/avatar.html" with foto=conversacion.profesional.foto iniciales=conversacion.profesional.iniciales tamano="sm" alt="" %}
-                {% else %}
-                {% include "core/includes/avatar.html" with foto=conversacion.paciente.foto iniciales=conversacion.paciente.iniciales tamano="sm" alt="" %}
-                {% endif %}
-                <h1>
-                    {% if user_role == 'paciente' %}
-                    {{ conversacion.profesional.get_full_name }}
-                    {% else %}
-                    {{ conversacion.paciente.first_name }} {{ conversacion.paciente.last_name }}
-                    {% endif %}
-                </h1>
-            </div>
-            <p><a href="{% url 'chat_lista' %}">Volver a mensajes</a></p>
-        </div>
-        <p class="alert warning">Este chat no es para urgencias médicas. Si necesitas atención inmediata, acude a un servicio de urgencias.</p>
+        <p class="meta"><a href="{% url 'chat_lista' %}">{% include "core/includes/icon.html" with name="flecha" clase="volver" %} Volver a mensajes</a></p>
         <section class="card chat-panel" id="chat" data-conversacion="{{ conversacion.pk }}" data-usuario="{{ request.user.pk }}" data-ultimo="{{ ultimo_id }}" data-enviar="{% url 'chat_enviar' conversacion.pk %}" data-leer="{% url 'chat_mensajes' conversacion.pk %}">
+            <div class="chat-head">
+                <div class="who-row">
+                    {% if user_role == 'paciente' %}
+                    {% include "core/includes/avatar.html" with foto=conversacion.profesional.foto iniciales=conversacion.profesional.iniciales tamano="sm" alt="" %}
+                    {% else %}
+                    {% include "core/includes/avatar.html" with foto=conversacion.paciente.foto iniciales=conversacion.paciente.iniciales tamano="sm" alt="" %}
+                    {% endif %}
+                    <div>
+                        <h1 class="chat-titulo">
+                            {% if user_role == 'paciente' %}
+                            {{ conversacion.profesional.get_full_name }}
+                            {% else %}
+                            {{ conversacion.paciente.first_name }} {{ conversacion.paciente.last_name }}
+                            {% endif %}
+                        </h1>
+                        <p class="meta">{% if user_role == 'paciente' %}{{ conversacion.profesional.etiqueta_especialidad }}{% else %}Paciente{% endif %}</p>
+                    </div>
+                </div>
+                <span class="chat-estado" id="chat-estado" data-modo="conectando" role="status">Conectando…</span>
+            </div>
+            <p class="alert warning">{% include "core/includes/icon.html" with name="alerta" %}<span>Este chat no es para urgencias médicas. Si necesitas atención inmediata, acude a un servicio de urgencias.</span></p>
             <div class="chat-log" id="chat-log" aria-live="polite">
                 {% for mensaje in mensajes %}
                 <article class="bubble {% if mensaje.remitente_id == request.user.id %}propia{% else %}ajena{% endif %}" data-id="{{ mensaje.pk }}">
@@ -41,14 +45,20 @@
                     </p>
                 </article>
                 {% empty %}
-                <p class="empty" id="chat-vacio">Escribe el primer mensaje. Sé breve y no envíes datos que no quieras compartir.</p>
+                <div class="empty compact" id="chat-vacio">
+                    <div class="empty-art" aria-hidden="true">{% include "core/includes/ilus/vacio.html" with tipo="chat" %}</div>
+                    <p class="empty-title">Todavía no hay mensajes</p>
+                    <p>Escribe el primero. Sé breve y no envíes datos que no quieras compartir.</p>
+                </div>
                 {% endfor %}
             </div>
-            <form id="chat-form" method="post" action="{% url 'chat_enviar' conversacion.pk %}">
+            <form id="chat-form" class="chat-form" method="post" action="{% url 'chat_enviar' conversacion.pk %}">
                 {% csrf_token %}
-                <label for="texto">Mensaje</label>
-                <textarea id="texto" name="texto" maxlength="1000" rows="3" required placeholder="Escribe y pulsa Enter para enviar"></textarea>
-                <button class="btn btn-book" type="submit">Enviar</button>
+                <label for="texto" class="visually-hidden">Mensaje</label>
+                <div class="fila">
+                    <textarea id="texto" name="texto" maxlength="1000" rows="2" required placeholder="Escribe y pulsa Enter para enviar"></textarea>
+                    <button class="btn btn-book" type="submit">{% include "core/includes/icon.html" with name="enviar" %}Enviar</button>
+                </div>
             </form>
         </section>
     </div>

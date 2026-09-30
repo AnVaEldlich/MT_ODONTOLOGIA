@@ -4,12 +4,12 @@
         <input type="hidden" name="campo" id="foto-campo" value="foto">
         <div class="card-title-row">
             <h2 id="foto-titulo">Cambiar imagen</h2>
-            <button class="btn btn-ghost btn-sm" type="button" id="foto-cerrar">Cerrar</button>
+            <button class="icon-btn" type="button" id="foto-cerrar" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
         </div>
         <p class="meta" id="foto-ayuda">La foto de perfil se ve en círculo. La portada es panorámica.</p>
         <div class="foto-tabs" role="tablist">
-            <button type="button" id="foto-tab-subir" role="tab" aria-selected="true" aria-controls="foto-panel-subir">Subir imagen</button>
-            <button type="button" id="foto-tab-camara" role="tab" aria-selected="false" aria-controls="foto-panel-camara">Tomar foto</button>
+            <button type="button" id="foto-tab-subir" role="tab" aria-selected="true" aria-controls="foto-panel-subir">{% include "core/includes/icon.html" with name="imagen" %}Subir imagen</button>
+            <button type="button" id="foto-tab-camara" role="tab" aria-selected="false" aria-controls="foto-panel-camara">{% include "core/includes/icon.html" with name="camara" %}Tomar foto</button>
         </div>
         <div id="foto-panel-subir" role="tabpanel">
             <label for="foto-archivo">Imagen JPG, PNG o WebP, hasta 5 MB</label>
@@ -17,12 +17,12 @@
         </div>
         <div id="foto-panel-camara" role="tabpanel" hidden>
             <video id="foto-video" autoplay playsinline muted hidden></video>
-            <p class="alert warning" id="foto-permiso" hidden>No pudimos usar la cámara. Si bloqueaste el permiso, actívalo en el navegador o sube una imagen desde tu equipo.</p>
+            <p class="alert warning" id="foto-permiso" hidden>{% include "core/includes/icon.html" with name="alerta" %}<span>No pudimos usar la cámara. Si bloqueaste el permiso, actívalo en el navegador o sube una imagen desde tu equipo.</span></p>
             <div class="foto-acciones">
-                <button class="btn btn-brand btn-sm" type="button" id="foto-capturar" hidden>Capturar</button>
+                <button class="btn btn-brand btn-sm" type="button" id="foto-capturar" hidden>{% include "core/includes/icon.html" with name="camara" %}Capturar</button>
                 <button class="btn btn-ghost btn-sm" type="button" id="foto-repetir" hidden>Repetir</button>
                 <label class="btn btn-ghost btn-sm foto-captura-movil">
-                    Usar la cámara del teléfono
+                    {% include "core/includes/icon.html" with name="camara" %}Usar la cámara del teléfono
                     <input id="foto-movil" type="file" accept="image/jpeg,image/png,image/webp" capture="user">
                 </label>
             </div>
@@ -35,7 +35,7 @@
             <p class="meta">Arrastra la imagen para encuadrar.</p>
         </div>
         <div class="foto-acciones">
-            <button class="btn btn-book" type="submit">Guardar</button>
+            <button class="btn btn-book" type="submit">{% include "core/includes/icon.html" with name="check" %}Guardar</button>
         </div>
     </form>
     <form method="post" action="{{ accion }}" id="foto-quitar">

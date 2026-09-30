@@ -11,15 +11,15 @@
             <h1>{% if vista == "dia" %}Agenda del día{% else %}Agenda de la semana{% endif %}</h1>
             <p>{{ profesional.get_full_name }} · {{ inicio|date:"d/m/Y" }}</p>
         </div>
-        <div class="card-title-row">
-            <div class="actions">
-                <a class="btn btn-ghost btn-sm" href="{% url 'agenda_profesional' %}?vista={{ vista }}&fecha={{ anterior|date:'Y-m-d' }}">Anterior</a>
+        <div class="card-title-row toolbar">
+            <div class="actions" role="group" aria-label="Cambiar periodo">
+                <a class="btn btn-ghost btn-sm" href="{% url 'agenda_profesional' %}?vista={{ vista }}&fecha={{ anterior|date:'Y-m-d' }}" aria-label="Periodo anterior">{% include "core/includes/icon.html" with name="flecha" clase="volver" %}Anterior</a>
                 <a class="btn btn-ghost btn-sm" href="{% url 'agenda_profesional' %}?vista={{ vista }}">Hoy</a>
-                <a class="btn btn-ghost btn-sm" href="{% url 'agenda_profesional' %}?vista={{ vista }}&fecha={{ siguiente|date:'Y-m-d' }}">Siguiente</a>
+                <a class="btn btn-ghost btn-sm" href="{% url 'agenda_profesional' %}?vista={{ vista }}&fecha={{ siguiente|date:'Y-m-d' }}" aria-label="Periodo siguiente">Siguiente{% include "core/includes/icon.html" with name="flecha" %}</a>
             </div>
-            <div class="actions">
-                <a class="btn {% if vista == 'dia' %}btn-primary{% else %}btn-ghost{% endif %} btn-sm" href="{% url 'agenda_profesional' %}?vista=dia&fecha={{ fecha|date:'Y-m-d' }}">Día</a>
-                <a class="btn {% if vista == 'semana' %}btn-primary{% else %}btn-ghost{% endif %} btn-sm" href="{% url 'agenda_profesional' %}?vista=semana&fecha={{ fecha|date:'Y-m-d' }}">Semana</a>
+            <div class="segmented" role="group" aria-label="Vista">
+                <a {% if vista == 'dia' %}aria-current="true"{% endif %} href="{% url 'agenda_profesional' %}?vista=dia&fecha={{ fecha|date:'Y-m-d' }}">Día</a>
+                <a {% if vista == 'semana' %}aria-current="true"{% endif %} href="{% url 'agenda_profesional' %}?vista=semana&fecha={{ fecha|date:'Y-m-d' }}">Semana</a>
             </div>
         </div>
         <section class="card scroll-x">
@@ -31,33 +31,34 @@
                 <tbody>
                     {% for cita in citas %}
                     <tr>
-                        <td data-label="Hora">{{ cita.fecha_hora|date:"D d/m · H:i" }}</td>
+                        <td data-label="Hora"><span class="when">{{ cita.fecha_hora|date:"D d/m" }}</span><br>{{ cita.fecha_hora|date:"H:i" }}</td>
                         <td data-label="Paciente"><a href="{% url 'ficha_paciente' cita.paciente_id %}">{{ cita.paciente.first_name }} {{ cita.paciente.last_name }}</a></td>
                         <td data-label="Detalle">{{ cita.duracion_minutos }} min{% if cita.consultorio %} · {{ cita.consultorio.nombre }}{% endif %}</td>
                         <td data-label="Estado"><span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span></td>
-                        <td data-label="Acciones" class="actions">
-                            {% if cita.estado == 'pendiente' %}
-                            <form method="post" action="{% url 'confirmar_cita' cita.pk %}">{% csrf_token %}<button class="btn btn-primary btn-sm" type="submit">Confirmar</button></form>
-                            {% endif %}
-                            {% if cita.estado == 'confirmada' %}
-                            <form method="post" action="{% url 'atender_cita' cita.pk %}">{% csrf_token %}<button class="btn btn-ghost btn-sm" type="submit">Marcar atendida</button></form>
-                            <form method="post" action="{% url 'inasistencia_cita' cita.pk %}">{% csrf_token %}<button class="btn btn-ghost btn-sm" type="submit">No asistió</button></form>
-                            {% endif %}
-                            {% if cita.estado == 'pendiente' or cita.estado == 'confirmada' %}
-                            <a class="btn btn-ghost btn-sm" href="{% url 'reprogramar_cita' cita.pk %}">Reprogramar</a>
-                            <form method="post" action="{% url 'cancelar_cita' cita.pk %}">
-                                {% csrf_token %}
-                                <p class="meta">La cita quedará cancelada.</p>
-                                <button class="btn btn-danger btn-sm" type="submit">Cancelar</button>
-                            </form>
-                            {% endif %}
+                        <td data-label="Acciones">
+                            <div class="actions">
+                                {% if cita.estado == 'pendiente' %}
+                                <form method="post" action="{% url 'confirmar_cita' cita.pk %}">{% csrf_token %}<button class="btn btn-primary btn-sm" type="submit">{% include "core/includes/icon.html" with name="check" %}Confirmar</button></form>
+                                {% endif %}
+                                {% if cita.estado == 'confirmada' %}
+                                <form method="post" action="{% url 'atender_cita' cita.pk %}">{% csrf_token %}<button class="btn btn-ghost btn-sm" type="submit">Marcar atendida</button></form>
+                                <form method="post" action="{% url 'inasistencia_cita' cita.pk %}">{% csrf_token %}<button class="btn btn-ghost btn-sm" type="submit">No asistió</button></form>
+                                {% endif %}
+                                {% if cita.estado == 'pendiente' or cita.estado == 'confirmada' %}
+                                <a class="btn btn-ghost btn-sm" href="{% url 'reprogramar_cita' cita.pk %}">Reprogramar</a>
+                                <form method="post" action="{% url 'cancelar_cita' cita.pk %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-danger btn-sm" type="submit" title="La cita quedará cancelada">Cancelar</button>
+                                </form>
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             {% else %}
-            <div class="empty"><p>No hay citas en este periodo.</p></div>
+            {% include "core/includes/vacio.html" with tipo="cita" titulo="No hay citas en este periodo" texto="Cambia de semana o revisa que tus horarios estén publicados." enlace="/clinica/disponibilidad/" accion="Publicar horarios" boton_clase="btn-ghost" %}
             {% endif %}
         </section>
         <section class="card">
@@ -70,12 +71,12 @@
                         <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
                         <div class="who">{{ cita.paciente.first_name }} {{ cita.paciente.last_name }}</div>
                     </div>
-                    <a href="{% url 'ficha_paciente' cita.paciente_id %}">Abrir ficha</a>
+                    <a href="{% url 'ficha_paciente' cita.paciente_id %}">Abrir ficha {% include "core/includes/icon.html" with name="flecha" %}</a>
                 </li>
                 {% endfor %}
             </ul>
             {% else %}
-            <p>No hay pacientes próximos.</p>
+            {% include "core/includes/vacio.html" with titulo="No hay pacientes próximos" compacto=True %}
             {% endif %}
         </section>
     </div>

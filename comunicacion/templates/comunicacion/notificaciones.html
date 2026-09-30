@@ -17,21 +17,28 @@
         </div>
         {% if avisos %}
         {% for aviso in avisos %}
-        <article class="card">
-            <h2>{{ aviso.titulo }}</h2>
-            <p>{{ aviso.mensaje }}</p>
-            <p class="meta">{{ aviso.created_at|date:"d/m/Y H:i" }}{% if aviso.leida %} · Leído{% endif %}</p>
-            {% if aviso.enlace %}<p><a href="{{ aviso.enlace }}">Abrir</a></p>{% endif %}
-            {% if not aviso.leida %}
-            <form method="post" action="{% url 'marcar_notificacion' aviso.pk %}">
-                {% csrf_token %}
-                <button class="btn btn-ghost btn-sm" type="submit">Marcar como leído</button>
-            </form>
-            {% endif %}
+        <article class="card feed-card aviso{% if not aviso.leida %} sin-leer{% endif %}">
+            <div class="note">
+                <span class="icon-tile{% if aviso.leida %}{% else %} warn{% endif %}" aria-hidden="true">{% include "core/includes/icon.html" with name="campana" clase="lg" %}</span>
+                <div>
+                    <h2>{{ aviso.titulo }}</h2>
+                    <p>{{ aviso.mensaje }}</p>
+                    <p class="meta">{{ aviso.created_at|date:"d/m/Y H:i" }}{% if aviso.leida %} · Leído{% endif %}</p>
+                    <div class="actions card-actions">
+                        {% if aviso.enlace %}<a class="btn btn-ghost btn-sm" href="{{ aviso.enlace }}">Abrir{% include "core/includes/icon.html" with name="flecha" %}</a>{% endif %}
+                        {% if not aviso.leida %}
+                        <form method="post" action="{% url 'marcar_notificacion' aviso.pk %}">
+                            {% csrf_token %}
+                            <button class="btn btn-ghost btn-sm" type="submit">{% include "core/includes/icon.html" with name="check" %}Marcar como leído</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </article>
         {% endfor %}
         {% else %}
-        <div class="card empty"><p>No tienes avisos.</p></div>
+        <div class="card">{% include "core/includes/vacio.html" with titulo="No tienes avisos" texto="Te avisaremos cuando haya una cita por confirmar o un recordatorio." %}</div>
         {% endif %}
     </div>
 </div>

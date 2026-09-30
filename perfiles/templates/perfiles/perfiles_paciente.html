@@ -10,17 +10,17 @@
         <section class="card cover-card">
             <div class="cover">
                 {% if paciente.portada %}<img src="{{ paciente.portada.url }}" alt="">{% endif %}
-                <button type="button" class="media-edit" data-foto-open="portada" data-tiene="{% if paciente.portada %}1{% else %}0{% endif %}">Editar portada</button>
+                <button type="button" class="media-edit" data-foto-open="portada" data-tiene="{% if paciente.portada %}1{% else %}0{% endif %}">{% include "core/includes/icon.html" with name="imagen" %}Editar portada</button>
             </div>
             <div class="profile-hero">
                 <div class="avatar-wrap">
                     {% include "core/includes/avatar.html" with foto=paciente.foto iniciales=paciente.iniciales tamano="lg" alt="" %}
-                    <button type="button" class="media-edit media-edit-avatar" data-foto-open="foto" data-tiene="{% if paciente.foto %}1{% else %}0{% endif %}" aria-label="Editar foto de perfil">Editar</button>
+                    <button type="button" class="media-edit media-edit-avatar" data-foto-open="foto" data-tiene="{% if paciente.foto %}1{% else %}0{% endif %}" aria-label="Editar foto de perfil">{% include "core/includes/icon.html" with name="camara" %}</button>
                 </div>
                 <div>
                     <h1>{{ paciente.first_name }} {{ paciente.last_name }}</h1>
-                    <p class="meta">{{ paciente.city }} · Paciente</p>
-                    <p><a class="btn btn-ghost btn-sm" href="{% url 'editar_perfil' %}">Editar perfil</a></p>
+                    <p class="meta">{% include "core/includes/icon.html" with name="pin" %} {{ paciente.city }} · Paciente</p>
+                    <p><a class="btn btn-ghost btn-sm" href="{% url 'editar_perfil' %}">{% include "core/includes/icon.html" with name="editar" %}Editar perfil</a></p>
                 </div>
             </div>
             <div class="stats">
@@ -33,19 +33,23 @@
         <section class="card feed-card">
             <div class="card-title-row">
                 <h2>Próxima cita</h2>
-                <a class="btn btn-book btn-sm" href="{% url 'solicitar_cita' %}">Agendar cita</a>
+                <a class="btn btn-book btn-sm" href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="mas" %}Agendar cita</a>
             </div>
             {% if proxima %}
-            <p class="when">{{ proxima.fecha_hora|date:"l d/m/Y · H:i" }}</p>
-            <p>{{ proxima.profesional.get_full_name }} · {{ proxima.profesional.etiqueta_especialidad }}</p>
-            {% if proxima.sede %}<p class="meta">{{ proxima.sede.nombre }}</p>{% endif %}
-            <p><span class="badge {{ proxima.estado }}">{{ proxima.get_estado_display }}</span></p>
-            <p><a class="btn btn-ghost btn-sm" href="{% url 'chat_con_profesional' proxima.profesional_id %}">Escribir al especialista</a></p>
-            {% else %}
-            <div class="empty">
-                <p>Todavía no tienes una cita próxima. Cuando reserves, aparecerá aquí.</p>
-                <a class="btn btn-book" href="{% url 'buscar_profesionales' %}">Buscar especialista</a>
+            <div class="note">
+                <span class="icon-tile book" aria-hidden="true">{% include "core/includes/icon.html" with name="calendario" clase="lg" %}</span>
+                <div>
+                    <h3>{{ proxima.fecha_hora|date:"l d/m/Y · H:i" }}</h3>
+                    <p>{{ proxima.profesional.get_full_name }} · {{ proxima.profesional.etiqueta_especialidad }}</p>
+                    {% if proxima.sede %}<p class="meta">{% include "core/includes/icon.html" with name="pin" %} {{ proxima.sede.nombre }}</p>{% endif %}
+                    <p class="actions card-actions">
+                        <span class="badge {{ proxima.estado }}">{{ proxima.get_estado_display }}</span>
+                        <a class="btn btn-ghost btn-sm" href="{% url 'chat_con_profesional' proxima.profesional_id %}">{% include "core/includes/icon.html" with name="chat" %}Escribir al especialista</a>
+                    </p>
+                </div>
             </div>
+            {% else %}
+            {% include "core/includes/vacio.html" with tipo="cita" titulo="Todavía no tienes una cita próxima" texto="Cuando reserves, aparecerá aquí con el recordatorio." enlace="/especialistas/" accion="Buscar especialista" %}
             {% endif %}
         </section>
 
@@ -55,15 +59,18 @@
             <ul class="cita-list">
                 {% for aviso in recordatorios %}
                 <li>
-                    <div>
-                        <div class="when">{{ aviso.titulo }}</div>
-                        <div class="who">{{ aviso.mensaje }}</div>
+                    <div class="who-row">
+                        <span class="icon-tile warn" aria-hidden="true">{% include "core/includes/icon.html" with name="campana" %}</span>
+                        <div>
+                            <div class="when">{{ aviso.titulo }}</div>
+                            <div class="who">{{ aviso.mensaje }}</div>
+                        </div>
                     </div>
                 </li>
                 {% endfor %}
             </ul>
             {% else %}
-            <div class="empty"><p>No tienes avisos pendientes. Te escribimos cuando haya una cita por confirmar.</p></div>
+            {% include "core/includes/vacio.html" with titulo="Sin avisos pendientes" texto="Te escribimos cuando haya una cita por confirmar." compacto=True %}
             {% endif %}
         </section>
 
@@ -71,8 +78,11 @@
             <h2>Novedades de la clínica</h2>
             {% for novedad in novedades %}
             <article class="note">
-                <h3>{{ novedad.titulo }}</h3>
-                <p>{{ novedad.texto }}</p>
+                <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="brillo" %}</span>
+                <div>
+                    <h3>{{ novedad.titulo }}</h3>
+                    <p>{{ novedad.texto }}</p>
+                </div>
             </article>
             {% endfor %}
         </section>
@@ -81,19 +91,24 @@
             <h2>Consejos de salud dental</h2>
             {% for consejo in consejos %}
             <article class="note">
-                <h3>{{ consejo.titulo }}</h3>
-                <p>{{ consejo.texto }}</p>
+                <span class="icon-tile book" aria-hidden="true">{% include "core/includes/icon.html" with name="diente" %}</span>
+                <div>
+                    <h3>{{ consejo.titulo }}</h3>
+                    <p>{{ consejo.texto }}</p>
+                </div>
             </article>
             {% endfor %}
         </section>
 
         <section>
-            <h2>Publicaciones</h2>
-            <p class="meta">Notas de los especialistas. No incluyen historias clínicas ni datos de otros pacientes.</p>
+            <div class="page-head">
+                <h2>Publicaciones</h2>
+                <p class="meta">Notas de los especialistas. No incluyen historias clínicas ni datos de otros pacientes.</p>
+            </div>
             {% for publicacion in publicaciones %}
             {% include "comunicacion/includes/publicacion.html" with siguiente="/perfiles/perfil/" %}
             {% empty %}
-            <div class="card empty"><p>Cuando un especialista publique un consejo, lo verás aquí.</p></div>
+            <div class="card">{% include "core/includes/vacio.html" with titulo="Aún no hay publicaciones" texto="Cuando un especialista publique un consejo, lo verás aquí." compacto=True %}</div>
             {% endfor %}
         </section>
     </div>

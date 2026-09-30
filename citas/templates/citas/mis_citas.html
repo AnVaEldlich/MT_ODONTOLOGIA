@@ -7,9 +7,12 @@
 <div class="portal">
     {% include "core/includes/portal_nav_paciente.html" %}
     <div>
-        <div class="page-head">
-            <h1>Historial de citas</h1>
-            <p>Puedes cancelar o reprogramar las que siguen pendientes o confirmadas.</p>
+        <div class="page-head card-title-row">
+            <div>
+                <h1>Historial de citas</h1>
+                <p>Puedes cancelar o reprogramar las que siguen pendientes o confirmadas.</p>
+            </div>
+            <a class="btn btn-book" href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="mas" %}Agendar cita</a>
         </div>
         {% if citas %}
         <div class="card scroll-x">
@@ -26,23 +29,24 @@
                 <tbody>
                     {% for cita in citas %}
                     <tr>
-                        <td data-label="Fecha">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</td>
+                        <td data-label="Fecha"><span class="when">{{ cita.fecha_hora|date:"d/m/Y" }}</span><br>{{ cita.fecha_hora|date:"H:i" }}</td>
                         <td data-label="Especialista">{{ cita.profesional.get_full_name }}</td>
                         <td data-label="Detalle">
                             {% if cita.tratamiento %}{{ cita.tratamiento.nombre }} · {% endif %}
                             {{ cita.duracion_minutos }} min
-                            {% if cita.sede %}<br>{{ cita.sede.nombre }}{% endif %}
+                            {% if cita.sede %}<br><span class="meta">{{ cita.sede.nombre }}</span>{% endif %}
                         </td>
                         <td data-label="Estado"><span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span></td>
-                        <td data-label="Acciones" class="actions">
+                        <td data-label="Acciones">
                             {% if cita.estado == 'pendiente' or cita.estado == 'confirmada' %}
                             {% if cita.fecha_hora > ahora %}
-                            <a class="btn btn-ghost btn-sm" href="{% url 'reprogramar_cita' cita.pk %}">Reprogramar</a>
-                            <form method="post" action="{% url 'cancelar_cita' cita.pk %}">
-                                {% csrf_token %}
-                                <p class="meta">La cita quedará cancelada.</p>
-                                <button class="btn btn-danger btn-sm" type="submit">Cancelar cita</button>
-                            </form>
+                            <div class="actions">
+                                <a class="btn btn-ghost btn-sm" href="{% url 'reprogramar_cita' cita.pk %}">Reprogramar</a>
+                                <form method="post" action="{% url 'cancelar_cita' cita.pk %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-danger btn-sm" type="submit" title="La cita quedará cancelada">Cancelar cita</button>
+                                </form>
+                            </div>
                             {% endif %}
                             {% endif %}
                         </td>
@@ -52,9 +56,8 @@
             </table>
         </div>
         {% else %}
-        <div class="card empty">
-            <p>Aún no tienes citas.</p>
-            <a class="btn btn-primary" href="{% url 'solicitar_cita' %}">Agendar cita</a>
+        <div class="card">
+            {% include "core/includes/vacio.html" with tipo="cita" titulo="Aún no tienes citas" texto="Busca un especialista y elige la hora que te sirva." enlace="/citas/solicitar/" accion="Agendar cita" %}
         </div>
         {% endif %}
     </div>
