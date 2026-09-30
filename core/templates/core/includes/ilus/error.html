@@ -1,0 +1,27 @@
+<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false">
+    <defs>
+        <linearGradient id="err-g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="var(--brand)"/>
+            <stop offset="1" stop-color="var(--brand-2)"/>
+        </linearGradient>
+    </defs>
+    <ellipse cx="160" cy="196" rx="110" ry="12" fill="var(--bg-muted)"/>
+    <circle cx="160" cy="100" r="78" fill="var(--brand-soft)"/>
+    <circle cx="238" cy="42" r="8" fill="var(--book-soft)"/>
+    <circle cx="80" cy="56" r="5" fill="var(--book-soft)"/>
+    {% if tipo == "500" %}
+    <path d="M160 46c-11 0-15 5.5-24.5 5.5C124.5 51.5 116 60 116 74c0 12 6 17.5 9.5 28 4 13.5 4.5 40 14 40 8 0 8.5-25 20.5-25s12.5 25 20.5 25c9.5 0 10-26.5 14-40 3.5-10.5 9.5-16 9.5-28 0-14-8.5-22.5-19.5-22.5-9.5 0-13.5-5.5-24.5-5.5z" fill="var(--bg-card)" stroke="url(#err-g)" stroke-width="5"/>
+    <g transform="rotate(-30 160 100)">
+        <rect x="118" y="88" width="84" height="26" rx="13" fill="var(--warn-bg)" stroke="var(--warn)" stroke-width="3"/>
+        <rect x="146" y="90" width="28" height="22" rx="4" fill="var(--warn)" opacity="0.5"/>
+        <circle cx="132" cy="97" r="1.6" fill="var(--warn)"/><circle cx="132" cy="105" r="1.6" fill="var(--warn)"/>
+        <circle cx="188" cy="97" r="1.6" fill="var(--warn)"/><circle cx="188" cy="105" r="1.6" fill="var(--warn)"/>
+    </g>
+    <path d="M232 74c4 6 4 12 0 18M244 66c7 9 7 20 0 30" fill="none" stroke="var(--danger)" stroke-width="3.5" stroke-linecap="round" opacity="0.8"/>
+    {% else %}
+    <path d="M160 40c-20 0-34 15-34 34 0 26 34 58 34 58s34-32 34-58c0-19-14-34-34-34z" fill="var(--bg-card)" stroke="url(#err-g)" stroke-width="5"/>
+    <circle cx="160" cy="74" r="13" fill="var(--brand-soft)" stroke="var(--brand)" stroke-width="3"/>
+    <path d="M155 70a5 5 0 1 1 7 4.5c-1.4.7-2 1.6-2 3M160 82h.01" fill="none" stroke="var(--brand-dark)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M100 150c20-14 44-16 60-6M220 150c-8-8-18-12-26-12" fill="none" stroke="var(--line-strong)" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 8"/>
+    {% endif %}
+</svg>

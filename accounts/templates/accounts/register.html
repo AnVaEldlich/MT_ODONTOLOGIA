@@ -12,16 +12,14 @@
 <form id="registrationForm" method="POST" action="{% url 'register' %}">
     {% csrf_token %}
     <div class="register-container">
-        <div class="logo">
-            <h1>MT ODONTOLOGIA INTEGRAL</h1>
-        </div>
+        <div class="auth-brand" aria-hidden="true"><span class="logo-mark">{% include "core/includes/icon.html" with name="diente" %}</span></div>
 
         <div class="welcome-text">
-            <h2>Registro de Paciente</h2>
-            <p>Completa tu información para comenzar tu camino hacia una sonrisa perfecta</p>
+            <h1>Registro de paciente</h1>
+            <p>Completa tu información para reservar y llevar tu historia dental en un solo lugar.</p>
         </div>
-        {% if messages %}{% for message in messages %}<p class="alert error">{{ message }}</p>{% endfor %}{% endif %}
-        {% if form.non_field_errors %}{% for error in form.non_field_errors %}<p class="alert error">{{ error }}</p>{% endfor %}{% endif %}
+        {% if messages %}{% for message in messages %}<p class="alert error">{% include "core/includes/icon.html" with name="alerta" %}<span>{{ message }}</span></p>{% endfor %}{% endif %}
+        {% if form.non_field_errors %}{% for error in form.non_field_errors %}<p class="alert error">{% include "core/includes/icon.html" with name="alerta" %}<span>{{ error }}</span></p>{% endfor %}{% endif %}
 
         <div class="progress-steps">
             <div class="step active" data-step="1">
@@ -104,7 +102,7 @@
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn btn-next" onclick="nextSection()">Siguiente</button>
+                <button type="button" class="btn btn-next" onclick="nextSection()">Siguiente{% include "core/includes/icon.html" with name="flecha" %}</button>
             </div>
         </div>
 
@@ -180,8 +178,8 @@
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn btn-prev" onclick="prevSection()">Anterior</button>
-                <button type="button" class="btn btn-next" onclick="nextSection()">Siguiente</button>
+                <button type="button" class="btn btn-prev" onclick="prevSection()">{% include "core/includes/icon.html" with name="flecha" clase="volver" %}Anterior</button>
+                <button type="button" class="btn btn-next" onclick="nextSection()">Siguiente{% include "core/includes/icon.html" with name="flecha" %}</button>
             </div>
         </div>
 
@@ -267,8 +265,8 @@
             </p>
 
             <div class="button-group">
-                <button type="button" class="btn btn-prev" onclick="prevSection()">Anterior</button>
-                <button type="submit" class="btn btn-submit">Completar Registro</button>
+                <button type="button" class="btn btn-prev" onclick="prevSection()">{% include "core/includes/icon.html" with name="flecha" clase="volver" %}Anterior</button>
+                <button type="submit" class="btn btn-submit">{% include "core/includes/icon.html" with name="check" %}Completar registro</button>
             </div>
         </div>
 

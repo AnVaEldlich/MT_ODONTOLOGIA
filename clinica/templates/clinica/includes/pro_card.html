@@ -4,10 +4,10 @@
         <h2><a href="{% url 'perfil_publico' tarjeta.profesional.pk %}">{{ tarjeta.nombre }}</a></h2>
         <p class="meta">{{ tarjeta.especialidad }}</p>
         {% include "core/includes/stars.html" with opiniones=tarjeta.opiniones promedio=tarjeta.promedio estrellas=tarjeta.estrellas %}
-        {% if tarjeta.verificado %}<p><span class="badge ok">Perfil verificado</span></p>{% endif %}
+        {% if tarjeta.verificado %}<p><span class="badge ok sin-punto">{% include "core/includes/icon.html" with name="check-circulo" %}Perfil verificado</span></p>{% endif %}
         <p class="meta">
-            {% if tarjeta.sede_principal %}{{ tarjeta.sede_principal.nombre }} · {% endif %}
-            {{ tarjeta.direccion }}{% if tarjeta.ciudad %}, {{ tarjeta.ciudad }}{% endif %}
+            {% include "core/includes/icon.html" with name="pin" %}
+            <span>{% if tarjeta.sede_principal %}{{ tarjeta.sede_principal.nombre }} · {% endif %}{{ tarjeta.direccion }}{% if tarjeta.ciudad %}, {{ tarjeta.ciudad }}{% endif %}</span>
         </p>
     </div>
     <div class="pro-book">
@@ -18,9 +18,9 @@
             {% for hueco in tarjeta.huecos %}
             {% include "clinica/includes/chip_hora.html" %}
             {% empty %}
-            <span class="chip chip-muted">Sin cupos publicados</span>
+            <span class="chip chip-muted">{% include "core/includes/icon.html" with name="reloj" %}Sin cupos publicados</span>
             {% endfor %}
         </div>
-        <a class="btn btn-book btn-sm" href="{% url 'perfil_publico' tarjeta.profesional.pk %}">Ver horarios</a>
+        <a class="btn btn-book btn-sm" href="{% url 'perfil_publico' tarjeta.profesional.pk %}">Ver horarios{% include "core/includes/icon.html" with name="flecha" %}</a>
     </div>
 </article>

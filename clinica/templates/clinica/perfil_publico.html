@@ -2,46 +2,55 @@
 {% block title %}{{ tarjeta.nombre }} — MT Odontología{% endblock %}
 {% block content %}
 <div class="profile">
-    <p class="meta"><a href="{% url 'buscar_profesionales' %}">Especialistas</a> / {{ tarjeta.nombre }}</p>
+    <p class="meta crumbs"><a href="{% url 'buscar_profesionales' %}">Especialistas</a> <span aria-hidden="true">/</span> {{ tarjeta.nombre }}</p>
     <div class="profile-grid">
         <div>
             <section class="card cover-card">
                 <div class="cover">
                     {% if tarjeta.profesional.portada %}<img src="{{ tarjeta.profesional.portada.url }}" alt="">{% endif %}
                 </div>
-                <div class="pro-card flush">
-                    {% include "core/includes/avatar.html" with foto=tarjeta.profesional.foto iniciales=tarjeta.iniciales tamano="lg" alt="" %}
+                <div class="profile-hero">
+                    <div class="avatar-wrap">
+                        {% include "core/includes/avatar.html" with foto=tarjeta.profesional.foto iniciales=tarjeta.iniciales tamano="lg" alt="" %}
+                    </div>
                     <div>
                         <h1>{{ tarjeta.nombre }}</h1>
                         <p class="meta">{{ tarjeta.especialidad }}</p>
                         {% include "core/includes/stars.html" with opiniones=tarjeta.opiniones promedio=tarjeta.promedio estrellas=tarjeta.estrellas %}
-                        {% if tarjeta.verificado %}<p><span class="badge ok">Perfil verificado</span></p>{% endif %}
-                        <p>
-                            {% for insignia in resumen.insignias %}<span class="badge">{{ insignia }}</span>{% endfor %}
+                        <p class="chips">
+                            {% for insignia in resumen.insignias %}
+                            {% if insignia == "Perfil verificado" %}
+                            <span class="badge ok sin-punto">{% include "core/includes/icon.html" with name="check-circulo" %}{{ insignia }}</span>
+                            {% else %}
+                            <span class="badge sin-punto">{{ insignia }}</span>
+                            {% endif %}
+                            {% endfor %}
                         </p>
-                        <div class="stats">
-                            <div class="stat"><div class="num">{{ resumen.atendidos }}</div><div class="label">Pacientes atendidos</div></div>
-                            <div class="stat"><div class="num">{% if resumen.promedio %}{{ resumen.promedio }}{% else %}—{% endif %}</div><div class="label">Calificación</div></div>
-                            <div class="stat"><div class="num">{{ resumen.seguidores }}</div><div class="label">Seguidores</div></div>
-                        </div>
-                        {% if user_role == 'paciente' %}
-                        <form method="post" action="{% url 'seguir_profesional' tarjeta.profesional.pk %}">
-                            {% csrf_token %}
-                            <button class="btn btn-ghost" type="submit">{% if resumen.siguiendo %}Siguiendo{% else %}Seguir{% endif %}</button>
-                        </form>
-                        {% endif %}
-                        {% if puede_chatear %}
-                        <p><a class="btn btn-book" href="{% url 'chat_con_profesional' tarjeta.profesional.pk %}">Escribir</a></p>
-                        {% elif user_role == 'paciente' %}
-                        <p class="meta">El chat se habilita cuando tengas una cita no cancelada con este especialista.</p>
-                        {% endif %}
                     </div>
+                </div>
+                <div class="stats">
+                    <div class="stat"><div class="num">{{ resumen.atendidos }}</div><div class="label">Pacientes atendidos</div></div>
+                    <div class="stat"><div class="num">{% if resumen.promedio %}{{ resumen.promedio }}{% else %}—{% endif %}</div><div class="label">Calificación</div></div>
+                    <div class="stat"><div class="num">{{ resumen.seguidores }}</div><div class="label">Seguidores</div></div>
+                </div>
+                <div class="actions cover-actions">
+                    {% if user_role == 'paciente' %}
+                    <form method="post" action="{% url 'seguir_profesional' tarjeta.profesional.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-ghost btn-sm" type="submit">{% if resumen.siguiendo %}{% include "core/includes/icon.html" with name="check" %}Siguiendo{% else %}{% include "core/includes/icon.html" with name="mas" %}Seguir{% endif %}</button>
+                    </form>
+                    {% endif %}
+                    {% if puede_chatear %}
+                    <a class="btn btn-book btn-sm" href="{% url 'chat_con_profesional' tarjeta.profesional.pk %}">{% include "core/includes/icon.html" with name="chat" %}Escribir</a>
+                    {% elif user_role == 'paciente' %}
+                    <p class="meta">{% include "core/includes/icon.html" with name="info" %} El chat se habilita cuando tengas una cita no cancelada con este especialista.</p>
+                    {% endif %}
                 </div>
                 {% if tarjeta.especialidades %}
                 <h2>Especialidades</h2>
-                <p>
+                <p class="chips">
                     {% for especialidad in tarjeta.especialidades %}
-                    <a class="badge" href="{% url 'buscar_profesionales' %}?especialidad={{ especialidad.codigo }}">{{ especialidad.nombre }}</a>
+                    <a class="badge sin-punto" href="{% url 'buscar_profesionales' %}?especialidad={{ especialidad.codigo }}">{{ especialidad.nombre }}</a>
                     {% endfor %}
                 </p>
                 {% endif %}
@@ -49,8 +58,14 @@
             <section class="card">
                 <h2>Dónde atiende</h2>
                 {% for sede in tarjeta.sedes %}
-                <p><strong>{{ sede.nombre }}</strong><br>{{ sede.direccion }}, {{ sede.ciudad }}</p>
-                {% if sede.horario_atencion %}<p class="meta">{{ sede.horario_atencion }}</p>{% endif %}
+                <div class="note">
+                    <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="pin" clase="lg" %}</span>
+                    <div>
+                        <h3>{{ sede.nombre }}</h3>
+                        <p>{{ sede.direccion }}, {{ sede.ciudad }}</p>
+                        {% if sede.horario_atencion %}<p class="meta">{% include "core/includes/icon.html" with name="reloj" %} {{ sede.horario_atencion }}</p>{% endif %}
+                    </div>
+                </div>
                 {% empty %}
                 <p>{{ tarjeta.direccion }}</p>
                 {% endfor %}
@@ -63,7 +78,7 @@
                     <li>
                         <div>
                             <div class="when">{{ servicio.nombre }}</div>
-                            <div class="who">{{ servicio.duracion_minutos }} min</div>
+                            <div class="who">{% include "core/includes/icon.html" with name="reloj" %} {{ servicio.duracion_minutos }} min</div>
                         </div>
                         {% if servicio.precio %}<span class="price">${{ servicio.precio|floatformat:0 }}</span>{% endif %}
                     </li>
@@ -76,24 +91,24 @@
                 {% for publicacion in publicaciones %}
                 {% include "comunicacion/includes/publicacion.html" %}
                 {% empty %}
-                <div class="card empty"><p>Este especialista todavía no publica notas.</p></div>
+                <div class="card">{% include "core/includes/vacio.html" with titulo="Todavía no publica notas" texto="Cuando comparta consejos o avisos, aparecerán aquí." compacto=True %}</div>
                 {% endfor %}
             </section>
             <section class="card" id="opiniones">
                 <h2>Opiniones</h2>
                 {% for resena in tarjeta.resenas %}
-                <article>
+                <article class="testimonio resena">
                     {% include "core/includes/stars.html" with opiniones=1 promedio=resena.calificacion estrellas=resena.calificacion %}
                     <p>{{ resena.comentario }}</p>
                     <p class="meta">{{ resena.paciente.first_name }} · {{ resena.created_at|date:"d/m/Y" }}</p>
                 </article>
                 {% empty %}
-                <p>Este especialista todavía no tiene opiniones publicadas.</p>
+                {% include "core/includes/vacio.html" with titulo="Aún sin opiniones" texto="Las reseñas se publican después de una cita atendida." compacto=True %}
                 {% endfor %}
             </section>
         </div>
         <aside class="card profile-book" aria-label="Reservar">
-            <h2>Reserva una hora</h2>
+            <h2>{% include "core/includes/icon.html" with name="calendario" %} Reserva una hora</h2>
             {% if tarjeta.precio %}<p class="price"><span>Consulta desde</span>{{ tarjeta.precio }}</p>{% endif %}
             {% if tarjeta.calendario %}
             <div class="calendar">
@@ -104,19 +119,19 @@
                         {% for hueco in dia.huecos %}
                         {% include "clinica/includes/chip_hora.html" %}
                         {% empty %}
-                        <span class="meta">Sin cupo</span>
+                        <span class="chip chip-muted">Sin cupo</span>
                         {% endfor %}
                     </div>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
-            <p>Aún no hay una sede publicada para mostrar el calendario.</p>
+            {% include "core/includes/vacio.html" with tipo="cita" titulo="Calendario por publicar" texto="Aún no hay una sede publicada para mostrar horarios." compacto=True %}
             {% endif %}
             {% if user_role == 'paciente' and tarjeta.sede_principal %}
-            <p><a class="btn btn-book" href="{% url 'solicitar_cita' %}?paso=horario&profesional={{ tarjeta.profesional.pk }}&sede={{ tarjeta.sede_principal.pk }}">Elegir otra hora</a></p>
+            <p class="book-cta"><a class="btn btn-book btn-block" href="{% url 'solicitar_cita' %}?paso=horario&profesional={{ tarjeta.profesional.pk }}&sede={{ tarjeta.sede_principal.pk }}">Elegir otra hora</a></p>
             {% elif not user.is_authenticated %}
-            <p class="meta">Ingresa con tu cuenta de paciente para confirmar la reserva.</p>
+            <p class="meta book-cta">{% include "core/includes/icon.html" with name="info" %} Ingresa con tu cuenta de paciente para confirmar la reserva.</p>
             {% endif %}
         </aside>
     </div>

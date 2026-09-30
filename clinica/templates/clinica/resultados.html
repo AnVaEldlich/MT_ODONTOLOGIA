@@ -3,7 +3,7 @@
 {% block content %}
 <div class="results">
     <aside class="filters" aria-label="Filtros">
-        <h2>Filtros</h2>
+        <h2>{% include "core/includes/icon.html" with name="filtros" %}Filtros</h2>
         <form method="get">
             <input type="hidden" name="q" value="{{ filtros.q }}">
             <input type="hidden" name="ciudad" value="{{ filtros.ciudad }}">
@@ -26,7 +26,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <button class="btn btn-brand" type="submit">Aplicar filtros</button>
+            <button class="btn btn-brand btn-block" type="submit">Aplicar filtros</button>
         </form>
     </aside>
     <div>
@@ -35,15 +35,14 @@
             <p>
                 {% if filtros.q %}«{{ filtros.q }}»{% endif %}
                 {% if filtros.ciudad %} en {{ filtros.ciudad }}{% endif %}
-                {% if not filtros.q and not filtros.ciudad %}Perfiles verificados de la clínica.{% endif %}
+                {% if not filtros.q and not filtros.ciudad %}Perfiles verificados de la clínica. Elige una hora directamente desde la tarjeta.{% endif %}
             </p>
         </div>
         {% for tarjeta in tarjetas %}
         {% include "clinica/includes/pro_card.html" %}
         {% empty %}
-        <div class="card empty">
-            <p>No hay especialistas con esos filtros.</p>
-            <a class="btn btn-ghost" href="{% url 'buscar_profesionales' %}">Quitar filtros</a>
+        <div class="card">
+            {% include "core/includes/vacio.html" with tipo="busqueda" titulo="No hay especialistas con esos filtros" texto="Prueba con otra especialidad o quita la sede." enlace="/especialistas/" accion="Quitar filtros" boton_clase="btn-ghost" %}
         </div>
         {% endfor %}
     </div>
