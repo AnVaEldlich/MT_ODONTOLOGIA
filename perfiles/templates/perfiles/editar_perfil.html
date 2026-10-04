@@ -1,0 +1,23 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Editar perfil — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_paciente.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Tu perfil</h1>
+            <p>{{ paciente.first_name }} {{ paciente.last_name }} · {{ paciente.id_type|upper }} {{ paciente.id_number }}</p>
+        </div>
+        <form class="card form-narrow" method="post" novalidate>
+            {% csrf_token %}
+            {% include "core/includes/fields.html" %}
+            <button class="btn btn-primary" type="submit">Guardar cambios</button>
+            <a class="btn btn-ghost" href="{% url 'perfil' %}">Volver</a>
+        </form>
+        <p><a href="{% url 'crear_resena' %}">Contar tu experiencia</a></p>
+    </div>
+</div>
+{% endblock %}

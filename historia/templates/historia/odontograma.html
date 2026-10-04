@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Odontograma — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_paciente.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Odontograma</h1>
+            <p>Vista de tus dientes permanentes en notación FDI. No se puede editar desde esta cuenta.</p>
+        </div>
+        <section class="card">
+            <div class="boca" aria-label="Odontograma en notación FDI">
+                <div class="arc">
+                    {% for pieza in filas.0 %}<span class="diente {{ pieza.estado }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}">{{ pieza.codigo }}</span>{% endfor %}
+                    <span class="separador" aria-hidden="true"></span>
+                    {% for pieza in filas.1 %}<span class="diente {{ pieza.estado }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}">{{ pieza.codigo }}</span>{% endfor %}
+                </div>
+                <div class="arc">
+                    {% for pieza in filas.2 %}<span class="diente {{ pieza.estado }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}">{{ pieza.codigo }}</span>{% endfor %}
+                    <span class="separador" aria-hidden="true"></span>
+                    {% for pieza in filas.3 %}<span class="diente {{ pieza.estado }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}">{{ pieza.codigo }}</span>{% endfor %}
+                </div>
+            </div>
+            <p class="meta">Verde: sano. Rojo: caries o fractura. Ámbar: corona. Gris: ausente.</p>
+        </section>
+    </div>
+</div>
+{% endblock %}

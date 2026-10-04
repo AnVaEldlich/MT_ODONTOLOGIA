@@ -1,0 +1,12 @@
+{% load static %}
+<article class="card service-card">
+    {% if item.imagen %}
+    <img class="service-art" src="{% static item.imagen %}" alt="" width="640" height="360">
+    {% else %}
+    <div class="service-art" aria-hidden="true">{% include "core/includes/icon.html" with name=item.icono|default:"diente" %}</div>
+    {% endif %}
+    <h3>{{ item.nombre }}</h3>
+    <p>{{ item.descripcion|default:"Consulta con el especialista para conocer el plan." }}</p>
+    <p class="meta"><span class="chip">{% include "core/includes/icon.html" with name="reloj" %} {{ item.duracion }} minutos de referencia</span></p>
+    <a class="btn btn-ghost btn-sm" href="{% url 'buscar_profesionales' %}?q={{ item.nombre|urlencode }}">Ver especialistas{% include "core/includes/icon.html" with name="flecha" %}</a>
+</article>

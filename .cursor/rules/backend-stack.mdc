@@ -1,0 +1,20 @@
+---
+description: Stack de backend permitido en MT Odontología
+alwaysApply: true
+---
+
+# Stack de backend
+
+Un solo backend: Django 5.2 sobre Python 3.10+. El navegador recibe HTML de plantillas y forms.
+
+- Persistencia: ORM de Django. MySQL local con PyMySQL (`USE_SQLITE=False`). Pruebas y Render: SQLite.
+- Entrada: `Form` o `ModelForm`. Auth de Django con grupos `Paciente` y `Profesional`.
+- Proceso: vistas delgadas y reglas en `app/services.py`.
+- Pruebas: pytest y pytest-django, en `app/tests/`.
+- Despliegue: gunicorn y WhiteNoise. Sentry solo si `SENTRY_DSN` está en `.env`.
+- Prohibido sin un ADR aceptado en `docs/decisions/`: Django REST framework, FastAPI, GraphQL, Celery y un segundo servicio.
+
+```python
+# ❌ cliente HTTP hacia otro backend propio
+# ✅ CitaForm + create_cita(...)
+```

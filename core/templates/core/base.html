@@ -1,122 +1,189 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-CO">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MT Odontología Integral{% endblock %}</title>
-    <link rel="icon" href="{% static 'images/Teeth.png' %}" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#0b7490" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0d171c" media="(prefers-color-scheme: dark)">
+    <title>{% block title %}MT Odontología{% endblock %}</title>
+    <link rel="icon" href="{% static 'images/favicon.svg' %}" type="image/svg+xml">
+    <link rel="preload" href="{% static 'fonts/inter-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    {% block extra_css %}{% endblock %}
+    <script>
+        (function () {
+            try {
+                var tema = localStorage.getItem("mt-tema");
+                if (tema === "dark" || tema === "light") { document.documentElement.setAttribute("data-theme", tema); }
+            } catch (e) {}
+        })();
+    </script>
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% block body_class %}{% endblock %}{% if user_role %} rol-{{ user_role }}{% endif %}">
+{% include "core/includes/icons.html" %}
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
 
 {% block navbar %}
-{% with is_home=request.resolver_match.url_name|default:'' %}
-<nav id="navbar">
-    <div class="nav-container">
-        <div class="logo" onclick="window.location.href='{% url 'home' %}'">MT ODONTOLOGIA</div>
-        <ul class="nav-links">
-            {% if is_home == 'home' %}
-            <li><a href="#home">Inicio</a></li>
-            <li><a href="#about">Sobre</a></li>
-            <li><a href="#portfolio">Tratamientos</a></li>
-            <li><a href="#contact">Agendar cita</a></li>
-            {% else %}
-            <li><a href="{% url 'home' %}">Inicio</a></li>
-            <li><a href="{% url 'home' %}#about">Sobre</a></li>
-            <li><a href="{% url 'home' %}#portfolio">Tratamientos</a></li>
-            {% if user_role == 'paciente' %}
-            <li><a href="{% url 'solicitar_cita' %}">Agendar cita</a></li>
-            {% else %}
-            <li><a href="{% url 'home' %}#contact">Agendar cita</a></li>
-            {% endif %}
-            {% endif %}
-
-            {% if user.is_authenticated %}
+<header class="topbar" id="navbar">
+    <div class="topbar-inner">
+        <a class="logo" href="{{ inicio_url }}">
+            <span class="logo-mark" aria-hidden="true">{% include "core/includes/icon.html" with name="diente" %}</span>
+            MT <span>Odontología</span>
+        </a>
+        <div class="topbar-search">
+            {% include "core/includes/finder.html" with prefix="nav" %}
+        </div>
+        <div class="topbar-access">
+            <ul class="topbar-links">
                 {% if user_role == 'paciente' %}
-                <li><a href="{% url 'perfil' %}">Mi perfil</a></li>
-                <li><a href="{% url 'mis_citas' %}">Mis citas</a></li>
+                <li><a href="{% url 'perfil' %}">Mi salud</a></li>
+                <li><a href="{% url 'mis_citas' %}">Citas</a></li>
+                <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} <span class="badge danger sin-punto">{{ notificaciones_sin_leer }}</span>{% endif %}</a></li>
+                <li><a href="{% url 'chat_lista' %}">Mensajes{% if mensajes_sin_leer %} <span class="badge danger sin-punto">{{ mensajes_sin_leer }}</span>{% endif %}</a></li>
                 {% elif user_role == 'profesional' %}
                 <li><a href="{% url 'perfil_profesional' %}">Mi panel</a></li>
-                <li><a href="{% url 'agenda_profesional' %}">Agenda</a></li>
+                <li><a href="{% url 'disponibilidad' %}">Horarios</a></li>
+                <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} <span class="badge danger sin-punto">{{ notificaciones_sin_leer }}</span>{% endif %}</a></li>
+                <li><a href="{% url 'chat_lista' %}">Mensajes{% if mensajes_sin_leer %} <span class="badge danger sin-punto">{{ mensajes_sin_leer }}</span>{% endif %}</a></li>
                 {% else %}
-                <li><a href="{% url 'dashboard' %}">Mi panel</a></li>
+                <li><a href="{% url 'login' %}">Ingresar</a></li>
+                <li><a href="{% url 'registro_pro' %}">Crear cuenta gratis</a></li>
                 {% endif %}
-                <li><a href="{% url 'logout' %}">Salir</a></li>
+            </ul>
+            {% if user_role == 'profesional' %}
+            <a class="btn btn-primary btn-sm" href="{% url 'agenda_profesional' %}">{% include "core/includes/icon.html" with name="agenda" %}Agenda</a>
+            {% elif user_role == 'paciente' %}
+            <a class="btn btn-primary btn-sm" href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="calendario" %}Agendar cita</a>
             {% else %}
-                <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
-                <li class="dropdown" id="dd1">
-                    <button type="button" class="dd-toggle" id="dd1_btn" aria-haspopup="true" aria-expanded="false">
-                        <span class="dd-label">¿Eres un especialista?</span>
-                        <span class="chev" aria-hidden="true"></span>
-                    </button>
-                    <div class="menu" role="menu" aria-labelledby="dd1_btn">
-                        <a class="menu-item" role="menuitem" href="{% url 'registro_pro' %}">Registrarse gratuitamente</a>
-                    </div>
-                </li>
+            <a class="btn btn-primary btn-sm" href="{% url 'buscar_profesionales' %}">{% include "core/includes/icon.html" with name="calendario" %}Agendar cita</a>
+            {% endif %}
+            <button type="button" class="icon-btn tema-toggle" data-tema-toggle aria-label="Cambiar entre tema claro y oscuro" title="Tema claro / oscuro">
+                <svg class="icon i-luna" aria-hidden="true" focusable="false"><use href="#i-luna"/></svg>
+                <svg class="icon i-sol" aria-hidden="true" focusable="false"><use href="#i-sol"/></svg>
+            </button>
+            {% if user.is_authenticated and avatar_iniciales %}
+            <a class="nav-avatar" href="{% if user_role == 'profesional' %}{% url 'perfil_profesional' %}{% else %}{% url 'perfil' %}{% endif %}" aria-label="Tu perfil">
+                {% include "core/includes/avatar.html" with foto=avatar_foto iniciales=avatar_iniciales tamano="sm" alt="" %}
+            </a>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}" class="nav-logout">
+                {% csrf_token %}
+                <button type="submit">Salir</button>
+            </form>
+            {% endif %}
+        </div>
+        <button type="button" class="menu-toggle" id="mobileMenuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileMenu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="mobile-nav-links">
+            {% if user_role == 'paciente' %}
+            <li><a href="{% url 'perfil' %}">{% include "core/includes/icon.html" with name="inicio" %}Mi salud</a></li>
+            <li><a href="{% url 'mis_citas' %}">{% include "core/includes/icon.html" with name="calendario" %}Citas</a></li>
+            <li><a href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="mas" %}Agendar cita</a></li>
+            {% elif user_role == 'profesional' %}
+            <li><a href="{% url 'perfil_profesional' %}">{% include "core/includes/icon.html" with name="inicio" %}Mi panel</a></li>
+            <li><a href="{% url 'agenda_profesional' %}">{% include "core/includes/icon.html" with name="agenda" %}Agenda</a></li>
+            <li><a href="{% url 'disponibilidad' %}">{% include "core/includes/icon.html" with name="reloj" %}Horarios</a></li>
+            {% else %}
+            <li><a href="{% url 'buscar_profesionales' %}">{% include "core/includes/icon.html" with name="buscar" %}Buscar especialista</a></li>
+            <li><a href="{% url 'login' %}">{% include "core/includes/icon.html" with name="usuario" %}Ingresar</a></li>
+            <li><a href="{% url 'register' %}">{% include "core/includes/icon.html" with name="mas" %}Crear cuenta</a></li>
+            <li><a href="{% url 'registro_pro' %}">{% include "core/includes/icon.html" with name="escudo" %}Soy especialista</a></li>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'notificaciones' %}">{% include "core/includes/icon.html" with name="campana" %}Avisos{% if notificaciones_sin_leer %} <span class="badge danger sin-punto">{{ notificaciones_sin_leer }}</span>{% endif %}</a></li>
+            <li><a href="{% url 'chat_lista' %}">{% include "core/includes/icon.html" with name="chat" %}Mensajes{% if mensajes_sin_leer %} <span class="badge danger sin-punto">{{ mensajes_sin_leer }}</span>{% endif %}</a></li>
+            {% endif %}
+            <li>
+                <button type="button" data-tema-toggle>{% include "core/includes/icon.html" with name="luna" %}Tema claro / oscuro</button>
+            </li>
+            {% if user.is_authenticated %}
+            <li>
+                <form method="post" action="{% url 'logout' %}" class="nav-logout">
+                    {% csrf_token %}
+                    <button type="submit">{% include "core/includes/icon.html" with name="salir" %}Salir</button>
+                </form>
+            </li>
             {% endif %}
         </ul>
-        <div class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menú" role="button" tabindex="0">
-            <div class="hamburger"></div>
-            <div class="hamburger"></div>
-            <div class="hamburger"></div>
-        </div>
     </div>
-</nav>
-
-<div class="mobile-menu" id="mobileMenu">
-    <ul class="mobile-nav-links">
-        {% if is_home == 'home' %}
-        <li><a href="#home">Inicio</a></li>
-        <li><a href="#about">Sobre</a></li>
-        <li><a href="#portfolio">Tratamientos</a></li>
-        <li><a href="#contact">Agendar cita</a></li>
-        {% else %}
-        <li><a href="{% url 'home' %}">Inicio</a></li>
-        <li><a href="{% url 'home' %}#about">Sobre</a></li>
-        <li><a href="{% url 'home' %}#portfolio">Tratamientos</a></li>
-        {% if user_role == 'paciente' %}
-        <li><a href="{% url 'solicitar_cita' %}">Agendar cita</a></li>
-        {% else %}
-        <li><a href="{% url 'home' %}#contact">Agendar cita</a></li>
-        {% endif %}
-        {% endif %}
-
-        {% if user.is_authenticated %}
-            {% if user_role == 'paciente' %}
-            <li><a href="{% url 'perfil' %}">Mi perfil</a></li>
-            <li><a href="{% url 'mis_citas' %}">Mis citas</a></li>
-            {% elif user_role == 'profesional' %}
-            <li><a href="{% url 'perfil_profesional' %}">Mi panel</a></li>
-            <li><a href="{% url 'agenda_profesional' %}">Agenda</a></li>
-            {% else %}
-            <li><a href="{% url 'dashboard' %}">Mi panel</a></li>
-            {% endif %}
-            <li><a href="{% url 'logout' %}">Salir</a></li>
-        {% else %}
-            <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
-            <li><a href="{% url 'registro_pro' %}">Soy especialista</a></li>
-        {% endif %}
-    </ul>
-</div>
-{% endwith %}
+</header>
 {% endblock %}
 
-<main class="{% block main_class %}{% endblock %}">
+<main id="contenido" class="{% block main_class %}{% endblock %}">
     {% block messages %}
     {% if messages %}
-    <div class="site-messages">
+    <div class="site-messages" role="status">
         {% for message in messages %}
-        <div class="alert {{ message.tags }}">{{ message }}</div>
+        <div class="alert {{ message.tags }}" {% if 'success' in message.tags or 'info' in message.tags %}data-auto-cerrar{% endif %}>
+            {% if 'error' in message.tags %}{% include "core/includes/icon.html" with name="alerta" %}{% elif 'success' in message.tags %}{% include "core/includes/icon.html" with name="check-circulo" %}{% else %}{% include "core/includes/icon.html" with name="info" %}{% endif %}
+            <span>{{ message }}</span>
+            <button type="button" class="alert-cerrar" aria-label="Cerrar aviso">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+        </div>
         {% endfor %}
     </div>
     {% endif %}
     {% endblock %}
-
     {% block content %}{% endblock %}
 </main>
 
+<footer class="site-footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <a class="logo" href="{{ inicio_url }}">
+                <span class="logo-mark" aria-hidden="true">{% include "core/includes/icon.html" with name="diente" %}</span>
+                MT <span>Odontología</span>
+            </a>
+            <p>Encuentra un especialista, compara opiniones y reserva una hora sin llamar.</p>
+        </div>
+        <div>
+            <h2>Pacientes</h2>
+            <p><a href="{% url 'buscar_profesionales' %}">Buscar especialistas</a></p>
+            <p><a href="{% url 'register' %}">Crear cuenta</a></p>
+            <p><a href="{% url 'login' %}">Ingresar</a></p>
+        </div>
+        <div>
+            <h2>Especialistas</h2>
+            <p><a href="{% url 'registro_pro' %}">Unirme como especialista</a></p>
+            <p><a href="{% url 'formclinic' %}">Registrar un centro</a></p>
+            {% if user_role != 'paciente' and user_role != 'profesional' %}
+            <p><a href="{% url 'home' %}#sedes">Sedes</a></p>
+            {% endif %}
+        </div>
+        <div>
+            <h2>Ayuda</h2>
+            {% if user_role != 'paciente' and user_role != 'profesional' %}
+            <p><a href="{% url 'home' %}#preguntas">Preguntas frecuentes</a></p>
+            <p><a href="{% url 'home' %}#tratamientos">Tratamientos</a></p>
+            {% endif %}
+        </div>
+    </div>
+    <p class="legal">Bogotá, Colombia. La reserva en línea no tiene costo de plataforma.</p>
+</footer>
+
+{% if user_role == 'paciente' or user_role == 'profesional' %}
+<nav class="tabbar" aria-label="Navegación de la aplicación">
+    {% with actual=request.resolver_match.url_name %}
+    {% if user_role == 'paciente' %}
+    <a href="{% url 'perfil' %}" {% if actual == 'perfil' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="inicio" %}Inicio</a>
+    <a href="{% url 'buscar_profesionales' %}" {% if actual == 'buscar_profesionales' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="buscar" %}Buscar</a>
+    <a href="{% url 'mis_citas' %}" {% if actual == 'mis_citas' or actual == 'solicitar_cita' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="calendario" %}Citas</a>
+    <a href="{% url 'chat_lista' %}" {% if actual == 'chat_lista' or actual == 'chat_detalle' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="chat" %}Chat{% if mensajes_sin_leer %} <span class="badge">{{ mensajes_sin_leer }}</span>{% endif %}</a>
+    <a href="{% url 'editar_perfil' %}" {% if actual == 'editar_perfil' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="usuario" %}Perfil</a>
+    {% else %}
+    <a href="{% url 'perfil_profesional' %}" {% if actual == 'perfil_profesional' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="inicio" %}Inicio</a>
+    <a href="{% url 'agenda_profesional' %}" {% if actual == 'agenda_profesional' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="agenda" %}Agenda</a>
+    <a href="{% url 'chat_lista' %}" {% if actual == 'chat_lista' or actual == 'chat_detalle' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="chat" %}Chat{% if mensajes_sin_leer %} <span class="badge">{{ mensajes_sin_leer }}</span>{% endif %}</a>
+    <a href="{% url 'disponibilidad' %}" {% if actual == 'disponibilidad' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="reloj" %}Horarios</a>
+    <a href="{% url 'notificaciones' %}" {% if actual == 'notificaciones' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="campana" %}Avisos</a>
+    {% endif %}
+    {% endwith %}
+</nav>
+{% endif %}
 <script src="{% static 'js/navbar.js' %}"></script>
 {% block extra_js %}{% endblock %}
 </body>

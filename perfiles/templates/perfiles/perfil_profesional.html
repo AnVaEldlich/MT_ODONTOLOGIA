@@ -1,76 +1,155 @@
-{% extends 'core/base.html' %}
+{% extends "core/base.html" %}
 {% load static %}
-
 {% block title %}Panel profesional — MT Odontología{% endblock %}
-
 {% block body_class %}app-layout{% endblock %}
-
 {% block main_class %}page{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
-{% endblock %}
-
 {% block content %}
-<div class="page-head">
-    <h1>Dr(a). {{ profesional.get_full_name }}</h1>
-    <p>{{ profesional.get_especialidad_display }} · {{ profesional.ubicacion }}</p>
-</div>
-
-<div class="stats">
-    <div class="stat warn">
-        <div class="num">{{ stats.pendientes }}</div>
-        <div class="label">Citas pendientes</div>
-    </div>
-    <div class="stat ok">
-        <div class="num">{{ stats.confirmadas }}</div>
-        <div class="label">Citas confirmadas</div>
-    </div>
-    <div class="stat">
-        <div class="num">{{ stats.total }}</div>
-        <div class="label">Citas en total</div>
-    </div>
-</div>
-
-<div class="card">
-    <div class="profile-top">
-        <div class="avatar">{{ profesional.user.first_name|first }}{{ profesional.user.last_name|first }}</div>
-        <div>
-            <h2>{{ profesional.get_full_name }}</h2>
-            <div class="sub">{{ user.email }}</div>
-            {% if profesional.is_verified %}<span class="badge confirmada">Perfil verificado</span>{% endif %}
-        </div>
-    </div>
-    <div class="info-grid">
-        <div class="info-item"><div class="k">Especialidad</div><div class="v">{{ profesional.get_especialidad_display }}</div></div>
-        <div class="info-item"><div class="k">Documento</div><div class="v">{{ profesional.get_id_type_display }} {{ profesional.id_number }}</div></div>
-        <div class="info-item"><div class="k">Contacto</div><div class="v">{{ profesional.get_full_phone }}</div></div>
-        <div class="info-item"><div class="k">Ubicación</div><div class="v">{{ profesional.ubicacion }}</div></div>
-    </div>
-</div>
-
-<div class="card">
-    <div class="card-title-row">
-        <h2>Próximas citas</h2>
-        <a href="{% url 'agenda_profesional' %}" class="btn btn-light btn-sm">Ver agenda completa</a>
-    </div>
-    {% if citas %}
-    <ul class="cita-list">
-        {% for cita in citas %}
-        <li>
-            <div>
-                <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
-                <div class="who">{{ cita.paciente.first_name }} {{ cita.paciente.last_name }}{% if cita.motivo %} — {{ cita.motivo }}{% endif %}</div>
+<div class="portal">
+    {% include "core/includes/portal_nav_profesional.html" %}
+    <div>
+        <section class="card cover-card">
+            <div class="cover">
+                {% if profesional.portada %}<img src="{{ profesional.portada.url }}" alt="">{% endif %}
+                <button type="button" class="media-edit" data-foto-open="portada" data-tiene="{% if profesional.portada %}1{% else %}0{% endif %}">{% include "core/includes/icon.html" with name="imagen" %}Editar portada</button>
             </div>
-            <span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span>
-        </li>
+            <div class="profile-hero">
+                <div class="avatar-wrap">
+                    {% include "core/includes/avatar.html" with foto=profesional.foto iniciales=profesional.iniciales tamano="lg" alt="" %}
+                    <button type="button" class="media-edit media-edit-avatar" data-foto-open="foto" data-tiene="{% if profesional.foto %}1{% else %}0{% endif %}" aria-label="Editar foto de perfil">{% include "core/includes/icon.html" with name="camara" %}</button>
+                </div>
+                <div>
+                    <p class="kicker">{% include "core/includes/icon.html" with name="escudo" %}Consultorio</p>
+                    <h1>{{ profesional.get_full_name }}</h1>
+                    <p class="meta">{{ profesional.etiqueta_especialidad }} · {% include "core/includes/icon.html" with name="pin" %} {{ profesional.ubicacion }}</p>
+                    <p class="chips">
+                        {% if profesional.is_verified %}
+                        <span class="badge ok sin-punto">{% include "core/includes/icon.html" with name="check-circulo" %}Perfil verificado</span>
+                        {% else %}
+                        <span class="badge warn sin-punto">{% include "core/includes/icon.html" with name="alerta" %}En revisión</span>
+                        {% endif %}
+                        {% for insignia in resumen.insignias %}
+                        {% if insignia != "Perfil verificado" %}
+                        <span class="badge ok sin-punto">{% include "core/includes/icon.html" with name="check-circulo" %}{{ insignia }}</span>
+                        {% endif %}
+                        {% endfor %}
+                        <a class="badge sin-punto" href="{% url 'perfil_publico' profesional.pk %}">Ver ficha pública {% include "core/includes/icon.html" with name="flecha" %}</a>
+                    </p>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat"><div class="num">{{ stats.hoy }}</div><div class="label">Citas de hoy</div></div>
+                <div class="stat"><div class="num">{{ stats.pendientes }}</div><div class="label">Pendientes</div></div>
+                <div class="stat"><div class="num">{{ stats.confirmadas }}</div><div class="label">Confirmadas</div></div>
+                <div class="stat"><div class="num">{% if resumen.promedio %}{{ resumen.promedio }}{% else %}—{% endif %}</div><div class="label">Calificación</div></div>
+            </div>
+        </section>
+
+        {% if not consulta_lista %}
+        <section class="card">
+            <h2>Prepara tu consulta</h2>
+            <p class="meta">Tres pasos. Los pacientes te encuentran cuando el perfil está verificado y hay horarios.</p>
+            <ol class="setup-list">
+                <li>
+                    <span class="icon-tile{% if pasos.horarios %} book{% endif %}" aria-hidden="true">{% include "core/includes/icon.html" with name="reloj" clase="lg" %}</span>
+                    <div>
+                        <h3>Publica tus horarios</h3>
+                        <p>{% if pasos.horarios %}Ya tienes agenda abierta.{% else %}Sin horas publicadas nadie puede reservarte.{% endif %}</p>
+                    </div>
+                    {% if pasos.horarios %}
+                    <span class="badge ok sin-punto">Listo</span>
+                    {% else %}
+                    <a class="btn btn-primary btn-sm" href="{% url 'disponibilidad' %}">Abrir horarios</a>
+                    {% endif %}
+                </li>
+                <li>
+                    <span class="icon-tile{% if pasos.foto %} book{% endif %}" aria-hidden="true">{% include "core/includes/icon.html" with name="camara" clase="lg" %}</span>
+                    <div>
+                        <h3>Pon tu foto de consultorio</h3>
+                        <p>{% if pasos.foto %}Tu ficha ya tiene foto.{% else %}Los pacientes reconocen mejor un rostro que unas iniciales.{% endif %}</p>
+                    </div>
+                    {% if pasos.foto %}
+                    <span class="badge ok sin-punto">Listo</span>
+                    {% else %}
+                    <button type="button" class="btn btn-ghost btn-sm" data-foto-open="foto" data-tiene="0">Subir foto</button>
+                    {% endif %}
+                </li>
+                <li>
+                    <span class="icon-tile{% if pasos.verificado %} book{% endif %}" aria-hidden="true">{% include "core/includes/icon.html" with name="escudo" clase="lg" %}</span>
+                    <div>
+                        <h3>Espera la verificación</h3>
+                        <p>{% if pasos.verificado %}Ya apareces en la búsqueda pública.{% else %}Puedes usar el panel ahora. La ficha pública se publica cuando el equipo confirma tus datos.{% endif %}</p>
+                    </div>
+                    {% if pasos.verificado %}
+                    <span class="badge ok sin-punto">Listo</span>
+                    {% else %}
+                    <span class="badge warn sin-punto">En revisión</span>
+                    {% endif %}
+                </li>
+            </ol>
+        </section>
+        {% endif %}
+
+        <div class="panel-grid">
+            <section class="card">
+                <div class="card-title-row">
+                    <h2>Hoy en el consultorio</h2>
+                    <a class="btn {% if consulta_lista %}btn-primary{% else %}btn-ghost{% endif %} btn-sm" href="{% url 'agenda_profesional' %}?vista=dia">{% include "core/includes/icon.html" with name="agenda" %}Abrir el día</a>
+                </div>
+                {% if citas_hoy %}
+                <ul class="cita-list">
+                    {% for cita in citas_hoy %}
+                    <li>
+                        <div>
+                            <div class="when">{{ cita.fecha_hora|date:"H:i" }} · {{ cita.paciente.first_name }} {{ cita.paciente.last_name }}</div>
+                            <div class="who"><span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span></div>
+                        </div>
+                        <a class="btn btn-ghost btn-sm" href="{% url 'ficha_paciente' cita.paciente_id %}">Abrir ficha</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                {% include "core/includes/vacio.html" with tipo="cita" titulo="Hoy no tienes pacientes" texto="Publica horarios o revisa la agenda de la semana." compacto=True %}
+                {% endif %}
+            </section>
+            <section class="card">
+                <h2>Próximos pacientes</h2>
+                {% if citas %}
+                <ul class="cita-list">
+                    {% for cita in citas %}
+                    <li>
+                        <div>
+                            <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
+                            <div class="who">{{ cita.paciente.first_name }} {{ cita.paciente.last_name }}</div>
+                        </div>
+                        <a href="{% url 'ficha_paciente' cita.paciente_id %}">Ver ficha {% include "core/includes/icon.html" with name="flecha" %}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                {% include "core/includes/vacio.html" with tipo="cita" titulo="Nadie ha reservado aún" texto="Cuando un paciente elija una hora, lo verás aquí." compacto=True %}
+                {% endif %}
+            </section>
+        </div>
+
+        <section class="card feed-card">
+            <h2>Consejo para tus pacientes</h2>
+            <p class="meta">Un aviso general. Sin nombres ni datos clínicos.</p>
+            <form method="post" action="{% url 'crear_publicacion' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% include "core/includes/fields.html" with form=form_publicacion %}
+                <button class="btn btn-primary" type="submit">{% include "core/includes/icon.html" with name="enviar" %}Publicar</button>
+            </form>
+        </section>
+        {% for publicacion in publicaciones %}
+        {% include "comunicacion/includes/publicacion.html" %}
+        {% empty %}
+        <div class="card">{% include "core/includes/vacio.html" with titulo="Todavía no publicas" texto="Un consejo corto ayuda a que te encuentren." compacto=True %}</div>
         {% endfor %}
-    </ul>
-    {% else %}
-    <div class="empty">
-        <div class="icon">📅</div>
-        <p>No hay citas próximas. Aparecerán cuando los pacientes soliciten.</p>
     </div>
-    {% endif %}
 </div>
+{% url 'foto_profesional' as foto_url %}
+{% include "perfiles/includes/foto_dialog.html" with accion=foto_url %}
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/foto.js' %}"></script>
 {% endblock %}

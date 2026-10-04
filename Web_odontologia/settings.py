@@ -3,6 +3,7 @@ Django settings for Web_odontologia project.
 """
 
 import os
+import sys
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,6 +26,9 @@ def _load_dotenv() -> None:
 
 
 _load_dotenv()
+
+# pytest no debe usar el MySQL del .env local: las pruebas corren en SQLite.
+_under_pytest = "pytest" in sys.modules
 
 
 def _env_bool(key: str, default: bool = False) -> bool:
@@ -53,6 +57,7 @@ CSRF_TRUSTED_ORIGINS = _env_list(
 )
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -61,8 +66,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "core",
     "accounts",
+    "clinica",
     "perfiles",
     "citas",
+    "historia",
+    "facturacion",
+    "comunicacion",
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -81,7 +91,7 @@ ROOT_URLCONF = "Web_odontologia.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -95,8 +105,24 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "Web_odontologia.wsgi.application"
+ASGI_APPLICATION = "Web_odontologia.asgi.application"
 
-_use_sqlite = _env_bool("USE_SQLITE", True)
+_redis_url = os.getenv("REDIS_URL", "").strip()
+if _redis_url:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {"hosts": [_redis_url]},
+        }
+    }
+else:
+    # Un solo proceso (runserver). Con varios procesos hace falta REDIS_URL.
+    CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+_use_sqlite = _under_pytest or _env_bool("USE_SQLITE", True)
 
 if _use_sqlite:
     DATABASES = {
@@ -114,7 +140,10 @@ else:
             "PASSWORD": os.getenv("DB_PASSWORD", ""),
             "HOST": os.getenv("DB_HOST", "localhost"),
             "PORT": os.getenv("DB_PORT", "3306"),
-            "OPTIONS": {"charset": "utf8mb4"},
+            "OPTIONS": {
+                "charset": "utf8mb4",
+                "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
         }
     }
 

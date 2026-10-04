@@ -1,0 +1,38 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Facturas — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_paciente.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Facturas y pagos</h1>
+            <p>Solo ves los cobros de tu cuenta.</p>
+        </div>
+        {% if facturas %}
+        <div class="card scroll-x">
+            <table class="table">
+                <thead>
+                    <tr><th>Número</th><th>Concepto</th><th>Valor</th><th>Saldo</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                    {% for factura in facturas %}
+                    <tr>
+                        <td data-label="Número"><a href="{% url 'detalle_factura' factura.pk %}">{{ factura.numero }}</a></td>
+                        <td data-label="Concepto">{{ factura.concepto }}</td>
+                        <td data-label="Valor">${{ factura.valor }}</td>
+                        <td data-label="Saldo">${{ factura.saldo_calculado }}</td>
+                        <td data-label="Estado">{{ factura.get_estado_display }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="card empty"><p>No tienes facturas.</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

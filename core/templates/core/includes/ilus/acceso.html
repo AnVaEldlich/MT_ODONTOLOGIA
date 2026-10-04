@@ -1,0 +1,33 @@
+<svg viewBox="0 0 360 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false">
+    <defs>
+        <linearGradient id="acc-g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="var(--brand)"/>
+            <stop offset="1" stop-color="var(--book-2)"/>
+        </linearGradient>
+        <filter id="acc-sombra" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#0b2a33" flood-opacity="0.14"/>
+        </filter>
+    </defs>
+    <circle cx="190" cy="130" r="110" fill="var(--brand-soft)"/>
+    <g class="flotante lento">
+        <rect x="70" y="60" width="220" height="150" rx="22" fill="var(--bg-card)" filter="url(#acc-sombra)"/>
+        <circle cx="120" cy="105" r="22" fill="url(#acc-g)"/>
+        <text x="109" y="111" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="800" fill="#fff">SM</text>
+        <rect x="154" y="92" width="110" height="10" rx="5" fill="var(--text)" opacity="0.75"/>
+        <rect x="154" y="110" width="76" height="8" rx="4" fill="var(--text-faint)" opacity="0.6"/>
+        <rect x="92" y="146" width="176" height="14" rx="7" fill="var(--bg-muted)"/>
+        <rect x="92" y="170" width="120" height="14" rx="7" fill="var(--bg-muted)"/>
+        <rect x="222" y="168" width="46" height="18" rx="9" fill="url(#acc-g)"/>
+    </g>
+    <g class="flotante">
+        <rect x="250" y="40" width="80" height="34" rx="17" fill="var(--bg-card)" filter="url(#acc-sombra)"/>
+        <circle cx="268" cy="57" r="9" fill="var(--book)"/>
+        <path d="m263.5 57 3 3 6-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="284" y="53" width="36" height="8" rx="4" fill="var(--text)" opacity="0.7"/>
+    </g>
+    <g class="flotante rapido">
+        <rect x="30" y="180" width="96" height="40" rx="20" fill="var(--bg-card)" filter="url(#acc-sombra)"/>
+        <path d="M50 190c-3 0-4 1.5-6.5 1.5-3 0-5.5 2.5-5.5 6.5 0 3 1.5 4.5 2.5 7.5 1 3.5 1.2 10.5 3.8 10.5 2 0 2.2-6.5 5.7-6.5s3.7 6.5 5.7 6.5c2.6 0 2.8-7 3.8-10.5 1-3 2.5-4.5 2.5-7.5 0-4-2.5-6.5-5.5-6.5-2.5 0-3.5-1.5-6.5-1.5z" fill="var(--bg-card)" stroke="url(#acc-g)" stroke-width="2.5"/>
+        <rect x="70" y="196" width="44" height="8" rx="4" fill="var(--text)" opacity="0.7"/>
+    </g>
+</svg>

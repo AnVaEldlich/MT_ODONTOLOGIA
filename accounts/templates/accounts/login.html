@@ -1,63 +1,45 @@
-{% extends 'core/base.html' %}
-{% load static %}
-
+{% extends "core/base.html" %}
 {% block title %}Iniciar sesión — MT Odontología{% endblock %}
-
-{% block body_class %}auth-layout auth-center{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
-{% endblock %}
-
+{% block body_class %}auth-layout{% endblock %}
 {% block messages %}{% endblock %}
-
 {% block content %}
-<form action="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}" method="POST">
-    {% csrf_token %}
-    <div class="login-container">
-        <div class="logo">
-            <h1>MT ODONTOLOGIA INTEGRAL</h1>
-        </div>
+<div class="auth-grid">
+    <aside class="auth-side" aria-label="Qué puedes hacer con tu cuenta">
+        <p class="kicker">{% include "core/includes/icon.html" with name="escudo" %}Tu cuenta</p>
+        <h2>Tu agenda dental, en un solo lugar.</h2>
+        <ul>
+            <li>{% include "core/includes/icon.html" with name="check-circulo" %}<span>Reserva, cancela o reprograma citas sin llamar.</span></li>
+            <li>{% include "core/includes/icon.html" with name="check-circulo" %}<span>Escríbele a tu especialista cuando tengas una cita activa.</span></li>
+            <li>{% include "core/includes/icon.html" with name="check-circulo" %}<span>Consulta tu historia, odontograma y facturas de forma privada.</span></li>
+        </ul>
+        <div class="ilus" aria-hidden="true">{% include "core/includes/ilus/acceso.html" %}</div>
+    </aside>
+    <form class="login-container" action="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}" method="post">
+        {% csrf_token %}
+        <div class="auth-brand" aria-hidden="true"><span class="logo-mark">{% include "core/includes/icon.html" with name="diente" %}</span></div>
         <div class="welcome-text">
-            <p>Inicia sesión para continuar</p>
+            <h1>Ingresar</h1>
+            <p>Usa el correo de tu cuenta de paciente o de especialista.</p>
         </div>
-
         {% if messages %}
-        {% for message in messages %}
-        <p class="form-error">{{ message }}</p>
-        {% endfor %}
+        {% for message in messages %}<p class="alert {{ message.tags }}">{% include "core/includes/icon.html" with name="info" %}<span>{{ message }}</span></p>{% endfor %}
         {% endif %}
         {% if form.non_field_errors %}
-        {% for error in form.non_field_errors %}
-        <p class="form-error">{{ error }}</p>
-        {% endfor %}
+        {% for error in form.non_field_errors %}<p class="alert error">{% include "core/includes/icon.html" with name="alerta" %}<span>{{ error }}</span></p>{% endfor %}
         {% endif %}
-
-        <div class="form-group">
-            <label for="id_email">Correo electrónico</label>
-            <div class="input-wrapper">
-                {{ form.email }}
-            </div>
-            {% if form.email.errors %}<p class="form-error">{{ form.email.errors.0 }}</p>{% endif %}
+        <div class="field{% if form.email.errors %} has-error{% endif %}">
+            <label for="{{ form.email.id_for_label }}">Correo electrónico</label>
+            {{ form.email }}
+            {% if form.email.errors %}<p class="err">{{ form.email.errors.0 }}</p>{% endif %}
         </div>
-
-        <div class="form-group">
-            <label for="id_password">Contraseña</label>
-            <div class="input-wrapper">
-                {{ form.password }}
-            </div>
-            {% if form.password.errors %}<p class="form-error">{{ form.password.errors.0 }}</p>{% endif %}
+        <div class="field{% if form.password.errors %} has-error{% endif %}">
+            <label for="{{ form.password.id_for_label }}">Contraseña</label>
+            {{ form.password }}
+            {% if form.password.errors %}<p class="err">{{ form.password.errors.0 }}</p>{% endif %}
         </div>
-
-        <button class="btn-login" type="submit">Iniciar Sesión</button>
-
-        <div class="divider">
-            <span>o</span>
-        </div>
-
-        <div class="register-link">
-            ¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a>
-        </div>
-    </div>
-</form>
+        <button class="btn btn-brand btn-block btn-lg" type="submit">Ingresar</button>
+        <p class="register-link">¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate</a></p>
+        <p class="register-link"><a href="{% url 'registro_pro' %}">Soy especialista</a></p>
+    </form>
+</div>
 {% endblock %}

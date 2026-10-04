@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+{% block title %}Página no encontrada — MT Odontología{% endblock %}
+{% block content %}
+<div class="error-page">
+    <div class="ilus" aria-hidden="true">{% include "core/includes/ilus/error.html" with tipo="404" %}</div>
+    <p class="codigo">Error 404</p>
+    <h1>No encontramos esa página</h1>
+    <p>La dirección no existe o el enlace quedó desactualizado. Puedes volver al inicio o buscar un especialista.</p>
+    <p class="actions">
+        <a class="btn btn-brand" href="{{ inicio_url }}">{% include "core/includes/icon.html" with name="inicio" %}Volver al inicio</a>
+        <a class="btn btn-primary" href="{% url 'buscar_profesionales' %}">{% include "core/includes/icon.html" with name="buscar" %}Buscar especialistas</a>
+    </p>
+</div>
+{% endblock %}

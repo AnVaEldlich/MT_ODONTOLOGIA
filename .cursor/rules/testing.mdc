@@ -1,0 +1,24 @@
+---
+description: Pruebas pytest por app de Django
+globs: "**/tests/**/*.py,**/test_*.py,conftest.py"
+alwaysApply: false
+---
+
+# Pruebas
+
+Pytest + `pytest-django`. Las pruebas viven junto a la app (`accounts/tests/`, `citas/tests/`), no en un `tests/` raíz.
+
+- Nombrar `test_<comportamiento>`. Un caso por comportamiento de usuario o de rol.
+- Usar `reverse("name")`, nunca paths literales.
+- Marcar acceso a BD con `@pytest.mark.django_db`.
+- Cubrir el camino feliz y el rechazo: rol incorrecto, form inválido, usuario anónimo.
+- No golpear MySQL ni red. SQLite de test basta.
+- No afirmar HTML frágil (clases de diseño). Afirmar status, redirect y datos persistidos.
+
+```python
+@pytest.mark.django_db
+def test_paciente_no_ve_agenda(client, paciente_user):
+    client.force_login(paciente_user)
+    response = client.get(reverse("agenda_profesional"))
+    assert response.status_code in (302, 403)
+```

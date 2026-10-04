@@ -1,0 +1,28 @@
+---
+description: Consistencia visual con los tokens de base.css
+globs: "**/*.html,**/*.css"
+alwaysApply: false
+---
+
+# Diseño
+
+Una sola marca. Los tokens viven solo en `:root` de `core/static/css/base.css`.
+
+Usar variables, no hex nuevos en CSS de página:
+
+- Color: `--primary-color`, `--secondary-color`, `--accent-color`, `--text-primary`, `--text-secondary`, `--bg-primary`, `--bg-secondary`
+- Superficie: `--bg-card`, `--shadow-md`, `--shadow-lg`, `--glass`
+- Marca: `--gradient-primary`, `--gradient-elegant`
+- Layout: `--navbar-offset` (la barra es `fixed`)
+
+- Un color nuevo se añade como token en `base.css` y se referencia con `var(--…)`. No abrir una segunda paleta.
+- Tipografía: `'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif`. No importar otra familia sin ADR.
+- Radio, sombra y hover deben parecerse al navbar (borde suave, sombra `--shadow-md` / `--shadow-lg`, transición ~0.3s).
+- Nada de estilos inline de color o spacing. El HTML estructura; el CSS de la app pinta.
+- Misma página en móvil y escritorio: reutilizar el patrón de `base.css` (contenedor, menú móvil), no un layout paralelo.
+- Sensación clínica y sobria. No mezclar el look TemplateMo de páginas viejas en pantallas nuevas; al tocar una pantalla vieja, migrar sus colores a tokens.
+
+```css
+/* ❌ color: #6366f1; */
+/* ✅ color: var(--primary-color); */
+```

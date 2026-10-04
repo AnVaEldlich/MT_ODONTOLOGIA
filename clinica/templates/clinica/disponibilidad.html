@@ -1,0 +1,78 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Horarios — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_profesional.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Disponibilidad</h1>
+            <p>Publica las franjas en las que se pueden agendar citas. Desactivar una franja no borra las citas ya pedidas.</p>
+        </div>
+        <section class="card">
+            <h2>Franjas activas</h2>
+            {% if franjas %}
+            <ul class="cita-list">
+                {% for franja in franjas %}
+                <li>
+                    <div class="who-row">
+                        <span class="icon-tile book" aria-hidden="true">{% include "core/includes/icon.html" with name="reloj" %}</span>
+                        <div>
+                            <div class="when">{{ franja.get_dia_semana_display }} · {{ franja.hora_inicio|time:"H:i" }} a {{ franja.hora_fin|time:"H:i" }}</div>
+                            <div class="who">{{ franja.sede.nombre }}{% if franja.consultorio %} · {{ franja.consultorio.nombre }}{% endif %}</div>
+                        </div>
+                    </div>
+                    <form method="post" action="{% url 'desactivar_disponibilidad' franja.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-ghost btn-sm" type="submit">Dejar de publicar</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            {% include "core/includes/vacio.html" with tipo="cita" titulo="Todavía no publicas horarios" texto="Mientras no haya franjas, el paciente puede proponer cualquier hora futura." compacto=True %}
+            {% endif %}
+        </section>
+        <form class="card form-narrow" method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="franja">
+            <h2>Nueva franja</h2>
+            {% include "core/includes/fields.html" with form=form %}
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">{% include "core/includes/icon.html" with name="mas" %}Publicar horario</button>
+            </div>
+        </form>
+        <section class="card">
+            <h2>Bloqueos</h2>
+            {% if bloqueos %}
+            <ul class="cita-list">
+                {% for bloqueo in bloqueos %}
+                <li>
+                    <div class="who-row">
+                        <span class="icon-tile warn" aria-hidden="true">{% include "core/includes/icon.html" with name="cerrar" %}</span>
+                        <div>
+                            <div class="when">{{ bloqueo.inicio|date:"d/m/Y H:i" }} – {{ bloqueo.fin|date:"d/m/Y H:i" }}</div>
+                            <div class="who">{{ bloqueo.motivo }}</div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            {% include "core/includes/vacio.html" with titulo="No hay bloqueos" texto="Usa un bloqueo para vacaciones o reuniones." compacto=True %}
+            {% endif %}
+        </section>
+        <form class="card form-narrow" method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="bloqueo">
+            <h2>Bloquear un horario</h2>
+            {% include "core/includes/fields.html" with form=bloqueo_form %}
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Guardar bloqueo</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

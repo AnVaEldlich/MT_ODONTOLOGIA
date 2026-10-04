@@ -1,0 +1,14 @@
+{% with actual=request.resolver_match.url_name %}
+<nav class="portal-nav" aria-label="Portal del paciente">
+    <a href="{% url 'perfil' %}" {% if actual == 'perfil' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="inicio" %}Inicio</a>
+    <a href="{% url 'solicitar_cita' %}" {% if actual == 'solicitar_cita' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="mas" %}Agendar</a>
+    <a href="{% url 'mis_citas' %}" {% if actual == 'mis_citas' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="calendario" %}Citas</a>
+    <a href="{% url 'chat_lista' %}" {% if actual == 'chat_lista' or actual == 'chat_detalle' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="chat" %}Mensajes{% if mensajes_sin_leer %} <span class="badge danger sin-punto">{{ mensajes_sin_leer }}</span>{% endif %}</a>
+    <a href="{% url 'mi_historia' %}" {% if actual == 'mi_historia' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="documento" %}Historia</a>
+    <a href="{% url 'mi_odontograma' %}" {% if actual == 'mi_odontograma' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="diente" %}Odontograma</a>
+    <a href="{% url 'mis_facturas' %}" {% if actual == 'mis_facturas' or actual == 'detalle_factura' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="recibo" %}Facturas</a>
+    <a href="{% url 'mis_recetas' %}" {% if actual == 'mis_recetas' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="pastilla" %}Recetas</a>
+    <a href="{% url 'notificaciones' %}" {% if actual == 'notificaciones' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="campana" %}Avisos{% if notificaciones_sin_leer %} <span class="badge danger sin-punto">{{ notificaciones_sin_leer }}</span>{% endif %}</a>
+    <a href="{% url 'editar_perfil' %}" {% if actual == 'editar_perfil' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="usuario" %}Perfil</a>
+</nav>
+{% endwith %}

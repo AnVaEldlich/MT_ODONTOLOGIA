@@ -1,6 +1,48 @@
-from .roles import user_role
+from django.urls import NoReverseMatch, reverse
+
+from comunicacion.models import Notificacion
+from comunicacion.services import mensajes_sin_leer
+
+from .roles import dashboard_url_name, user_role
 
 
 def role(request):
-    """Expone el rol del usuario a todas las plantillas."""
-    return {"user_role": user_role(request.user)}
+    """Expone el rol, los avisos, los mensajes sin leer y la foto de la cabecera."""
+    sin_leer = 0
+    chat_sin_leer = 0
+    avatar_foto = None
+    avatar_iniciales = ""
+    if request.user.is_authenticated:
+        sin_leer = Notificacion.objects.filter(usuario=request.user, leida=False).count()
+        chat_sin_leer = mensajes_sin_leer(request.user)
+        perfil = _perfil_visible(request.user)
+        if perfil is not None:
+            avatar_iniciales = perfil.iniciales()
+            avatar_foto = perfil.foto if perfil.foto else None
+    return {
+        "user_role": user_role(request.user),
+        "notificaciones_sin_leer": sin_leer,
+        "mensajes_sin_leer": chat_sin_leer,
+        "avatar_foto": avatar_foto,
+        "avatar_iniciales": avatar_iniciales,
+        "inicio_url": _inicio_url(request.user),
+    }
+
+
+def _inicio_url(user):
+    if not user.is_authenticated:
+        return reverse("home")
+    destino = dashboard_url_name(user)
+    if destino == "home":
+        return reverse("home")
+    try:
+        return reverse(destino)
+    except NoReverseMatch:
+        return reverse("home")
+
+
+def _perfil_visible(user):
+    profesional = getattr(user, "profesional", None)
+    if profesional is not None:
+        return profesional
+    return getattr(user, "paciente", None)

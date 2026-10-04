@@ -6,6 +6,9 @@ urlpatterns = [
     path("solicitar/", views.solicitar_cita, name="solicitar_cita"),
     path("mis-citas/", views.mis_citas, name="mis_citas"),
     path("<int:pk>/cancelar/", views.cancelar_cita, name="cancelar_cita"),
+    path("<int:pk>/reprogramar/", views.reprogramar_cita_view, name="reprogramar_cita"),
     path("agenda/", views.agenda_profesional, name="agenda_profesional"),
     path("<int:pk>/confirmar/", views.confirmar_cita, name="confirmar_cita"),
+    path("<int:pk>/atender/", views.atender_cita_view, name="atender_cita"),
+    path("<int:pk>/no-asistio/", views.inasistencia_cita_view, name="inasistencia_cita"),
 ]

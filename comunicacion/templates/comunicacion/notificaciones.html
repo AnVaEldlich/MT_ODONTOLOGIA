@@ -1,0 +1,45 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Avisos — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% if user_role == 'profesional' %}
+    {% include "core/includes/portal_nav_profesional.html" %}
+    {% elif user_role == 'paciente' %}
+    {% include "core/includes/portal_nav_paciente.html" %}
+    {% endif %}
+    <div>
+        <div class="page-head">
+            <h1>Avisos</h1>
+            <p>Recordatorios de tus citas. No incluyen la historia clínica.</p>
+        </div>
+        {% if avisos %}
+        {% for aviso in avisos %}
+        <article class="card feed-card aviso{% if not aviso.leida %} sin-leer{% endif %}">
+            <div class="note">
+                <span class="icon-tile{% if aviso.leida %}{% else %} warn{% endif %}" aria-hidden="true">{% include "core/includes/icon.html" with name="campana" clase="lg" %}</span>
+                <div>
+                    <h2>{{ aviso.titulo }}</h2>
+                    <p>{{ aviso.mensaje }}</p>
+                    <p class="meta">{{ aviso.created_at|date:"d/m/Y H:i" }}{% if aviso.leida %} · Leído{% endif %}</p>
+                    <div class="actions card-actions">
+                        {% if aviso.enlace %}<a class="btn btn-ghost btn-sm" href="{{ aviso.enlace }}">Abrir{% include "core/includes/icon.html" with name="flecha" %}</a>{% endif %}
+                        {% if not aviso.leida %}
+                        <form method="post" action="{% url 'marcar_notificacion' aviso.pk %}">
+                            {% csrf_token %}
+                            <button class="btn btn-ghost btn-sm" type="submit">{% include "core/includes/icon.html" with name="check" %}Marcar como leído</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+        {% else %}
+        <div class="card">{% include "core/includes/vacio.html" with titulo="No tienes avisos" texto="Te avisaremos cuando haya una cita por confirmar o un recordatorio." %}</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

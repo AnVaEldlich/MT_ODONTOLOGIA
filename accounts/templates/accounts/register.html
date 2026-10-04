@@ -5,26 +5,21 @@
 
 {% block body_class %}auth-layout{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'accounts/css/register.css' %}">
-{% endblock %}
 
 {% block messages %}{% endblock %}
 
 {% block content %}
-<form id="registrationForm" method="POST" action="{% url 'register' %}">
+<form id="registrationForm" method="POST" action="{% url 'register' %}" novalidate{% if form.confirm_password.errors %} data-open-section="3"{% endif %}>
     {% csrf_token %}
     <div class="register-container">
-        <div class="logo">
-            <h1>MT ODONTOLOGIA INTEGRAL</h1>
-        </div>
+        <div class="auth-brand" aria-hidden="true"><span class="logo-mark">{% include "core/includes/icon.html" with name="diente" %}</span></div>
 
         <div class="welcome-text">
-            <h2>Registro de Paciente</h2>
-            <p>Completa tu información para comenzar tu camino hacia una sonrisa perfecta</p>
+            <h1>Registro de paciente</h1>
+            <p>Completa tu información para reservar y llevar tu historia dental en un solo lugar.</p>
         </div>
-        {% if messages %}{% for message in messages %}<p style="color:#b91c1c;text-align:center">{{ message }}</p>{% endfor %}{% endif %}
-        {% if form.non_field_errors %}{% for error in form.non_field_errors %}<p style="color:#b91c1c;text-align:center">{{ error }}</p>{% endfor %}{% endif %}
+        {% if messages %}{% for message in messages %}<p class="alert error">{% include "core/includes/icon.html" with name="alerta" %}<span>{{ message }}</span></p>{% endfor %}{% endif %}
+        {% if form.non_field_errors %}{% for error in form.non_field_errors %}<p class="alert error">{% include "core/includes/icon.html" with name="alerta" %}<span>{{ error }}</span></p>{% endfor %}{% endif %}
 
         <div class="progress-steps">
             <div class="step active" data-step="1">
@@ -107,7 +102,7 @@
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn btn-next" onclick="nextSection()">Siguiente</button>
+                <button type="button" class="btn btn-next" onclick="nextSection()">Siguiente{% include "core/includes/icon.html" with name="flecha" %}</button>
             </div>
         </div>
 
@@ -183,8 +178,8 @@
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn btn-prev" onclick="prevSection()">Anterior</button>
-                <button type="button" class="btn btn-next" onclick="nextSection()">Siguiente</button>
+                <button type="button" class="btn btn-prev" onclick="prevSection()">{% include "core/includes/icon.html" with name="flecha" clase="volver" %}Anterior</button>
+                <button type="button" class="btn btn-next" onclick="nextSection()">Siguiente{% include "core/includes/icon.html" with name="flecha" %}</button>
             </div>
         </div>
 
@@ -255,8 +250,11 @@
                 <label for="confirmPassword">Confirmar Contraseña <span class="required">*</span></label>
                 <div class="input-wrapper">
                     <input type="password" id="confirmPassword" name="confirm_password"
-                        placeholder="Repite tu contraseña" required>
+                        placeholder="Repite tu contraseña" required
+                        aria-describedby="passwordMismatch"
+                        {% if form.confirm_password.errors %}aria-invalid="true"{% endif %}>
                 </div>
+                <p class="err" id="passwordMismatch" role="alert"{% if not form.confirm_password.errors %} hidden{% endif %}>Las contraseñas no coinciden.</p>
             </div>
 
             <div class="checkbox-item">
@@ -270,18 +268,28 @@
             </p>
 
             <div class="button-group">
-                <button type="button" class="btn btn-prev" onclick="prevSection()">Anterior</button>
-                <button type="submit" class="btn btn-submit">Completar Registro</button>
+                <button type="button" class="btn btn-prev" onclick="prevSection()">{% include "core/includes/icon.html" with name="flecha" clase="volver" %}Anterior</button>
+                <button type="submit" class="btn btn-submit">{% include "core/includes/icon.html" with name="check" %}Completar registro</button>
             </div>
         </div>
 
         <div class="login-link">
             ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a>
         </div>
+        {% if show_dev_fill %}
+        <div class="dev-fill">
+            <button type="button" id="devFillRegister" class="btn-dev-fill">
+                Rellenar datos de prueba
+            </button>
+        </div>
+        {% endif %}
     </div>
 </form>
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'accounts/js/register.js' %}"></script>
+<script src="{% static 'accounts/js/register.js' %}?v=2"></script>
+{% if show_dev_fill %}
+<script src="{% static 'accounts/js/register_dev_fill.js' %}?v=1"></script>
+{% endif %}
 {% endblock %}

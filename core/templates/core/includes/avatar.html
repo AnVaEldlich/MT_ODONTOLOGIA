@@ -1,0 +1,5 @@
+{% if foto %}
+<img class="avatar {{ tamano }}" src="{{ foto.url }}" alt="{{ alt|default:'' }}">
+{% else %}
+<div class="avatar {{ tamano }}" aria-hidden="true">{{ iniciales }}</div>
+{% endif %}

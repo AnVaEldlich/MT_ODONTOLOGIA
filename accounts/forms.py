@@ -1,8 +1,19 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 from .models import ClinicCenter, Paciente, Profesional
+from .services import create_paciente, create_profesional
+
+
+def _password_errors(password):
+    try:
+        validate_password(password)
+    except ValidationError as exc:
+        return exc.messages
+    return []
 
 
 class LoginForm(forms.Form):
@@ -22,9 +33,10 @@ class LoginForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
-        email = cleaned.get("email")
+        email = (cleaned.get("email") or "").strip().lower()
         password = cleaned.get("password")
         if email and password:
+            cleaned["email"] = email
             self.user_cache = authenticate(
                 self.request,
                 username=email,
@@ -81,119 +93,164 @@ class PatientRegisterForm(forms.Form):
             raise forms.ValidationError("Este documento ya está registrado.")
         return id_number
 
+    def clean_password(self):
+        password = self.cleaned_data["password"]
+        errors = _password_errors(password)
+        if errors:
+            raise forms.ValidationError(errors)
+        return password
+
     def clean(self):
         cleaned = super().clean()
-        if cleaned.get("password") != cleaned.get("confirm_password"):
-            raise forms.ValidationError("Las contraseñas no coinciden.")
+        password = cleaned.get("password")
+        confirm = cleaned.get("confirm_password")
+        if password and confirm and password != confirm:
+            self.add_error("confirm_password", "Las contraseñas no coinciden.")
         return cleaned
 
     def save(self):
-        conditions = set(self.cleaned_data.get("conditions") or [])
-        email = self.cleaned_data["email"]
-        user = User.objects.create_user(
-            username=email,
-            email=email,
-            password=self.cleaned_data["password"],
-            first_name=self.cleaned_data["first_name"],
-            last_name=self.cleaned_data["last_name"],
-        )
-        paciente = Paciente.objects.create(
-            user=user,
-            first_name=self.cleaned_data["first_name"],
-            last_name=self.cleaned_data["last_name"],
-            id_type=self.cleaned_data["id_type"],
-            id_number=self.cleaned_data["id_number"],
-            birth_date=self.cleaned_data["birth_date"],
-            gender=self.cleaned_data["gender"],
-            phone=self.cleaned_data["phone"],
-            address=self.cleaned_data["address"],
-            city=self.cleaned_data["city"],
-            department=self.cleaned_data["department"],
-            emergency_contact=self.cleaned_data.get("emergency_contact") or None,
-            emergency_phone=self.cleaned_data.get("emergency_phone") or None,
-            eps=self.cleaned_data.get("eps") or None,
-            diabetes="diabetes" in conditions,
-            hipertension="hipertension" in conditions,
-            cardiopatia="cardiopatia" in conditions,
-            alergias="alergias" in conditions,
-            embarazo="embarazo" in conditions,
-            ninguna="ninguna" in conditions,
-            medications=self.cleaned_data.get("medications"),
-            dental_history=self.cleaned_data.get("dental_history"),
-        )
-        from .roles import assign_paciente_group
-
-        assign_paciente_group(user)
-        return user, paciente
+        return create_paciente(self.cleaned_data)
 
 
 class ProfessionalRegisterForm(forms.Form):
-    username = forms.CharField(max_length=150)
-    email = forms.EmailField()
-    password1 = forms.CharField(min_length=8, widget=forms.PasswordInput)
-    password2 = forms.CharField(widget=forms.PasswordInput)
-    first_name = forms.CharField(max_length=100)
-    last_name = forms.CharField(max_length=100)
-    id_type = forms.ChoiceField(choices=Profesional.ID_TYPE_CHOICES)
-    id_number = forms.CharField(max_length=30)
-    especialidad = forms.ChoiceField(choices=Profesional.ESPECIALIDAD_CHOICES)
-    ubicacion = forms.CharField(max_length=255)
-    codigo_pais = forms.CharField(max_length=5, initial="+57")
-    telefono = forms.CharField(max_length=20)
+    first_name = forms.CharField(
+        label="Nombre",
+        max_length=100,
+        widget=forms.TextInput(attrs={"placeholder": "María José", "autocomplete": "given-name"}),
+    )
+    last_name = forms.CharField(
+        label="Apellidos",
+        max_length=100,
+        widget=forms.TextInput(attrs={"placeholder": "González Pérez", "autocomplete": "family-name"}),
+    )
+    id_type = forms.ChoiceField(
+        label="Tipo de identificación",
+        choices=[("", "Selecciona el tipo"), *Profesional.ID_TYPE_CHOICES],
+    )
+    id_number = forms.CharField(
+        label="Número de identificación",
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={"placeholder": "1234567890", "inputmode": "numeric", "autocomplete": "off"}
+        ),
+    )
+    especialidad = forms.ChoiceField(
+        label="Especialidad",
+        choices=[("", "Selecciona tu especialidad"), *Profesional.ESPECIALIDAD_CHOICES],
+    )
+    ubicacion = forms.CharField(
+        label="Ciudad o sede de consulta",
+        max_length=255,
+        help_text="Así te encontrarán los pacientes de tu ciudad.",
+        widget=forms.TextInput(attrs={"placeholder": "Ibagué, Tolima"}),
+    )
+    codigo_pais = forms.ChoiceField(
+        label="Indicativo",
+        choices=[("+57", "+57"), ("+1", "+1"), ("+52", "+52"), ("+34", "+34")],
+        initial="+57",
+    )
+    telefono = forms.CharField(
+        label="Celular",
+        max_length=20,
+        help_text="Solo el número. El indicativo va al lado.",
+        widget=forms.TextInput(
+            attrs={"placeholder": "300 123 4567", "inputmode": "tel", "autocomplete": "tel-national"}
+        ),
+    )
+    email = forms.EmailField(
+        label="Correo profesional",
+        help_text="Con este correo ingresas a tu panel.",
+        widget=forms.EmailInput(attrs={"placeholder": "tu@consultorio.com", "autocomplete": "email"}),
+    )
+    password1 = forms.CharField(
+        label="Contraseña",
+        min_length=8,
+        help_text="Mínimo 8 caracteres.",
+        widget=forms.PasswordInput(attrs={"placeholder": "••••••••", "autocomplete": "new-password"}),
+    )
+    password2 = forms.CharField(
+        label="Confirmar contraseña",
+        widget=forms.PasswordInput(attrs={"placeholder": "Repite la contraseña", "autocomplete": "new-password"}),
+    )
+    acepta_terminos = forms.BooleanField(
+        label="Acepto los términos y la política de privacidad para el tratamiento de mis datos.",
+        error_messages={"required": "Debes aceptar los términos y condiciones."},
+    )
 
-    def clean_username(self):
-        username = self.cleaned_data["username"]
-        if User.objects.filter(username=username).exists():
-            raise forms.ValidationError("Este nombre de usuario ya existe.")
-        return username
+    def clean_email(self):
+        email = self.cleaned_data["email"].strip().lower()
+        if User.objects.filter(username=email).exists() or User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Ya existe una cuenta con este correo.")
+        return email
 
     def clean_id_number(self):
-        id_number = self.cleaned_data["id_number"]
+        id_number = self.cleaned_data["id_number"].strip()
+        if not id_number.isdigit():
+            raise forms.ValidationError("El documento solo puede tener números.")
         if Profesional.objects.filter(id_number=id_number).exists():
             raise forms.ValidationError("Este documento ya está registrado.")
         return id_number
 
+    def clean_telefono(self):
+        digits = "".join(ch for ch in self.cleaned_data["telefono"] if ch.isdigit())
+        if len(digits) < 7 or len(digits) > 15:
+            raise forms.ValidationError("Escribe un celular válido, de 7 a 15 dígitos.")
+        return digits
+
+    def clean_password1(self):
+        password = self.cleaned_data["password1"]
+        errors = _password_errors(password)
+        if errors:
+            raise forms.ValidationError(errors)
+        return password
+
     def clean(self):
         cleaned = super().clean()
-        if cleaned.get("password1") != cleaned.get("password2"):
-            raise forms.ValidationError("Las contraseñas no coinciden.")
+        password = cleaned.get("password1")
+        confirm = cleaned.get("password2")
+        if password and confirm and password != confirm:
+            self.add_error("password2", "Las contraseñas no coinciden.")
         return cleaned
 
     def save(self):
-        user = User.objects.create_user(
-            username=self.cleaned_data["username"],
-            email=self.cleaned_data["email"],
-            password=self.cleaned_data["password1"],
-            first_name=self.cleaned_data["first_name"],
-            last_name=self.cleaned_data["last_name"],
-        )
-        profesional = Profesional.objects.create(
-            user=user,
-            id_type=self.cleaned_data["id_type"],
-            id_number=self.cleaned_data["id_number"],
-            especialidad=self.cleaned_data["especialidad"],
-            ubicacion=self.cleaned_data["ubicacion"],
-            codigo_pais=self.cleaned_data["codigo_pais"],
-            telefono=self.cleaned_data["telefono"],
-        )
-        from .roles import assign_profesional_group
-
-        assign_profesional_group(user)
-        return user, profesional
+        return create_profesional(self.cleaned_data)
 
 
 class ClinicCenterForm(forms.ModelForm):
     class Meta:
         model = ClinicCenter
         fields = ("clinic_name", "specialists_range", "city")
-        widgets = {
-            "clinic_name": forms.TextInput(attrs={"name": "clinicName"}),
-            "specialists_range": forms.Select(attrs={"name": "specialists"}),
-            "city": forms.TextInput(attrs={"name": "city"}),
-        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["clinic_name"].widget.attrs["name"] = "clinicName"
-        self.fields["specialists_range"].widget.attrs["name"] = "specialists"
-        self.fields["city"].widget.attrs["name"] = "city"
+        self.fields["specialists_range"].choices = [
+            ("", "--- Elegir ---"),
+            *self.fields["specialists_range"].choices,
+        ]
+        self.fields["city"].widget.attrs["placeholder"] = "Introducir la ciudad"
+
+
+class PacientePerfilForm(forms.ModelForm):
+    class Meta:
+        model = Paciente
+        fields = (
+            "phone",
+            "address",
+            "city",
+            "department",
+            "emergency_contact",
+            "emergency_phone",
+            "eps",
+            "diabetes",
+            "hipertension",
+            "cardiopatia",
+            "alergias",
+            "embarazo",
+            "ninguna",
+            "medications",
+            "dental_history",
+        )
+        widgets = {
+            "medications": forms.Textarea(attrs={"rows": 3}),
+            "dental_history": forms.Textarea(attrs={"rows": 3}),
+        }

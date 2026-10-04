@@ -1,0 +1,29 @@
+<dialog class="foto-dialog" id="seguidos-dialog" aria-labelledby="seguidos-titulo">
+    <div class="card-title-row">
+        <h2 id="seguidos-titulo">Especialistas que sigues</h2>
+        <button class="icon-btn" type="button" id="seguidos-cerrar" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+    </div>
+    {% if especialistas_seguidos %}
+    <ul class="cita-list seguidos-lista">
+        {% for item in especialistas_seguidos %}
+        <li>
+            <div class="who-row">
+                {% include "core/includes/avatar.html" with foto=item.profesional.foto iniciales=item.profesional.iniciales tamano="sm" alt="" %}
+                <div>
+                    <div class="when">{{ item.profesional.get_full_name }}</div>
+                    <div class="who">{{ item.profesional.etiqueta_especialidad }}</div>
+                </div>
+            </div>
+            <p class="actions card-actions">
+                <a class="btn btn-ghost btn-sm" href="{% url 'perfil_publico' item.profesional.pk %}">Ver ficha</a>
+                {% if item.puede_chatear %}
+                <a class="btn btn-primary btn-sm" href="{% url 'chat_con_profesional' item.profesional.pk %}">{% include "core/includes/icon.html" with name="chat" %}Escribir</a>
+                {% endif %}
+            </p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    {% include "core/includes/vacio.html" with titulo="Aún no sigues a nadie" texto="En la ficha de un especialista puedes pulsar Seguir." enlace="/especialistas/" accion="Buscar especialista" %}
+    {% endif %}
+</dialog>

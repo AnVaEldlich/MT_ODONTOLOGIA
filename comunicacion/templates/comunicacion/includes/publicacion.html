@@ -1,0 +1,57 @@
+<article class="card feed-card">
+    <div class="card-title-row">
+        <div class="who-row">
+            {% include "core/includes/avatar.html" with foto=publicacion.profesional.foto iniciales=publicacion.profesional.iniciales alt="" %}
+            <div>
+                <strong><a class="post-autor" href="{% url 'perfil_publico' publicacion.profesional_id %}">{{ publicacion.profesional.get_full_name }}</a></strong>
+                <p class="meta">{{ publicacion.profesional.etiqueta_especialidad }} · {{ publicacion.created_at|date:"d/m/Y H:i" }}</p>
+            </div>
+        </div>
+        {% if user_role == 'paciente' %}
+        <form method="post" action="{% url 'seguir_profesional' publicacion.profesional_id %}">
+            {% csrf_token %}
+            <button class="btn btn-ghost btn-sm" type="submit">{% if publicacion.profesional_id in seguidos %}{% include "core/includes/icon.html" with name="check" %}Siguiendo{% else %}{% include "core/includes/icon.html" with name="mas" %}Seguir{% endif %}</button>
+        </form>
+        {% endif %}
+    </div>
+    <p class="post-texto">{{ publicacion.texto }}</p>
+    {% if publicacion.imagen %}
+    <img class="post-image" src="{{ publicacion.imagen.url }}" alt="Imagen de la publicación de {{ publicacion.profesional.get_full_name }}">
+    {% endif %}
+    <div class="card-title-row post-pie">
+        <p class="meta">{% include "core/includes/icon.html" with name="corazon" %} {{ publicacion.gustos }} me gusta</p>
+        {% if user_role == 'paciente' %}
+        <form method="post" action="{% url 'me_gusta' publicacion.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="siguiente" value="{{ siguiente|default:request.path }}">
+            <button class="btn btn-ghost btn-sm like-btn" type="submit">{% include "core/includes/icon.html" with name="corazon" %}Me gusta</button>
+        </form>
+        {% endif %}
+    </div>
+    {% for comentario in publicacion.comentarios.all %}
+        {% if comentario.estado == 'publicado' or user_role == 'profesional' and publicacion.profesional.pk == request.user.profesional.pk or user_role == 'paciente' and comentario.paciente_id == request.user.paciente.pk %}
+        <article class="comment">
+            <p>{{ comentario.texto }}</p>
+            <p class="meta">{{ comentario.paciente.first_name }} · <span class="badge {% if comentario.estado == 'publicado' %}ok{% elif comentario.estado == 'pendiente' %}warn{% else %}danger{% endif %} sin-punto">{{ comentario.get_estado_display }}</span></p>
+            {% if user_role == 'profesional' and publicacion.profesional_id == request.user.profesional.pk and comentario.estado == 'pendiente' %}
+            <form class="actions" method="post" action="{% url 'moderar_comentario' comentario.pk %}">
+                {% csrf_token %}
+                <button class="btn btn-ghost btn-sm" name="estado" value="publicado" type="submit">{% include "core/includes/icon.html" with name="check" %}Publicar</button>
+                <button class="btn btn-ghost btn-sm" name="estado" value="oculto" type="submit">{% include "core/includes/icon.html" with name="cerrar" %}Ocultar</button>
+            </form>
+            {% endif %}
+        </article>
+        {% endif %}
+    {% endfor %}
+    {% if user_role == 'paciente' %}
+    <form class="comment-form" method="post" action="{% url 'comentar_publicacion' publicacion.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="siguiente" value="{{ siguiente|default:request.path }}">
+        <label for="comentario-{{ publicacion.pk }}">Comentar</label>
+        <div class="fila">
+            <textarea id="comentario-{{ publicacion.pk }}" name="texto" maxlength="280" rows="2" required placeholder="Tu comentario pasa por revisión antes de publicarse"></textarea>
+            <button class="btn btn-brand btn-sm" type="submit">{% include "core/includes/icon.html" with name="enviar" %}Enviar</button>
+        </div>
+    </form>
+    {% endif %}
+</article>

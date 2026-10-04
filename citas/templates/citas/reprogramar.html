@@ -1,0 +1,26 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Reprogramar cita — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% if user_role == 'profesional' %}
+    {% include "core/includes/portal_nav_profesional.html" %}
+    {% else %}
+    {% include "core/includes/portal_nav_paciente.html" %}
+    {% endif %}
+    <div>
+        <div class="page-head">
+            <h1>Reprogramar cita</h1>
+            <p>Hoy está para el {{ cita.fecha_hora|date:"d/m/Y · H:i" }} con {{ cita.profesional.get_full_name }}.</p>
+        </div>
+        <form class="card form-narrow" method="post" novalidate>
+            {% csrf_token %}
+            {% include "core/includes/fields.html" %}
+            <button class="btn btn-primary" type="submit">Guardar nueva hora</button>
+            <a class="btn btn-ghost" href="{% if user_role == 'profesional' %}{% url 'agenda_profesional' %}{% else %}{% url 'mis_citas' %}{% endif %}">Volver</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,36 +1,114 @@
-{% extends 'core/base.html' %}
+{% extends "core/base.html" %}
 {% load static %}
-
 {% block title %}Agendar cita — MT Odontología{% endblock %}
-
 {% block body_class %}app-layout{% endblock %}
-
 {% block main_class %}page{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'perfiles/css/perfiles.css' %}">
-{% endblock %}
-
 {% block content %}
-<div class="page-head">
-    <h1>Agendar nueva cita</h1>
-    <p>Elige un profesional, la fecha y cuéntanos el motivo de tu consulta.</p>
-</div>
+<div class="portal">
+    {% include "core/includes/portal_nav_paciente.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Agendar cita</h1>
+            <p>Cuatro pasos. Al final confirmas y la cita queda pendiente hasta que el especialista la acepte.</p>
+        </div>
+        <ol class="steps" aria-label="Pasos de la reserva">
+            {% for codigo, etiqueta in pasos %}
+            <li {% if codigo == paso %}aria-current="step"{% endif %}>{{ etiqueta }}</li>
+            {% endfor %}
+        </ol>
 
-<div class="card form-narrow">
-    <form method="post" novalidate>
-        {% csrf_token %}
-        {% for field in form %}
-        <div class="field">
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}<div class="err">{{ field.errors.0 }}</div>{% endif %}
-        </div>
-        {% endfor %}
-        <div class="actions" style="margin-top:1rem">
-            <button type="submit" class="btn btn-primary">Solicitar cita</button>
-            <a href="{% url 'mis_citas' %}" class="btn btn-ghost">Cancelar</a>
-        </div>
-    </form>
+        {% if paso == "servicio" %}
+        <form class="card form-narrow" method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="continuar">
+            <input type="hidden" name="paso" value="servicio">
+            <h2>¿Qué necesitas?</h2>
+            {% include "core/includes/fields.html" %}
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Continuar{% include "core/includes/icon.html" with name="flecha" %}</button>
+            </div>
+        </form>
+        {% elif paso == "sede" %}
+        <form class="card" method="get">
+            <input type="hidden" name="paso" value="sede">
+            <div class="field">
+                <label for="filtro-sede">Filtrar especialistas por sede</label>
+                <select id="filtro-sede" name="sede">
+                    {% for sede in form.fields.sede.queryset %}
+                    <option value="{{ sede.pk }}" {% if request.GET.sede == sede.pk|stringformat:"s" or borrador.sede.pk == sede.pk %}selected{% endif %}>{{ sede }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="btn btn-ghost" type="submit">Actualizar lista</button>
+        </form>
+        <form class="card form-narrow" method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="continuar">
+            <input type="hidden" name="paso" value="sede">
+            <h2>Sede y especialista</h2>
+            {% include "core/includes/fields.html" %}
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Continuar{% include "core/includes/icon.html" with name="flecha" %}</button>
+            </div>
+        </form>
+        {% elif paso == "horario" %}
+        <form class="card" method="get">
+            <input type="hidden" name="paso" value="horario">
+            <div class="field">
+                <label for="fecha">Día</label>
+                <input id="fecha" type="date" name="fecha" value="{{ fecha|date:'Y-m-d' }}" required>
+            </div>
+            <button class="btn btn-ghost" type="submit">{% include "core/includes/icon.html" with name="calendario" %}Ver horas</button>
+        </form>
+        <section class="card">
+            <h2>Horas libres{% if duracion %} · {{ duracion }} minutos{% endif %}</h2>
+            {% if huecos %}
+            <div class="slot-list">
+                {% for hueco in huecos %}
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="accion" value="continuar">
+                    <input type="hidden" name="paso" value="horario">
+                    <input type="hidden" name="hora" value="{{ hueco.inicio|date:'c' }}">
+                    <button type="submit">{{ hueco.inicio|date:"H:i" }}{% if hueco.consultorio %} · {{ hueco.consultorio.nombre }}{% endif %}</button>
+                </form>
+                {% endfor %}
+            </div>
+            {% elif libre %}
+            <p class="alert">{% include "core/includes/icon.html" with name="info" %}<span>Este especialista todavía no publica horarios. Propón una fecha y hora futura.</span></p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="continuar">
+                <input type="hidden" name="paso" value="horario">
+                <div class="field">
+                    <label for="hora-libre">Fecha y hora</label>
+                    <input id="hora-libre" type="datetime-local" name="hora" required>
+                </div>
+                <button class="btn btn-primary" type="submit">Usar esta hora</button>
+            </form>
+            {% else %}
+            {% include "core/includes/vacio.html" with tipo="cita" titulo="No hay horas libres ese día" texto="Prueba otro día o vuelve a elegir especialista." compacto=True %}
+            {% endif %}
+        </section>
+        {% else %}
+        <section class="card form-narrow">
+            <h2>Confirmar solicitud</h2>
+            <div class="summary">
+                {% if borrador.tratamiento %}<p><strong>Tratamiento:</strong> {{ borrador.tratamiento.nombre }}</p>{% endif %}
+                {% if borrador.sede %}<p><strong>Sede:</strong> {{ borrador.sede.nombre }}</p>{% endif %}
+                {% if borrador.profesional %}<p><strong>Especialista:</strong> {{ borrador.profesional.get_full_name }}</p>{% endif %}
+                {% if borrador.consultorio %}<p><strong>Consultorio:</strong> {{ borrador.consultorio.nombre }}</p>{% endif %}
+                {% if borrador.fecha_hora %}<p><strong>Hora:</strong> {{ borrador.fecha_hora|date:"d/m/Y · H:i" }}</p>{% endif %}
+            </div>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% include "core/includes/fields.html" %}
+                <div class="form-actions">
+                    <button class="btn btn-primary btn-lg" type="submit">{% include "core/includes/icon.html" with name="check" %}Confirmar solicitud</button>
+                </div>
+            </form>
+        </section>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

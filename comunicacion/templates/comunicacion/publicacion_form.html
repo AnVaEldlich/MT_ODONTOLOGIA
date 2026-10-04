@@ -1,0 +1,13 @@
+{% extends "core/base.html" %}
+{% block title %}Nueva publicación — MT Odontología{% endblock %}
+{% block content %}
+<div class="page">
+    <h1>Nueva publicación</h1>
+    <p class="meta">Comparte un consejo o un aviso general. No escribas nombres de pacientes ni datos clínicos.</p>
+    <form class="card form-narrow" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% include "core/includes/fields.html" %}
+        <button class="btn btn-primary" type="submit">Publicar</button>
+    </form>
+</div>
+{% endblock %}

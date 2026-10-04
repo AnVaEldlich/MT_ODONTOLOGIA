@@ -1,0 +1,138 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Ficha de {{ paciente.first_name }} — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_profesional.html" %}
+    <div>
+        <div class="page-head">
+            <div class="who-row">
+                {% include "core/includes/avatar.html" with foto=paciente.foto iniciales=paciente.iniciales tamano="sm" alt="" %}
+                <h1>{{ paciente.first_name }} {{ paciente.last_name }}</h1>
+            </div>
+            <p>{{ paciente.id_type|upper }} {{ paciente.id_number }} · {{ paciente.phone }} · {{ paciente.city }}</p>
+            {% if puede_chatear %}
+            <p><a class="btn btn-ghost btn-sm" href="{% url 'chat_con_paciente' paciente.pk %}">Escribir en el chat</a></p>
+            {% endif %}
+        </div>
+        <section class="card">
+            <h2>Alertas del registro</h2>
+            <div class="chips">
+                {% if paciente.alergias %}<span class="chip">Alergias</span>{% endif %}
+                {% if paciente.diabetes %}<span class="chip">Diabetes</span>{% endif %}
+                {% if paciente.hipertension %}<span class="chip">Hipertensión</span>{% endif %}
+                {% if paciente.cardiopatia %}<span class="chip">Cardiopatía</span>{% endif %}
+                {% if paciente.embarazo %}<span class="chip">Embarazo</span>{% endif %}
+                {% if paciente.eps %}<span class="chip">EPS {{ paciente.eps }}</span>{% endif %}
+            </div>
+        </section>
+        <section class="card">
+            <h2>Citas contigo</h2>
+            {% if citas %}
+            <ul class="cita-list">
+                {% for cita in citas %}
+                <li>
+                    <div>
+                        <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
+                        <div class="who">{{ cita.get_estado_display }}{% if cita.motivo %} · {{ cita.motivo }}{% endif %}</div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No hay citas registradas.</p>
+            {% endif %}
+        </section>
+        <section class="card">
+            <h2>Historia clínica</h2>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="historia">
+                {% include "core/includes/fields.html" with form=historia_form %}
+                <button class="btn btn-primary" type="submit">Guardar historia</button>
+            </form>
+        </section>
+        <section class="card">
+            <h2>Evolución</h2>
+            {% if evoluciones %}
+            <ul class="cita-list">
+                {% for nota in evoluciones %}
+                <li>
+                    <div>
+                        <div class="when">{{ nota.created_at|date:"d/m/Y H:i" }}</div>
+                        <div class="who">{{ nota.nota }}{% if nota.tratamiento %} · {{ nota.tratamiento.nombre }}{% endif %}</div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>Todavía no hay notas de evolución.</p>
+            {% endif %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="evolucion">
+                {% include "core/includes/fields.html" with form=evolucion_form %}
+                <button class="btn btn-primary" type="submit">Registrar evolución</button>
+            </form>
+        </section>
+        <section class="card">
+            <h2>Odontograma</h2>
+            <p class="meta">Elige un diente y guarda su estado. El paciente lo ve en solo lectura.</p>
+            <div class="boca" aria-label="Odontograma en notación FDI">
+                <div class="arc">
+                    {% for pieza in filas.0 %}<a class="diente {{ pieza.estado }}" href="?diente={{ pieza.codigo }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}" {% if diente and diente.codigo == pieza.codigo %}aria-current="true"{% endif %}>{{ pieza.codigo }}</a>{% endfor %}
+                    <span class="separador" aria-hidden="true"></span>
+                    {% for pieza in filas.1 %}<a class="diente {{ pieza.estado }}" href="?diente={{ pieza.codigo }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}" {% if diente and diente.codigo == pieza.codigo %}aria-current="true"{% endif %}>{{ pieza.codigo }}</a>{% endfor %}
+                </div>
+                <div class="arc">
+                    {% for pieza in filas.2 %}<a class="diente {{ pieza.estado }}" href="?diente={{ pieza.codigo }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}" {% if diente and diente.codigo == pieza.codigo %}aria-current="true"{% endif %}>{{ pieza.codigo }}</a>{% endfor %}
+                    <span class="separador" aria-hidden="true"></span>
+                    {% for pieza in filas.3 %}<a class="diente {{ pieza.estado }}" href="?diente={{ pieza.codigo }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}" {% if diente and diente.codigo == pieza.codigo %}aria-current="true"{% endif %}>{{ pieza.codigo }}</a>{% endfor %}
+                </div>
+            </div>
+            {% if diente %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="diente">
+                {% include "core/includes/fields.html" with form=diente_form %}
+                <button class="btn btn-primary" type="submit">Guardar diente {{ diente.codigo }}</button>
+            </form>
+            {% else %}
+            <p>Selecciona un diente para editarlo.</p>
+            {% endif %}
+        </section>
+        <section class="card">
+            <h2>Recetas</h2>
+            {% for receta in recetas %}
+            <article>
+                <p><strong>{{ receta.created_at|date:"d/m/Y" }}</strong> · {{ receta.indicaciones }}</p>
+                <ul>
+                    {% for item in receta.items.all %}
+                    <li>{{ item.medicamento }} — {{ item.dosis }}, {{ item.frecuencia }}, {{ item.duracion }}</li>
+                    {% endfor %}
+                </ul>
+            </article>
+            {% empty %}
+            <p>No hay recetas registradas.</p>
+            {% endfor %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="receta">
+                {% include "core/includes/fields.html" with form=receta_form %}
+                <button class="btn btn-primary" type="submit">Guardar receta</button>
+            </form>
+        </section>
+        <section class="card">
+            <h2>Nueva factura</h2>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="factura">
+                {% include "core/includes/fields.html" with form=factura_form %}
+                <button class="btn btn-primary" type="submit">Emitir factura</button>
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}

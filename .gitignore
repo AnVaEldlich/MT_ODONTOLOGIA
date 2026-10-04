@@ -11,7 +11,10 @@ dist/
 build/
 
 # Django
-db.sqlite3
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
 *.log
 local_settings.py
 media/
@@ -19,7 +22,8 @@ media/
 # Entorno
 venv/
 .env
-.env.local
+.env.*
+!.env.example
 
 # IDE
 .idea/
@@ -31,11 +35,18 @@ venv/
 .DS_Store
 Thumbs.db
 
-# Tests / coverage
+# Tests / coverage (artefactos locales; el código de prueba SÍ se versiona)
 .pytest_cache/
 .coverage
 htmlcov/
+*.local.json
+playwright-report/
+test-results/
 
 # Static collect (producción)
 staticfiles/
 accounts/__pycache__/apps.cpython-313.pyc
+
+# Entregas académicas locales
+Tasks/
+university_tasks/

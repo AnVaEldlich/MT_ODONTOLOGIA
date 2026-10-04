@@ -1,0 +1,21 @@
+---
+description: Datos clínicos, roles y secretos
+alwaysApply: true
+---
+
+# Seguridad
+
+Hay datos de salud (alergias, medicamentos, historia dental). Tratarlos como sensibles.
+
+- Secretos solo en `.env` (ver `.env.example`). Nunca en código, reglas, docs ni commits.
+- Toda vista de paciente o profesional usa `login_required` o `paciente_required` / `profesional_required` en `perfiles/decorators.py`. No reimplementar el chequeo de rol.
+- Formularios POST con `{% csrf_token %}`. No desactivar CSRF.
+- `next` de login solo con `url_has_allowed_host_and_scheme`. No redirigir a una URL cruda de querystring.
+- No loguear contraseñas, documentos de identidad ni historia clínica.
+- Consultas por el ORM. No interpolar input en SQL.
+- Un usuario solo ve y muta sus citas o las de su agenda. Filtrar por dueño en la query, no solo ocultar el botón.
+
+```python
+# ❌ return redirect(request.GET["next"])
+# ✅ if url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+```

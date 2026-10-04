@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Recetas — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_paciente.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Recetas</h1>
+            <p>Indicaciones que dejó tu especialista.</p>
+        </div>
+        {% if recetas %}
+        {% for receta in recetas %}
+        <article class="card">
+            <h2>{{ receta.created_at|date:"d/m/Y" }} · {{ receta.profesional.get_full_name }}</h2>
+            {% if receta.indicaciones %}<p>{{ receta.indicaciones }}</p>{% endif %}
+            <ul>
+                {% for item in receta.items.all %}
+                <li>{{ item.medicamento }} — {{ item.dosis }}, {{ item.frecuencia }}, durante {{ item.duracion }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+        {% endfor %}
+        {% else %}
+        <div class="card empty"><p>No tienes recetas.</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
