@@ -14,6 +14,7 @@ from django.utils import timezone
 from accounts.models import Paciente, Profesional
 from accounts.roles import assign_paciente_group, assign_profesional_group, ensure_groups
 from citas.models import Cita
+from clinica.catalogo import CATALOGO_TRATAMIENTOS
 from clinica.models import (
     AsignacionSede,
     Consultorio,
@@ -200,28 +201,20 @@ class Command(BaseCommand):
         return creados
 
     def _tratamientos(self, especialidades):
-        catalogo = [
-            ("limpieza", "Limpieza dental", "Profilaxis y orientación de higiene. Dato de demostración.", "odontologia-general", 45, "90000"),
-            ("ortodoncia", "Control de ortodoncia", "Ajuste de aparatología. Escenario ficticio.", "ortodoncia", 40, "150000"),
-            ("endodoncia", "Endodoncia", "Tratamiento de conducto de demostración.", "endodoncia", 90, "380000"),
-            ("blanqueamiento", "Blanqueamiento", "Aclaramiento dental en consultorio. No es un caso real.", "estetica-dental", 60, "280000"),
-            ("implantes", "Valoración de implante", "Estudio inicial de implantología. Paciente ficticio.", "implantologia", 40, "120000"),
-            ("estetica", "Estética dental", "Diseño de sonrisa de ejemplo.", "estetica-dental", 50, "200000"),
-        ]
         tratamientos = {}
-        for codigo, nombre, descripcion, especialidad, duracion, precio in catalogo:
+        for item in CATALOGO_TRATAMIENTOS:
             tratamiento, _created = Tratamiento.objects.get_or_create(
-                codigo=codigo,
+                codigo=item["codigo"],
                 defaults={
-                    "nombre": nombre,
-                    "descripcion": descripcion,
-                    "especialidad": especialidades[especialidad],
-                    "duracion_minutos": duracion,
-                    "precio": Decimal(precio),
+                    "nombre": item["nombre"],
+                    "descripcion": item["descripcion"],
+                    "especialidad": especialidades[item["especialidad"]],
+                    "duracion_minutos": item["duracion_minutos"],
+                    "precio": item["precio"],
                     "activo": True,
                 },
             )
-            tratamientos[codigo] = tratamiento
+            tratamientos[item["codigo"]] = tratamiento
         return tratamientos
 
     def _profesionales(self, sedes):

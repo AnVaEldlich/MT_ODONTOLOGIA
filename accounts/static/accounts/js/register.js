@@ -9,6 +9,27 @@
 
     form.setAttribute("novalidate", "novalidate");
 
+    const passwordInput = document.getElementById("password");
+    const confirmInput = document.getElementById("confirmPassword");
+    const mismatch = document.getElementById("passwordMismatch");
+
+    function passwordsMatch() {
+        if (!passwordInput || !confirmInput || !mismatch) {
+            return true;
+        }
+        const password = passwordInput.value;
+        const confirmPassword = confirmInput.value;
+        const show = confirmPassword.length > 0 && password !== confirmPassword;
+        mismatch.hidden = !show;
+        confirmInput.setAttribute("aria-invalid", show ? "true" : "false");
+        return !show;
+    }
+
+    if (passwordInput && confirmInput) {
+        passwordInput.addEventListener("input", passwordsMatch);
+        confirmInput.addEventListener("input", passwordsMatch);
+    }
+
     function updateSteps() {
         document.querySelectorAll(".step").forEach((step, index) => {
             step.classList.toggle("active", index + 1 <= currentSection);
@@ -65,6 +86,12 @@
     window.nextSection = nextSection;
     window.prevSection = prevSection;
 
+    const openSection = Number(form.dataset.openSection || 0);
+    if (openSection > 1) {
+        currentSection = openSection;
+        updateSteps();
+    }
+
     form.addEventListener("submit", function (event) {
         if (currentSection !== 3) {
             event.preventDefault();
@@ -75,15 +102,14 @@
             return;
         }
 
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirmPassword").value;
         const terms = document.getElementById("terms");
 
-        if (password !== confirmPassword) {
+        if (!passwordsMatch()) {
             event.preventDefault();
-            alert("Las contraseñas no coinciden");
+            confirmInput.focus();
             return;
         }
+        const password = passwordInput.value;
         if (password.length < 8) {
             event.preventDefault();
             alert("La contraseña debe tener al menos 8 caracteres");

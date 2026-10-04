@@ -76,7 +76,7 @@ def registerprofesional(request):
         if form.is_valid():
             user, _prof = form.save()
             login(request, user)
-            messages.success(request, "Profesional registrado correctamente.")
+            messages.success(request, "Tu cuenta de especialista está lista. Este es tu panel.")
             return redirect("perfil_profesional")
         for error in form.non_field_errors():
             messages.error(request, error)

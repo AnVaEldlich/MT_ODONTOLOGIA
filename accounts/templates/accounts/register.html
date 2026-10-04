@@ -9,7 +9,7 @@
 {% block messages %}{% endblock %}
 
 {% block content %}
-<form id="registrationForm" method="POST" action="{% url 'register' %}">
+<form id="registrationForm" method="POST" action="{% url 'register' %}" novalidate{% if form.confirm_password.errors %} data-open-section="3"{% endif %}>
     {% csrf_token %}
     <div class="register-container">
         <div class="auth-brand" aria-hidden="true"><span class="logo-mark">{% include "core/includes/icon.html" with name="diente" %}</span></div>
@@ -250,8 +250,11 @@
                 <label for="confirmPassword">Confirmar Contraseña <span class="required">*</span></label>
                 <div class="input-wrapper">
                     <input type="password" id="confirmPassword" name="confirm_password"
-                        placeholder="Repite tu contraseña" required>
+                        placeholder="Repite tu contraseña" required
+                        aria-describedby="passwordMismatch"
+                        {% if form.confirm_password.errors %}aria-invalid="true"{% endif %}>
                 </div>
+                <p class="err" id="passwordMismatch" role="alert"{% if not form.confirm_password.errors %} hidden{% endif %}>Las contraseñas no coinciden.</p>
             </div>
 
             <div class="checkbox-item">
@@ -285,7 +288,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'accounts/js/register.js' %}"></script>
+<script src="{% static 'accounts/js/register.js' %}?v=2"></script>
 {% if show_dev_fill %}
 <script src="{% static 'accounts/js/register_dev_fill.js' %}?v=1"></script>
 {% endif %}

@@ -134,9 +134,30 @@ def _profesional_payload(**overrides):
         "email": "laura@test.com",
         "password1": "testpass123",
         "password2": "testpass123",
+        "acepta_terminos": "on",
     }
     data.update(overrides)
     return data
+
+
+@pytest.mark.django_db
+def test_professional_register_rejects_mismatched_passwords(client):
+    payload = _profesional_payload(password2="otraClave999")
+    response = client.post(reverse("registerprofesional"), payload)
+
+    assert response.status_code == 200
+    assert "Las contraseñas no coinciden." in response.content.decode()
+    assert not User.objects.filter(email=payload["email"]).exists()
+
+
+@pytest.mark.django_db
+def test_professional_register_rejects_invalid_phone(client):
+    payload = _profesional_payload(telefono="12")
+    response = client.post(reverse("registerprofesional"), payload)
+
+    assert response.status_code == 200
+    assert "celular válido" in response.content.decode()
+    assert not User.objects.filter(email=payload["email"]).exists()
 
 
 @pytest.mark.django_db
@@ -147,6 +168,8 @@ def test_professional_registers_and_logs_in_with_email(client):
     assert user.username == "laura@test.com"
     assert Profesional.objects.filter(user=user).exists()
     assert response.request["PATH_INFO"] == reverse("perfil_profesional")
+    assert "Prepara tu consulta" in response.content.decode()
+    assert b"OperationalError" not in response.content
 
     client.logout()
     logged = client.post(

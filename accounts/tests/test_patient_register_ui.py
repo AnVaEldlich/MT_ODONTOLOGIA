@@ -48,5 +48,6 @@ def test_register_ui_rejects_mismatched_passwords(client):
     response = client.post(reverse("register"), payload)
 
     assert response.status_code == 200
+    assert "Las contraseñas no coinciden." in response.content.decode()
     assert not User.objects.filter(username=payload["email"]).exists()
     assert not Paciente.objects.filter(id_number=payload["id_number"]).exists()

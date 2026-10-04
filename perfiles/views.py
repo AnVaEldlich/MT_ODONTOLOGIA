@@ -14,6 +14,7 @@ from accounts.models import Paciente
 from accounts.roles import dashboard_url_name
 from citas.models import Cita
 from citas.services import profesional_atiende
+from clinica.models import Disponibilidad
 from comunicacion.forms import PublicacionForm
 from comunicacion.services import feed_paciente, publicaciones_de, resumen_profesional, tiene_cita_para_chat
 from facturacion.forms import FacturaForm
@@ -107,6 +108,12 @@ def perfil_profesional(request):
         estado__in=[Cita.ESTADO_PENDIENTE, Cita.ESTADO_CONFIRMADA],
         fecha_hora__gte=ahora,
     ).order_by("fecha_hora")[:8]
+    tiene_horarios = Disponibilidad.objects.filter(profesional=profesional, activa=True).exists()
+    pasos = {
+        "horarios": tiene_horarios,
+        "foto": bool(profesional.foto),
+        "verificado": profesional.is_verified,
+    }
     return render(
         request,
         "perfiles/perfil_profesional.html",
@@ -122,6 +129,8 @@ def perfil_profesional(request):
             "resumen": resumen_profesional(profesional),
             "publicaciones": publicaciones_de(profesional),
             "form_publicacion": PublicacionForm(),
+            "pasos": pasos,
+            "consulta_lista": all(pasos.values()),
         },
     )
 

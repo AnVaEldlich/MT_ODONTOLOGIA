@@ -33,9 +33,10 @@ class LoginForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
-        email = cleaned.get("email")
+        email = (cleaned.get("email") or "").strip().lower()
         password = cleaned.get("password")
         if email and password:
+            cleaned["email"] = email
             self.user_cache = authenticate(
                 self.request,
                 username=email,
@@ -101,8 +102,10 @@ class PatientRegisterForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
-        if cleaned.get("password") != cleaned.get("confirm_password"):
-            raise forms.ValidationError("Las contraseñas no coinciden.")
+        password = cleaned.get("password")
+        confirm = cleaned.get("confirm_password")
+        if password and confirm and password != confirm:
+            self.add_error("confirm_password", "Las contraseñas no coinciden.")
         return cleaned
 
     def save(self):
@@ -110,29 +113,89 @@ class PatientRegisterForm(forms.Form):
 
 
 class ProfessionalRegisterForm(forms.Form):
-    email = forms.EmailField()
-    password1 = forms.CharField(min_length=8, widget=forms.PasswordInput)
-    password2 = forms.CharField(widget=forms.PasswordInput)
-    first_name = forms.CharField(max_length=100)
-    last_name = forms.CharField(max_length=100)
-    id_type = forms.ChoiceField(choices=Profesional.ID_TYPE_CHOICES)
-    id_number = forms.CharField(max_length=30)
-    especialidad = forms.ChoiceField(choices=Profesional.ESPECIALIDAD_CHOICES)
-    ubicacion = forms.CharField(max_length=255)
-    codigo_pais = forms.CharField(max_length=5, initial="+57")
-    telefono = forms.CharField(max_length=20)
+    first_name = forms.CharField(
+        label="Nombre",
+        max_length=100,
+        widget=forms.TextInput(attrs={"placeholder": "María José", "autocomplete": "given-name"}),
+    )
+    last_name = forms.CharField(
+        label="Apellidos",
+        max_length=100,
+        widget=forms.TextInput(attrs={"placeholder": "González Pérez", "autocomplete": "family-name"}),
+    )
+    id_type = forms.ChoiceField(
+        label="Tipo de identificación",
+        choices=[("", "Selecciona el tipo"), *Profesional.ID_TYPE_CHOICES],
+    )
+    id_number = forms.CharField(
+        label="Número de identificación",
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={"placeholder": "1234567890", "inputmode": "numeric", "autocomplete": "off"}
+        ),
+    )
+    especialidad = forms.ChoiceField(
+        label="Especialidad",
+        choices=[("", "Selecciona tu especialidad"), *Profesional.ESPECIALIDAD_CHOICES],
+    )
+    ubicacion = forms.CharField(
+        label="Ciudad o sede de consulta",
+        max_length=255,
+        help_text="Así te encontrarán los pacientes de tu ciudad.",
+        widget=forms.TextInput(attrs={"placeholder": "Ibagué, Tolima"}),
+    )
+    codigo_pais = forms.ChoiceField(
+        label="Indicativo",
+        choices=[("+57", "+57"), ("+1", "+1"), ("+52", "+52"), ("+34", "+34")],
+        initial="+57",
+    )
+    telefono = forms.CharField(
+        label="Celular",
+        max_length=20,
+        help_text="Solo el número. El indicativo va al lado.",
+        widget=forms.TextInput(
+            attrs={"placeholder": "300 123 4567", "inputmode": "tel", "autocomplete": "tel-national"}
+        ),
+    )
+    email = forms.EmailField(
+        label="Correo profesional",
+        help_text="Con este correo ingresas a tu panel.",
+        widget=forms.EmailInput(attrs={"placeholder": "tu@consultorio.com", "autocomplete": "email"}),
+    )
+    password1 = forms.CharField(
+        label="Contraseña",
+        min_length=8,
+        help_text="Mínimo 8 caracteres.",
+        widget=forms.PasswordInput(attrs={"placeholder": "••••••••", "autocomplete": "new-password"}),
+    )
+    password2 = forms.CharField(
+        label="Confirmar contraseña",
+        widget=forms.PasswordInput(attrs={"placeholder": "Repite la contraseña", "autocomplete": "new-password"}),
+    )
+    acepta_terminos = forms.BooleanField(
+        label="Acepto los términos y la política de privacidad para el tratamiento de mis datos.",
+        error_messages={"required": "Debes aceptar los términos y condiciones."},
+    )
 
     def clean_email(self):
-        email = self.cleaned_data["email"]
+        email = self.cleaned_data["email"].strip().lower()
         if User.objects.filter(username=email).exists() or User.objects.filter(email=email).exists():
             raise forms.ValidationError("Ya existe una cuenta con este correo.")
         return email
 
     def clean_id_number(self):
-        id_number = self.cleaned_data["id_number"]
+        id_number = self.cleaned_data["id_number"].strip()
+        if not id_number.isdigit():
+            raise forms.ValidationError("El documento solo puede tener números.")
         if Profesional.objects.filter(id_number=id_number).exists():
             raise forms.ValidationError("Este documento ya está registrado.")
         return id_number
+
+    def clean_telefono(self):
+        digits = "".join(ch for ch in self.cleaned_data["telefono"] if ch.isdigit())
+        if len(digits) < 7 or len(digits) > 15:
+            raise forms.ValidationError("Escribe un celular válido, de 7 a 15 dígitos.")
+        return digits
 
     def clean_password1(self):
         password = self.cleaned_data["password1"]
@@ -143,8 +206,10 @@ class ProfessionalRegisterForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
-        if cleaned.get("password1") != cleaned.get("password2"):
-            raise forms.ValidationError("Las contraseñas no coinciden.")
+        password = cleaned.get("password1")
+        confirm = cleaned.get("password2")
+        if password and confirm and password != confirm:
+            self.add_error("password2", "Las contraseñas no coinciden.")
         return cleaned
 
     def save(self):

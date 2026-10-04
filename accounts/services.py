@@ -51,15 +51,15 @@ def create_profesional(cleaned):
         username=email,
         email=email,
         password=cleaned["password1"],
-        first_name=cleaned["first_name"],
-        last_name=cleaned["last_name"],
+        first_name=cleaned["first_name"].strip(),
+        last_name=cleaned["last_name"].strip(),
     )
     profesional = Profesional.objects.create(
         user=user,
         id_type=cleaned["id_type"],
         id_number=cleaned["id_number"],
         especialidad=cleaned["especialidad"],
-        ubicacion=cleaned["ubicacion"],
+        ubicacion=cleaned["ubicacion"].strip(),
         codigo_pais=cleaned["codigo_pais"],
         telefono=cleaned["telefono"],
     )
