@@ -92,6 +92,28 @@
         updateNavbarScroll();
     }
 
+    const avisos = document.querySelector(".site-messages");
+    if (avisos) {
+        const quitar = (aviso) => {
+            if (aviso.classList.contains("is-leaving")) {
+                return;
+            }
+            aviso.classList.add("is-leaving");
+            window.setTimeout(() => {
+                aviso.remove();
+                if (!avisos.querySelector(".alert")) {
+                    avisos.remove();
+                }
+            }, 450);
+        };
+        avisos.querySelectorAll(".alert-cerrar").forEach((boton) => {
+            boton.addEventListener("click", () => quitar(boton.closest(".alert")));
+        });
+        avisos.querySelectorAll(".alert[data-auto-cerrar]").forEach((aviso) => {
+            window.setTimeout(() => quitar(aviso), 2000);
+        });
+    }
+
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
         anchor.addEventListener("click", function (event) {
             const href = this.getAttribute("href");

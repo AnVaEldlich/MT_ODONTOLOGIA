@@ -1,0 +1,40 @@
+---
+description: Botones y piezas reutilizables para pantallas nuevas
+globs: "**/*.html,**/*.css"
+alwaysApply: false
+---
+
+# Componentes de interfaz
+
+Una pantalla nueva no inventa botones ni tarjetas. Usa las clases de `base.css` y los includes de `core/templates/core/includes/`.
+
+## Botones
+
+Siempre `class="btn"` más una variante. Un `btn-primary` por vista.
+
+| Variante | Uso |
+| --- | --- |
+| `btn-primary` | La acción que avanza (guardar, confirmar, agendar) |
+| `btn-ghost` | Secundaria o salida (volver, editar, ver mapa) |
+| `btn-danger` | Destruye (cancelar cita) |
+| `btn-brand` | Buscar o filtrar, no reservar |
+
+Tamaños: `btn-sm`, `btn-lg`. Ancho: `btn-block`. No uses `btn-book`, `btn-next`, `btn-prev`, `btn-login`, `btn-submit` ni `submit-btn` en pantallas nuevas: son alias de las cuatro variantes.
+
+```django
+{# ❌ <a class="btn-book">Agendar cita</a> #}
+{# ✅ <a class="btn btn-primary" href="{% url 'solicitar_cita' %}">Agendar cita</a> #}
+```
+
+Esa acción vive en un solo sitio de la vista: navbar, cabecera de lista o estado vacío. No la repitas al lado.
+
+## Piezas
+
+- Formulario: `{% include "core/includes/fields.html" %}`
+- Lista vacía: `{% include "core/includes/vacio.html" %}`
+- Tratamiento de portada: `{% include "core/includes/tratamiento.html" %}`
+- Especialista: `{% include "clinica/includes/pro_card.html" %}`
+- Icono, avatar, estrellas, buscador: `icon.html`, `avatar.html`, `stars.html`, `finder.html`
+- Portal: `portal_nav_paciente.html` o `portal_nav_profesional.html`
+
+Una pieza que ya existe se incluye. Si hace falta un estilo nuevo, es un modificador de esa pieza (`btn-sm`, `empty compact`), no una segunda clase que copie el mismo look.

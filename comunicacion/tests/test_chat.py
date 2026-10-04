@@ -8,7 +8,7 @@ from django.utils import timezone
 from accounts.models import Paciente, Profesional
 from accounts.roles import assign_paciente_group, assign_profesional_group
 from citas.models import Cita
-from comunicacion.models import Conversacion, Mensaje, Publicacion
+from comunicacion.models import Conversacion, Mensaje, Publicacion, Seguimiento
 
 
 def _paciente(django_user_model, email, documento, apellido="Pac"):
@@ -178,3 +178,15 @@ def test_feed_no_muestra_datos_clinicos_ajenos(client, django_user_model):
     panel = client.get(reverse("perfil_profesional"))
     assert panel.status_code == 200
     assert "Pacientes atendidos" in panel.content.decode()
+
+
+@pytest.mark.django_db
+def test_perfil_abre_dialogo_de_especialistas_seguidos(client, django_user_model):
+    user, paciente = _paciente(django_user_model, "sigue@test.com", "9008")
+    _pro_user, profesional = _profesional(django_user_model, "pro.sigue@test.com")
+    Seguimiento.objects.create(paciente=paciente, profesional=profesional)
+    client.force_login(user)
+    cuerpo = client.get(reverse("perfil")).content.decode()
+    assert "seguidos-dialog" in cuerpo
+    assert "Leo Vera" in cuerpo
+    assert reverse("chat_con_profesional", args=[profesional.pk]) not in cuerpo

@@ -14,7 +14,7 @@
             </div>
             <p>{{ paciente.id_type|upper }} {{ paciente.id_number }} · {{ paciente.phone }} · {{ paciente.city }}</p>
             {% if puede_chatear %}
-            <p><a class="btn btn-book btn-sm" href="{% url 'chat_con_paciente' paciente.pk %}">Escribir en el chat</a></p>
+            <p><a class="btn btn-ghost btn-sm" href="{% url 'chat_con_paciente' paciente.pk %}">Escribir en el chat</a></p>
             {% endif %}
         </div>
         <section class="card">

@@ -1,7 +1,9 @@
+from django.urls import NoReverseMatch, reverse
+
 from comunicacion.models import Notificacion
 from comunicacion.services import mensajes_sin_leer
 
-from .roles import user_role
+from .roles import dashboard_url_name, user_role
 
 
 def role(request):
@@ -23,7 +25,20 @@ def role(request):
         "mensajes_sin_leer": chat_sin_leer,
         "avatar_foto": avatar_foto,
         "avatar_iniciales": avatar_iniciales,
+        "inicio_url": _inicio_url(request.user),
     }
+
+
+def _inicio_url(user):
+    if not user.is_authenticated:
+        return reverse("home")
+    destino = dashboard_url_name(user)
+    if destino == "home":
+        return reverse("home")
+    try:
+        return reverse(destino)
+    except NoReverseMatch:
+        return reverse("home")
 
 
 def _perfil_visible(user):

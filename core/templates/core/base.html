@@ -27,7 +27,7 @@
 {% block navbar %}
 <header class="topbar" id="navbar">
     <div class="topbar-inner">
-        <a class="logo" href="{% url 'home' %}">
+        <a class="logo" href="{{ inicio_url }}">
             <span class="logo-mark" aria-hidden="true">{% include "core/includes/icon.html" with name="diente" %}</span>
             MT <span>Odontología</span>
         </a>
@@ -48,7 +48,7 @@
                 <li><a href="{% url 'chat_lista' %}">Mensajes{% if mensajes_sin_leer %} <span class="badge danger sin-punto">{{ mensajes_sin_leer }}</span>{% endif %}</a></li>
                 {% else %}
                 <li><a href="{% url 'login' %}">Ingresar</a></li>
-                <li><a href="{% url 'registro_pro' %}">Soy especialista</a></li>
+                <li><a href="{% url 'registro_pro' %}">Crear cuenta gratis</a></li>
                 {% endif %}
             </ul>
             {% if user_role == 'profesional' %}
@@ -119,9 +119,10 @@
     {% if messages %}
     <div class="site-messages" role="status">
         {% for message in messages %}
-        <div class="alert {{ message.tags }}">
+        <div class="alert {{ message.tags }}" {% if 'success' in message.tags or 'info' in message.tags %}data-auto-cerrar{% endif %}>
             {% if 'error' in message.tags %}{% include "core/includes/icon.html" with name="alerta" %}{% elif 'success' in message.tags %}{% include "core/includes/icon.html" with name="check-circulo" %}{% else %}{% include "core/includes/icon.html" with name="info" %}{% endif %}
             <span>{{ message }}</span>
+            <button type="button" class="alert-cerrar" aria-label="Cerrar aviso">{% include "core/includes/icon.html" with name="cerrar" %}</button>
         </div>
         {% endfor %}
     </div>
@@ -133,7 +134,7 @@
 <footer class="site-footer">
     <div class="footer-grid">
         <div class="footer-brand">
-            <a class="logo" href="{% url 'home' %}">
+            <a class="logo" href="{{ inicio_url }}">
                 <span class="logo-mark" aria-hidden="true">{% include "core/includes/icon.html" with name="diente" %}</span>
                 MT <span>Odontología</span>
             </a>
@@ -149,12 +150,16 @@
             <h2>Especialistas</h2>
             <p><a href="{% url 'registro_pro' %}">Unirme como especialista</a></p>
             <p><a href="{% url 'formclinic' %}">Registrar un centro</a></p>
+            {% if user_role != 'paciente' and user_role != 'profesional' %}
             <p><a href="{% url 'home' %}#sedes">Sedes</a></p>
+            {% endif %}
         </div>
         <div>
             <h2>Ayuda</h2>
+            {% if user_role != 'paciente' and user_role != 'profesional' %}
             <p><a href="{% url 'home' %}#preguntas">Preguntas frecuentes</a></p>
             <p><a href="{% url 'home' %}#tratamientos">Tratamientos</a></p>
+            {% endif %}
         </div>
     </div>
     <p class="legal">Bogotá, Colombia. La reserva en línea no tiene costo de plataforma.</p>

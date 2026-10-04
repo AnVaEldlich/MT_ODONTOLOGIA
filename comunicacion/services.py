@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Avg, Count, Exists, OuterRef
 from django.utils import timezone
 
+from accounts.models import Profesional
 from citas.models import Cita
 from clinica.models import Disponibilidad
 
@@ -76,6 +77,9 @@ def feed_paciente(paciente):
         estado__in=[Cita.ESTADO_PENDIENTE, Cita.ESTADO_CONFIRMADA],
         fecha_hora__gte=ahora,
     ).order_by("fecha_hora")
+    ids_seguidos = set(
+        Seguimiento.objects.filter(paciente=paciente).values_list("profesional_id", flat=True)
+    )
     return {
         "proxima": proximas.first(),
         "citas": citas.order_by("-fecha_hora")[:4],
@@ -93,10 +97,28 @@ def feed_paciente(paciente):
             .prefetch_related("comentarios__paciente")
             .order_by("-created_at")[:8]
         ),
-        "seguidos": set(
-            Seguimiento.objects.filter(paciente=paciente).values_list("profesional_id", flat=True)
-        ),
+        "seguidos": ids_seguidos,
+        "especialistas_seguidos": _especialistas_seguidos(paciente, ids_seguidos),
     }
+
+
+def _especialistas_seguidos(paciente, ids_seguidos):
+    if not ids_seguidos:
+        return []
+    profesionales = (
+        Profesional.objects.filter(pk__in=ids_seguidos)
+        .select_related("user")
+        .order_by("user__last_name", "user__first_name")
+    )
+    con_chat = set(
+        Cita.objects.filter(paciente=paciente, profesional_id__in=ids_seguidos)
+        .exclude(estado=Cita.ESTADO_CANCELADA)
+        .values_list("profesional_id", flat=True)
+    )
+    return [
+        {"profesional": profesional, "puede_chatear": profesional.pk in con_chat}
+        for profesional in profesionales
+    ]
 
 
 def resumen_profesional(profesional, paciente=None):

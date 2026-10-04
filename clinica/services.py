@@ -7,6 +7,7 @@ from django.utils import timezone
 from accounts.models import Profesional
 from comunicacion.models import Resena
 
+from .catalogo import CATALOGO_TRATAMIENTOS
 from .models import Especialidad, ProfesionalEspecialidad, Sede, Tratamiento
 
 
@@ -211,6 +212,45 @@ def _calendario(profesional, sede):
         ]
         dias.append({"fecha": fecha, "huecos": huecos})
     return dias
+
+
+def tratamientos_de_portada():
+    """Tarjetas de la portada. El catálogo se ve aunque la tabla esté vacía."""
+    guardados = {tratamiento.codigo: tratamiento for tratamiento in Tratamiento.objects.all()}
+    conocidos = set()
+    tarjetas = []
+    for item in CATALOGO_TRATAMIENTOS:
+        conocidos.add(item["codigo"])
+        fila = guardados.get(item["codigo"])
+        if fila is not None and not fila.activo:
+            continue
+        tarjetas.append(_tarjeta_tratamiento(item))
+    for codigo, fila in guardados.items():
+        if codigo in conocidos or not fila.activo:
+            continue
+        tarjetas.append(
+            _tarjeta_tratamiento(
+                {
+                    "nombre": fila.nombre,
+                    "descripcion": fila.descripcion,
+                    "duracion_minutos": fila.duracion_minutos,
+                    "icono": "diente",
+                    "imagen": "",
+                }
+            )
+        )
+    tarjetas.sort(key=lambda tarjeta: tarjeta["nombre"])
+    return tarjetas
+
+
+def _tarjeta_tratamiento(item):
+    return {
+        "nombre": item["nombre"],
+        "descripcion": item["descripcion"],
+        "duracion": item["duracion_minutos"],
+        "icono": item["icono"],
+        "imagen": item.get("imagen", ""),
+    }
 
 
 def _hueco_publico(hueco):

@@ -26,14 +26,16 @@
             <div class="stats">
                 <div class="stat"><div class="num">{{ stats.proximas }}</div><div class="label">Citas próximas</div></div>
                 <div class="stat"><div class="num">{{ stats.total }}</div><div class="label">Citas en total</div></div>
-                <div class="stat"><div class="num">{{ seguidos|length }}</div><div class="label">Especialistas que sigues</div></div>
+                <button type="button" class="stat stat-accion" id="seguidos-abrir" aria-haspopup="dialog" aria-controls="seguidos-dialog">
+                    <div class="num">{{ seguidos|length }}</div>
+                    <div class="label">Especialistas que sigues</div>
+                </button>
             </div>
         </section>
 
         <section class="card feed-card">
             <div class="card-title-row">
                 <h2>Próxima cita</h2>
-                <a class="btn btn-book btn-sm" href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="mas" %}Agendar cita</a>
             </div>
             {% if proxima %}
             <div class="note">
@@ -115,7 +117,9 @@
 </div>
 {% url 'foto_paciente' as foto_url %}
 {% include "perfiles/includes/foto_dialog.html" with accion=foto_url %}
+{% include "perfiles/includes/seguidos_dialog.html" %}
 {% endblock %}
 {% block extra_js %}
 <script src="{% static 'js/foto.js' %}"></script>
+<script src="{% static 'js/seguidos.js' %}"></script>
 {% endblock %}

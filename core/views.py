@@ -1,33 +1,17 @@
 from urllib.parse import quote
 
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
-from clinica.models import Sede, Tratamiento
-from clinica.services import directorio
+from accounts.roles import dashboard_url_name, user_role
+from clinica.models import Sede
+from clinica.services import directorio, tratamientos_de_portada
 from comunicacion.models import Resena
-
-# Nombre del símbolo SVG (core/includes/icons.html) que ilustra cada tratamiento.
-ICONOS_TRATAMIENTO = {
-    "ortodoncia": "cuadricula",
-    "endodoncia": "pastilla",
-    "implantes": "mas",
-    "blanqueamiento": "brillo",
-    "limpieza": "check-circulo",
-    "estetica": "estrella",
-}
 
 
 def home(request):
-    tratamientos = []
-    for tratamiento in Tratamiento.objects.filter(activo=True).select_related("especialidad"):
-        tratamientos.append(
-            {
-                "nombre": tratamiento.nombre,
-                "descripcion": tratamiento.descripcion,
-                "duracion": tratamiento.duracion_minutos,
-                "icono": ICONOS_TRATAMIENTO.get(tratamiento.codigo, "diente"),
-            }
-        )
+    if user_role(request.user) in ("paciente", "profesional"):
+        return redirect(dashboard_url_name(request.user))
+    tratamientos = tratamientos_de_portada()
     listado = directorio({}, limite_horas=3)
     resenas = (
         Resena.objects.filter(publicada=True)

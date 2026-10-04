@@ -12,7 +12,9 @@
                 <h1>Historial de citas</h1>
                 <p>Puedes cancelar o reprogramar las que siguen pendientes o confirmadas.</p>
             </div>
-            <a class="btn btn-book" href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="mas" %}Agendar cita</a>
+            {% if citas %}
+            <a class="btn btn-primary" href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="mas" %}Agendar cita</a>
+            {% endif %}
         </div>
         {% if citas %}
         <div class="card scroll-x">

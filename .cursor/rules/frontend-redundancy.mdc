@@ -1,0 +1,20 @@
+---
+description: Evitar markup, CSS y JS repetidos en las pantallas Django
+globs: "**/*.html,**/*.css,**/*.js"
+alwaysApply: false
+---
+
+# Sin redundancia en el frontend
+
+Antes de copiar un bloque, busca si ya existe. Una segunda copia del mismo markup, selector o comportamiento se incluye; no se reescribe.
+
+- Lista vacía: `{% include "core/includes/vacio.html" %}`. Formulario: `core/includes/fields.html`. Tratamiento: `core/includes/tratamiento.html`. Icono, avatar y estrellas: `core/includes/icon.html`, `avatar.html`, `stars.html`.
+- Portal del rol: `portal_nav_paciente.html` o `portal_nav_profesional.html`. No pegar esos enlaces en la página.
+- Un bloque que ya aparece en otra pantalla de la misma app pasa a `app/templates/app/includes/`. Si lo usan dos apps, vive en `core/templates/core/includes/`. La primera aparición se queda en la página.
+- Clases de `base.css` antes de CSS de página: `btn-primary`, `btn-ghost`, `btn-danger`, `alert`, `field`, `empty`, `card`. No copiar ese selector a `app/static/app/css/`.
+- Un comportamiento, un archivo. Si dos páginas lo necesitan, el script está en `core/static/js/` y ambas lo cargan en `extra_js`. No duplicar el listener.
+
+```django
+{# ❌ <div class="empty"><p>No hay citas</p><a href="...">Agendar</a></div> #}
+{# ✅ {% include "core/includes/vacio.html" with tipo="cita" titulo="No hay citas" texto="Cuando reserves, aparecerán aquí." enlace="/citas/solicitar/" accion="Agendar cita" %} #}
+```

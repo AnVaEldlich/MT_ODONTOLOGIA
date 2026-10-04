@@ -6,6 +6,6 @@
     <p class="codigo">Error 500</p>
     <h1>Tuvimos un problema</h1>
     <p>No pudimos completar la solicitud. Ya quedó registrado; inténtalo de nuevo en unos minutos.</p>
-    <p class="actions"><a class="btn btn-brand" href="{% url 'home' %}">{% include "core/includes/icon.html" with name="inicio" %}Volver al inicio</a></p>
+    <p class="actions"><a class="btn btn-brand" href="{{ inicio_url }}">{% include "core/includes/icon.html" with name="inicio" %}Volver al inicio</a></p>
 </div>
 {% endblock %}

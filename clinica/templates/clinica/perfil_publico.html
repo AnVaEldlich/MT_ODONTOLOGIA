@@ -41,7 +41,7 @@
                     </form>
                     {% endif %}
                     {% if puede_chatear %}
-                    <a class="btn btn-book btn-sm" href="{% url 'chat_con_profesional' tarjeta.profesional.pk %}">{% include "core/includes/icon.html" with name="chat" %}Escribir</a>
+                    <a class="btn btn-ghost btn-sm" href="{% url 'chat_con_profesional' tarjeta.profesional.pk %}">{% include "core/includes/icon.html" with name="chat" %}Escribir</a>
                     {% elif user_role == 'paciente' %}
                     <p class="meta">{% include "core/includes/icon.html" with name="info" %} El chat se habilita cuando tengas una cita no cancelada con este especialista.</p>
                     {% endif %}
@@ -129,7 +129,7 @@
             {% include "core/includes/vacio.html" with tipo="cita" titulo="Calendario por publicar" texto="Aún no hay una sede publicada para mostrar horarios." compacto=True %}
             {% endif %}
             {% if user_role == 'paciente' and tarjeta.sede_principal %}
-            <p class="book-cta"><a class="btn btn-book btn-block" href="{% url 'solicitar_cita' %}?paso=horario&profesional={{ tarjeta.profesional.pk }}&sede={{ tarjeta.sede_principal.pk }}">Elegir otra hora</a></p>
+            <p class="book-cta"><a class="btn btn-primary btn-block" href="{% url 'solicitar_cita' %}?paso=horario&profesional={{ tarjeta.profesional.pk }}&sede={{ tarjeta.sede_principal.pk }}">Elegir otra hora</a></p>
             {% elif not user.is_authenticated %}
             <p class="meta book-cta">{% include "core/includes/icon.html" with name="info" %} Ingresa con tu cuenta de paciente para confirmar la reserva.</p>
             {% endif %}

@@ -10,17 +10,6 @@
             <p class="kicker">{% include "core/includes/icon.html" with name="brillo" %}Clínica odontológica</p>
             <h1>Encuentra a tu especialista y <em>reserva una hora</em>.</h1>
             <p class="lede">Busca por especialidad o tratamiento y por ciudad. Eliges el horario que te sirve, sin llamar ni esperar.</p>
-            {% include "core/includes/finder.html" with prefix="hero" %}
-            <p class="hero-cta">
-                {% if user_role == 'paciente' %}
-                <a class="btn btn-book btn-lg" href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="calendario" %}Agendar cita</a>
-                {% elif user_role == 'profesional' %}
-                <a class="btn btn-book btn-lg" href="{% url 'agenda_profesional' %}">{% include "core/includes/icon.html" with name="agenda" %}Ver mi agenda</a>
-                {% else %}
-                <a class="btn btn-book btn-lg" href="{% url 'buscar_profesionales' %}">{% include "core/includes/icon.html" with name="calendario" %}Agendar cita</a>
-                <a class="btn btn-ghost btn-lg" href="{% url 'registro_pro' %}">Soy especialista</a>
-                {% endif %}
-            </p>
             <ul class="trust">
                 <li>{% include "core/includes/icon.html" with name="check-circulo" %}Perfiles verificados</li>
                 <li>{% include "core/includes/icon.html" with name="check-circulo" %}Reserva sin costo</li>
@@ -114,16 +103,10 @@
         </div>
         <div class="card-grid services">
             {% for item in tratamientos %}
-            <article class="card service-card">
-                <div class="service-art" aria-hidden="true">{% include "core/includes/icon.html" with name=item.icono|default:"diente" %}</div>
-                <h3>{{ item.nombre }}</h3>
-                <p>{{ item.descripcion|default:"Consulta con el especialista para conocer el plan." }}</p>
-                <p class="meta">{% include "core/includes/icon.html" with name="reloj" %} {{ item.duracion }} minutos de referencia</p>
-                <a href="{% url 'buscar_profesionales' %}?q={{ item.nombre|urlencode }}">Ver especialistas {% include "core/includes/icon.html" with name="flecha" %}</a>
-            </article>
+            {% include "core/includes/tratamiento.html" %}
             {% empty %}
             <div class="card">
-                {% include "core/includes/vacio.html" with titulo="Pronto publicaremos el catálogo" texto="Mientras tanto puedes agendar una valoración." enlace="/especialistas/" accion="Agendar cita" %}
+                {% include "core/includes/vacio.html" with titulo="Pronto publicaremos el catálogo" texto="Mientras tanto puedes buscar un especialista para una valoración." enlace="/especialistas/" accion="Buscar especialista" %}
             </div>
             {% endfor %}
         </div>

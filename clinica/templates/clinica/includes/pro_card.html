@@ -21,6 +21,6 @@
             <span class="chip chip-muted">{% include "core/includes/icon.html" with name="reloj" %}Sin cupos publicados</span>
             {% endfor %}
         </div>
-        <a class="btn btn-book btn-sm" href="{% url 'perfil_publico' tarjeta.profesional.pk %}">Ver horarios{% include "core/includes/icon.html" with name="flecha" %}</a>
+        <a class="btn btn-primary btn-sm" href="{% url 'perfil_publico' tarjeta.profesional.pk %}">Ver horarios{% include "core/includes/icon.html" with name="flecha" %}</a>
     </div>
 </article>
