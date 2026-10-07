@@ -177,7 +177,7 @@ def test_feed_no_muestra_datos_clinicos_ajenos(client, django_user_model):
     client.force_login(pro_user)
     panel = client.get(reverse("perfil_profesional"))
     assert panel.status_code == 200
-    assert "Pacientes atendidos" in panel.content.decode()
+    assert "Citas de hoy" in panel.content.decode()
 
 
 @pytest.mark.django_db
