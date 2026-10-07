@@ -8,6 +8,20 @@ La arquitectura, el esquema y las rutas están en [docs/](docs/). El diagrama de
 
 `.env` y `db.sqlite3` no se versionan. Si ya están en tu máquina, consérvalos: no los borres ni pises `.env` con la plantilla.
 
+## Variables de entorno
+
+`settings.py` no trae valores inseguros por defecto. Sin variables arranca como en producción: `DEBUG=False`, MySQL, y exige `SECRET_KEY`, `ALLOWED_HOSTS` y `CSRF_TRUSTED_ORIGINS` (si faltan, o si valen `*`, falla con `ImproperlyConfigured` en lugar de servir). Una variable ya definida en la shell o en CI gana sobre la del `.env`.
+
+Para desarrollo local pon en tu `.env`:
+
+- `DEBUG=True`. Sin esto, el proyecto se comporta como en producción (redirección a HTTPS, cookies seguras, hosts obligatorios).
+- `SECRET_KEY`. Con `DEBUG=True` puede faltar y se usa una clave de desarrollo; aun así, conviene fijar una.
+- `USE_SQLITE=True` para SQLite, o `USE_SQLITE=False` junto con tus `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST` y `DB_PORT` para MySQL. Por defecto es MySQL.
+
+En producción (`DEBUG=False`) son obligatorias `SECRET_KEY`, `ALLOWED_HOSTS` (dominios reales separados por coma) y `CSRF_TRUSTED_ORIGINS` (con esquema, `https://dominio`). Además se activan `SECURE_SSL_REDIRECT`, HSTS de un año con subdominios y preload, `SECURE_PROXY_SSL_HEADER` (`X-Forwarded-Proto`), cookies de sesión y CSRF seguras, `SECURE_CONTENT_TYPE_NOSNIFF` y `X_FRAME_OPTIONS=DENY`. Se pueden ajustar con `SECURE_SSL_REDIRECT`, `SECURE_HSTS_SECONDS`, `SECURE_HSTS_INCLUDE_SUBDOMAINS` y `SECURE_HSTS_PRELOAD`. `render.yaml` ya define lo necesario para Render.
+
+La lista completa, con ejemplos, está en [.env.example](.env.example).
+
 ## Si ya tienes MySQL con datos
 
 No crees otra base y no corras un `docker compose` encima del mismo puerto si tu servidor ya está en el `3306`.
@@ -69,7 +83,7 @@ python manage.py check
 python manage.py makemigrations --check
 ```
 
-`pytest` fuerza SQLite aunque tu `.env` tenga `USE_SQLITE=False`, para no escribir en la base real. En CI pasa lo mismo.
+`pytest` fuerza SQLite aunque tu `.env` tenga `USE_SQLITE=False`, para no escribir en la base real. `pytest.ini` (vía `pytest-env`) fija además `DEBUG=True` y una `SECRET_KEY` de prueba, así las pruebas no dependen de tu `.env`. En CI pasa lo mismo, y un paso extra corre `python manage.py check --deploy` con `DEBUG=False` y variables ficticias para confirmar que la configuración de producción no emite advertencias de seguridad.
 
 ## Chat
 

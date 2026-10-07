@@ -6,11 +6,16 @@ import os
 import sys
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 def _load_dotenv() -> None:
-    """Carga WEB_ODONTOLOGIA/.env sin depender del cwd (estable con autoreload)."""
+    """Carga WEB_ODONTOLOGIA/.env sin depender del cwd (estable con autoreload).
+
+    Una variable ya presente en el entorno (shell, CI, pytest.ini) gana sobre el .env.
+    """
     path = BASE_DIR / ".env"
     if not path.is_file():
         return
@@ -22,7 +27,7 @@ def _load_dotenv() -> None:
         key = key.strip()
         val = val.strip().strip('"').strip("'")
         if key:
-            os.environ[key] = val
+            os.environ.setdefault(key, val)
 
 
 _load_dotenv()
@@ -35,6 +40,16 @@ def _env_bool(key: str, default: bool = False) -> bool:
     return os.getenv(key, str(default)).lower() in ("true", "1", "yes", "on")
 
 
+def _env_int(key: str, default: int) -> int:
+    raw = os.getenv(key, "").strip()
+    if not raw:
+        return default
+    try:
+        return int(raw)
+    except ValueError as exc:
+        raise ImproperlyConfigured(f"{key} debe ser un número entero, no {raw!r}.") from exc
+
+
 def _env_list(key: str, default: str = "") -> list[str]:
     raw = os.getenv(key, default).strip()
     if not raw:
@@ -42,19 +57,30 @@ def _env_list(key: str, default: str = "") -> list[str]:
     return [h.strip() for h in raw.split(",") if h.strip()]
 
 
-SECRET_KEY = os.getenv(
-    "SECRET_KEY",
-    "django-insecure-dev-only-change-in-production",
-)
+# Sin DEBUG=True explícito la configuración es la de producción.
+DEBUG = _env_bool("DEBUG", False)
 
-DEBUG = _env_bool("DEBUG", True)
+SECRET_KEY = os.getenv("SECRET_KEY", "").strip()
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured(
+            "SECRET_KEY no está definida. Agrégala al entorno o al .env "
+            "(con DEBUG=True se usa una clave de desarrollo)."
+        )
+    SECRET_KEY = "django-insecure-dev-only-change-in-production"
 
-ALLOWED_HOSTS = _env_list("ALLOWED_HOSTS", "127.0.0.1,localhost")
+ALLOWED_HOSTS = _env_list("ALLOWED_HOSTS", "127.0.0.1,localhost" if DEBUG else "")
+CSRF_TRUSTED_ORIGINS = _env_list("CSRF_TRUSTED_ORIGINS")
 
-CSRF_TRUSTED_ORIGINS = _env_list(
-    "CSRF_TRUSTED_ORIGINS",
-    "https://*.onrender.com" if not DEBUG else "",
-)
+if not DEBUG:
+    if not ALLOWED_HOSTS or "*" in ALLOWED_HOSTS:
+        raise ImproperlyConfigured(
+            "ALLOWED_HOSTS debe listar los dominios reales (separados por coma) y no puede ser '*' sin DEBUG."
+        )
+    if not CSRF_TRUSTED_ORIGINS or any(o == "*" or o.endswith("://*") for o in CSRF_TRUSTED_ORIGINS):
+        raise ImproperlyConfigured(
+            "CSRF_TRUSTED_ORIGINS debe listar los orígenes con esquema (https://dominio) y no puede ser '*' sin DEBUG."
+        )
 
 INSTALLED_APPS = [
     "daphne",
@@ -122,7 +148,7 @@ else:
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-_use_sqlite = _under_pytest or _env_bool("USE_SQLITE", True)
+_use_sqlite = _under_pytest or _env_bool("USE_SQLITE", False)
 
 if _use_sqlite:
     DATABASES = {
@@ -205,8 +231,19 @@ if _sentry_dsn:
     except ImportError:
         pass
 
+# Seguridad. Las cabeceras aplican siempre; TLS y cookies seguras solo sin DEBUG.
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "same-origin"
+X_FRAME_OPTIONS = "DENY"
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
 if not DEBUG:
+    # El proxy (Render, nginx) termina TLS y avisa con X-Forwarded-Proto.
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    SECURE_SSL_REDIRECT = _env_bool("SECURE_SSL_REDIRECT", False)
+    SECURE_SSL_REDIRECT = _env_bool("SECURE_SSL_REDIRECT", True)
+    SECURE_HSTS_SECONDS = _env_int("SECURE_HSTS_SECONDS", 31536000)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = _env_bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", True)
+    SECURE_HSTS_PRELOAD = _env_bool("SECURE_HSTS_PRELOAD", True)
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True

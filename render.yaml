@@ -18,6 +18,11 @@ services:
         generateValue: true
       - key: DEBUG
         value: "False"
+      # Render termina TLS y envía X-Forwarded-Proto; settings.py ya lo confía.
+      - key: SECURE_SSL_REDIRECT
+        value: "True"
+      - key: SECURE_HSTS_SECONDS
+        value: "31536000"
       - key: USE_SQLITE
         value: "False"
       - key: SKIP_MIGRATE_ON_BUILD

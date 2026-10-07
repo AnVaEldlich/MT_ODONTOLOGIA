@@ -35,6 +35,15 @@ jobs:
           python manage.py check
           python manage.py migrate --noinput
 
+      - name: Deploy check (DEBUG=False)
+        env:
+          SECRET_KEY: ci-deploy-check-dummy-key-0123456789-abcdefghijklmnopqrstuvwxyz
+          DEBUG: "False"
+          USE_SQLITE: "True"
+          ALLOWED_HOSTS: example.com
+          CSRF_TRUSTED_ORIGINS: https://example.com
+        run: python manage.py check --deploy --fail-level WARNING
+
       - name: Pytest
         env:
           SECRET_KEY: ci-secret-key-for-tests-only
