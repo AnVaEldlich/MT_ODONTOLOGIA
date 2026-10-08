@@ -6,6 +6,7 @@ from django.db.models.functions import Concat
 from auditoria.models import AuditLog
 from auditoria.services import registrar, snapshot
 from clinica.services import asignar_especialidad_principal, asignar_especialidades, asignar_sedes
+from historia.services import abrir_historia
 
 from .models import Paciente, Profesional
 from .roles import assign_paciente_group, assign_profesional_group
@@ -44,6 +45,11 @@ def buscar_pacientes(q):
         | Q(correo__icontains=termino)
         | Q(user__email__icontains=termino)
     )
+
+
+def pacientes_de_profesional(profesional, q=""):
+    """Pacientes que el profesional atiende o atendió: los que tienen una cita con él."""
+    return buscar_pacientes(q).filter(citas__profesional=profesional).distinct()
 
 
 @transaction.atomic
@@ -123,16 +129,15 @@ def create_paciente(cleaned):
         emergency_contact=cleaned.get("emergency_contact") or None,
         emergency_phone=cleaned.get("emergency_phone") or None,
         eps=cleaned.get("eps") or None,
-        diabetes="diabetes" in conditions,
-        hipertension="hipertension" in conditions,
-        cardiopatia="cardiopatia" in conditions,
-        alergias="alergias" in conditions,
-        embarazo="embarazo" in conditions,
-        ninguna="ninguna" in conditions,
-        medications=cleaned.get("medications"),
-        dental_history=cleaned.get("dental_history"),
     )
     assign_paciente_group(user)
+    # Lo médico vive en HistoriaClinica; las columnas clínicas de Paciente quedan congeladas.
+    abrir_historia(
+        paciente,
+        condiciones=conditions,
+        medicamentos=cleaned.get("medications") or "",
+        antecedentes=cleaned.get("dental_history") or "",
+    )
     return user, paciente
 
 @transaction.atomic

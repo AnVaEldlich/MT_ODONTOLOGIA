@@ -28,7 +28,7 @@ from comunicacion.models import Comentario, MeGusta, Mensaje, Notificacion, Publ
 from comunicacion.services import abrir_conversacion, enviar_mensaje
 from facturacion.models import Factura, Pago
 from historia.models import Odontograma, Receta, RecetaItem
-from historia.services import obtener_historia, registrar_evolucion
+from historia.services import abrir_historia, obtener_historia, registrar_evolucion
 
 DEMO_PASSWORD = "demo1234"
 
@@ -299,10 +299,14 @@ class Command(BaseCommand):
                     "city": "Bogotá",
                     "department": "Cundinamarca",
                     "eps": "EPS Demo",
-                    "alergias": data["alergias"],
-                    "dental_history": data["dental_history"],
                 },
             )
+            if _created:
+                abrir_historia(
+                    paciente,
+                    condiciones={"alergias"} if data["alergias"] else set(),
+                    antecedentes=data["dental_history"],
+                )
             pacientes.append(paciente)
         return pacientes
 

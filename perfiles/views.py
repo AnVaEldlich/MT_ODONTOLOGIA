@@ -13,7 +13,12 @@ from accounts.forms import PacienteGestionForm, PacientePerfilForm, ProfesionalP
 from accounts.imagenes import guardar_foto, quitar_foto
 from accounts.models import Paciente, Profesional
 from accounts.roles import ROL_ADMINISTRADOR, dashboard_url_name
-from accounts.services import buscar_pacientes, create_paciente_sin_cuenta, update_paciente_datos
+from accounts.services import (
+    buscar_pacientes,
+    create_paciente_sin_cuenta,
+    pacientes_de_profesional,
+    update_paciente_datos,
+)
 from citas.models import Cita
 from citas.services import profesional_atiende
 from clinica.models import Disponibilidad
@@ -29,6 +34,7 @@ from historia.services import (
     guardar_diente,
     guardar_historia,
     obtener_historia,
+    registrar_consulta,
     registrar_evolucion,
 )
 
@@ -104,6 +110,7 @@ def ficha_administrativa(request, paciente_id):
         {
             "paciente": paciente,
             "puede_ver_clinica": puede_ver_clinica,
+            "alertas": obtener_historia(paciente).alertas() if puede_ver_clinica else [],
             "procedimientos": procedimientos,
             "proximas": paciente.citas.filter(
                 estado__in=[Cita.ESTADO_PENDIENTE, Cita.ESTADO_CONFIRMADA], fecha_hora__gte=timezone.now()
@@ -226,6 +233,13 @@ def editar_perfil_profesional(request):
 
 
 @profesional_required
+def mis_pacientes(request):
+    q = request.GET.get("q", "").strip()
+    pagina = Paginator(pacientes_de_profesional(request.user.profesional, q), 30).get_page(request.GET.get("pagina"))
+    return render(request, "perfiles/mis_pacientes.html", {"pagina": pagina, "q": q})
+
+
+@profesional_required
 def ficha_paciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, pk=paciente_id)
     profesional = request.user.profesional
@@ -242,7 +256,7 @@ def _guardar_ficha(request, paciente, profesional):
         if accion == "historia":
             form = HistoriaForm(request.POST, instance=obtener_historia(paciente))
             if form.is_valid():
-                guardar_historia(form.instance, form.cleaned_data)
+                guardar_historia(form.instance, form.cleaned_data, request=request)
                 messages.success(request, "Historia clínica actualizada.")
                 return redirect("ficha_paciente", paciente_id=paciente.pk)
         elif accion == "evolucion":
@@ -254,6 +268,7 @@ def _guardar_ficha(request, paciente, profesional):
                     nota=form.cleaned_data["nota"],
                     tratamiento=form.cleaned_data.get("tratamiento"),
                     cita=form.cleaned_data.get("cita"),
+                    request=request,
                 )
                 messages.success(request, "Evolución registrada.")
                 return redirect("ficha_paciente", paciente_id=paciente.pk)
@@ -266,13 +281,14 @@ def _guardar_ficha(request, paciente, profesional):
                     codigo_fdi=form.cleaned_data["codigo_fdi"],
                     estado=form.cleaned_data["estado"],
                     nota=form.cleaned_data.get("nota") or "",
+                    request=request,
                 )
                 messages.success(request, "Odontograma actualizado.")
                 return redirect("ficha_paciente", paciente_id=paciente.pk)
         elif accion == "receta":
             form = RecetaForm(request.POST, paciente=paciente, profesional=profesional)
             if form.is_valid():
-                crear_receta(profesional=profesional, paciente=paciente, **form.cleaned_data)
+                crear_receta(profesional=profesional, paciente=paciente, request=request, **form.cleaned_data)
                 messages.success(request, "Receta guardada.")
                 return redirect("ficha_paciente", paciente_id=paciente.pk)
         elif accion == "factura":
@@ -300,6 +316,8 @@ def _guardar_ficha(request, paciente, profesional):
 
 def _render_ficha(request, paciente, profesional, accion=None, form_invalido=None):
     historia, filas = dientes_del_paciente(paciente)
+    if request.method == "GET":
+        registrar_consulta(request, paciente)
     diente_codigo = request.GET.get("diente")
     diente = None
     if diente_codigo and diente_codigo.isdigit():

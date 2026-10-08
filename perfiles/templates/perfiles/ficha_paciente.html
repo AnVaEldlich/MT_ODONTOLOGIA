@@ -18,13 +18,10 @@
             {% endif %}
         </div>
         <section class="card">
-            <h2>Alertas del registro</h2>
+            <h2>Alertas de la historia</h2>
             <div class="chips">
-                {% if paciente.alergias %}<span class="chip">Alergias</span>{% endif %}
-                {% if paciente.diabetes %}<span class="chip">Diabetes</span>{% endif %}
-                {% if paciente.hipertension %}<span class="chip">Hipertensión</span>{% endif %}
-                {% if paciente.cardiopatia %}<span class="chip">Cardiopatía</span>{% endif %}
-                {% if paciente.embarazo %}<span class="chip">Embarazo</span>{% endif %}
+                {% for alerta in historia.alertas %}<span class="chip">{{ alerta }}</span>{% endfor %}
+                {% if historia.ninguna %}<span class="chip">Sin condiciones declaradas</span>{% endif %}
                 {% if paciente.eps %}<span class="chip">EPS {{ paciente.eps }}</span>{% endif %}
             </div>
         </section>

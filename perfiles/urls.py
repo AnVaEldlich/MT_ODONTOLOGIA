@@ -10,6 +10,7 @@ urlpatterns = [
     path("profesional/", views.perfil_profesional, name="perfil_profesional"),
     path("profesional/editar/", views.editar_perfil_profesional, name="editar_perfil_profesional"),
     path("profesional/foto/", views.actualizar_foto_profesional, name="foto_profesional"),
+    path("profesional/pacientes/", views.mis_pacientes, name="mis_pacientes"),
     path("profesional/pacientes/<int:paciente_id>/", views.ficha_paciente, name="ficha_paciente"),
     path("administrador/", views.panel_administrador, name="panel_administrador"),
     path("administrador/pacientes/", views.pacientes_gestion, name="pacientes_gestion"),

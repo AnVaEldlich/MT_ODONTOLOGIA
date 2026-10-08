@@ -8,12 +8,30 @@ from .models import DIENTES_FDI, HistoriaClinica, Odontograma
 
 
 class HistoriaForm(forms.ModelForm):
+    condiciones = forms.MultipleChoiceField(
+        label="Condiciones médicas",
+        required=False,
+        choices=HistoriaClinica.CONDICIONES,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "checkbox-list"}),
+    )
+
     class Meta:
         model = HistoriaClinica
-        fields = ("antecedentes", "medicamentos", "alergias", "observaciones")
+        fields = ("condiciones", "alergias", "antecedentes", "medicamentos", "observaciones")
         widgets = {campo: forms.Textarea(attrs={"rows": 3}) for campo in (
             "antecedentes", "medicamentos", "alergias", "observaciones"
         )}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk and "condiciones" not in self.initial:
+            self.initial["condiciones"] = self.instance.condiciones_marcadas()
+
+    def clean_condiciones(self):
+        marcadas = set(self.cleaned_data["condiciones"])
+        if "ninguna" in marcadas and len(marcadas) > 1:
+            raise ValidationError("Si marcas «Ninguna condición» no puede haber otras marcadas.")
+        return sorted(marcadas)
 
 
 class EvolucionForm(forms.Form):

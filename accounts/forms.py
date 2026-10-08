@@ -371,6 +371,8 @@ class ProfesionalPerfilForm(forms.ModelForm):
 
 
 class PacientePerfilForm(forms.ModelForm):
+    """Datos de contacto que el paciente edita. Lo médico solo lo cambia el profesional en la historia."""
+
     class Meta:
         model = Paciente
         fields = (
@@ -381,19 +383,7 @@ class PacientePerfilForm(forms.ModelForm):
             "emergency_contact",
             "emergency_phone",
             "eps",
-            "diabetes",
-            "hipertension",
-            "cardiopatia",
-            "alergias",
-            "embarazo",
-            "ninguna",
-            "medications",
-            "dental_history",
         )
-        widgets = {
-            "medications": forms.Textarea(attrs={"rows": 3}),
-            "dental_history": forms.Textarea(attrs={"rows": 3}),
-        }
 
 
 # Mismos valores que el registro público (register.html) para que la búsqueda y los filtros coincidan.

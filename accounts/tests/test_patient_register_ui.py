@@ -31,8 +31,11 @@ def test_register_ui_fills_form_and_creates_patient(client):
     assert paciente.phone == payload["phone"]
     assert paciente.city == payload["city"]
     assert paciente.eps == payload["eps"]
-    assert paciente.ninguna is True
-    assert paciente.diabetes is False
+    # Lo médico queda en la historia clínica, no en las columnas congeladas de Paciente.
+    assert paciente.historia.ninguna is True
+    assert paciente.historia.diabetes is False
+    assert paciente.historia.antecedentes == payload["dental_history"]
+    assert paciente.ninguna is False
     assert paciente.emergency_contact == payload["emergency_contact"]
     assert response.wsgi_request.user.is_authenticated
     assert response.wsgi_request.user.pk == user.pk

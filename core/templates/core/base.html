@@ -94,6 +94,7 @@
             {% elif user_role == 'profesional' %}
             <li><a href="{% url 'perfil_profesional' %}">{% include "core/includes/icon.html" with name="inicio" %}Mi panel</a></li>
             <li><a href="{% url 'agenda_profesional' %}">{% include "core/includes/icon.html" with name="agenda" %}Agenda</a></li>
+            <li><a href="{% url 'mis_pacientes' %}">{% include "core/includes/icon.html" with name="usuarios" %}Mis pacientes</a></li>
             <li><a href="{% url 'disponibilidad' %}">{% include "core/includes/icon.html" with name="reloj" %}Horarios</a></li>
             <li><a href="{% url 'editar_perfil_profesional' %}">{% include "core/includes/icon.html" with name="usuario" %}Editar perfil</a></li>
             {% if es_administrador %}<li><a href="{% url 'panel_administrador' %}">{% include "core/includes/icon.html" with name="escudo" %}Administración</a></li>{% endif %}

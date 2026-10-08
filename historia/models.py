@@ -13,6 +13,18 @@ DIENTES_FDI = (
 
 
 class HistoriaClinica(models.Model):
+    """Única fuente de los datos médicos del paciente. Las columnas clínicas de Paciente quedan congeladas."""
+
+    # (campo, etiqueta) de las condiciones que se marcan con casilla.
+    CONDICIONES = (
+        ("diabetes", "Diabetes"),
+        ("hipertension", "Hipertensión"),
+        ("cardiopatia", "Cardiopatía"),
+        ("embarazo", "Embarazo"),
+        ("ninguna", "Ninguna condición"),
+    )
+    ALERGIAS_DEL_REGISTRO = "Alergias reportadas en el registro."
+
     paciente = models.OneToOneField(
         Paciente,
         on_delete=models.CASCADE,
@@ -23,6 +35,11 @@ class HistoriaClinica(models.Model):
     medicamentos = models.TextField(blank=True, verbose_name="Medicamentos")
     alergias = models.TextField(blank=True, verbose_name="Alergias")
     observaciones = models.TextField(blank=True, verbose_name="Observaciones")
+    diabetes = models.BooleanField(default=False, verbose_name="Diabetes")
+    hipertension = models.BooleanField(default=False, verbose_name="Hipertensión")
+    cardiopatia = models.BooleanField(default=False, verbose_name="Cardiopatía")
+    embarazo = models.BooleanField(default=False, verbose_name="Embarazo")
+    ninguna = models.BooleanField(default=False, verbose_name="Ninguna condición")
     origen_migracion = models.BooleanField(
         default=False,
         verbose_name="Creada al migrar datos",
@@ -37,6 +54,15 @@ class HistoriaClinica(models.Model):
 
     def __str__(self):
         return f"Historia de {self.paciente}"
+
+    def condiciones_marcadas(self):
+        return [campo for campo, _etiqueta in self.CONDICIONES if getattr(self, campo)]
+
+    def alertas(self):
+        """Etiquetas cortas para las fichas: alergias y condiciones activas."""
+        etiquetas = ["Alergias"] if self.alergias.strip() else []
+        etiquetas += [etiqueta for campo, etiqueta in self.CONDICIONES if campo != "ninguna" and getattr(self, campo)]
+        return etiquetas
 
 
 class Evolucion(models.Model):

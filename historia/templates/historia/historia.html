@@ -12,6 +12,15 @@
             <p>Solo lectura. Tu especialista actualiza la evolución después de la cita.</p>
         </div>
         <section class="card">
+            <h2>Condiciones médicas</h2>
+            {% if historia.alertas or historia.ninguna %}
+            <div class="chips">
+                {% for alerta in historia.alertas %}<span class="chip">{{ alerta }}</span>{% endfor %}
+                {% if historia.ninguna %}<span class="chip">Sin condiciones declaradas</span>{% endif %}
+            </div>
+            {% else %}
+            <p>Sin condiciones registradas.</p>
+            {% endif %}
             <h2>Antecedentes</h2>
             <p>{{ historia.antecedentes|default:"Sin antecedentes registrados." }}</p>
             <h2>Medicamentos</h2>

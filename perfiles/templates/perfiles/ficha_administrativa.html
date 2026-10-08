@@ -36,6 +36,7 @@
         <section class="card">
             <h2>Información médica</h2>
             {% if puede_ver_clinica %}
+            {% if alertas %}<div class="chips">{% for alerta in alertas %}<span class="chip">{{ alerta }}</span>{% endfor %}</div>{% endif %}
             <p class="meta">Eres el profesional tratante. La historia, el odontograma y las evoluciones están en la ficha clínica.</p>
             <a class="btn btn-ghost btn-sm" href="{% url 'ficha_paciente' paciente.pk %}">{% include "core/includes/icon.html" with name="documento" %}Abrir ficha clínica</a>
             {% else %}
