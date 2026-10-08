@@ -9,6 +9,8 @@
     {% include "core/includes/portal_nav_profesional.html" %}
     {% elif user_role == 'paciente' %}
     {% include "core/includes/portal_nav_paciente.html" %}
+    {% elif es_personal %}
+    {% include "core/includes/portal_nav_personal.html" %}
     {% endif %}
     <div>
         <div class="page-head">
