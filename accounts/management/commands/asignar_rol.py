@@ -3,15 +3,15 @@ from getpass import getpass
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 
-from accounts.roles import ROLES_PERSONAL, assign_personal_group, remove_personal_group, roles_de
+from accounts.roles import GRUPO_POR_ROL, assign_group_role, remove_group_role, roles_de
 
 
 class Command(BaseCommand):
-    help = "Asigna o quita el rol Administrador o Administrativo a una cuenta por correo"
+    help = "Asigna o quita el rol Administrador a una cuenta por correo"
 
     def add_arguments(self, parser):
         parser.add_argument("email")
-        parser.add_argument("rol", choices=sorted(ROLES_PERSONAL))
+        parser.add_argument("rol", choices=sorted(GRUPO_POR_ROL))
         parser.add_argument("--quitar", action="store_true", help="Quita el rol en lugar de asignarlo")
         parser.add_argument("--crear", action="store_true", help="Crea la cuenta si no existe")
         parser.add_argument("--nombre", default="", help="Nombre y apellido para una cuenta nueva")
@@ -30,10 +30,10 @@ class Command(BaseCommand):
             self.stdout.write(f"Cuenta creada: {email}")
 
         if options["quitar"]:
-            remove_personal_group(user, rol)
+            remove_group_role(user, rol)
             self.stdout.write(self.style.SUCCESS(f"Rol {rol} retirado de {email}."))
         else:
-            assign_personal_group(user, rol)
+            assign_group_role(user, rol)
             self.stdout.write(self.style.SUCCESS(f"Rol {rol} asignado a {email}."))
         self.stdout.write("Roles actuales: " + ", ".join(sorted(roles_de(user)) or ["ninguno"]))
 

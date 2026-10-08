@@ -45,11 +45,11 @@
                 <li><a href="{% url 'perfil_profesional' %}">Mi panel</a></li>
                 <li><a href="{% url 'disponibilidad' %}">Horarios</a></li>
                 <li><a href="{% url 'editar_perfil_profesional' %}">Perfil</a></li>
-                {% if es_personal %}<li><a href="{% url 'panel_personal' %}">Gestión</a></li>{% endif %}
+                {% if es_administrador %}<li><a href="{% url 'panel_administrador' %}">Administración</a></li>{% endif %}
                 <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} <span class="badge danger sin-punto">{{ notificaciones_sin_leer }}</span>{% endif %}</a></li>
                 <li><a href="{% url 'chat_lista' %}">Mensajes{% if mensajes_sin_leer %} <span class="badge danger sin-punto">{{ mensajes_sin_leer }}</span>{% endif %}</a></li>
-                {% elif es_personal %}
-                <li><a href="{% url 'panel_personal' %}">Gestión</a></li>
+                {% elif es_administrador %}
+                <li><a href="{% url 'panel_administrador' %}">Administración</a></li>
                 <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} <span class="badge danger sin-punto">{{ notificaciones_sin_leer }}</span>{% endif %}</a></li>
                 {% else %}
                 <li><a href="{% url 'login' %}">Ingresar</a></li>
@@ -60,8 +60,8 @@
             <a class="btn btn-primary btn-sm" href="{% url 'agenda_profesional' %}">{% include "core/includes/icon.html" with name="agenda" %}Agenda</a>
             {% elif user_role == 'paciente' %}
             <a class="btn btn-primary btn-sm" href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="calendario" %}Agendar cita</a>
-            {% elif es_personal %}
-            <a class="btn btn-primary btn-sm" href="{% url 'panel_personal' %}">{% include "core/includes/icon.html" with name="escudo" %}Panel</a>
+            {% elif es_administrador %}
+            <a class="btn btn-primary btn-sm" href="{% url 'panel_administrador' %}">{% include "core/includes/icon.html" with name="escudo" %}Panel</a>
             {% else %}
             <a class="btn btn-primary btn-sm" href="{% url 'buscar_profesionales' %}">{% include "core/includes/icon.html" with name="calendario" %}Agendar cita</a>
             {% endif %}
@@ -96,9 +96,9 @@
             <li><a href="{% url 'agenda_profesional' %}">{% include "core/includes/icon.html" with name="agenda" %}Agenda</a></li>
             <li><a href="{% url 'disponibilidad' %}">{% include "core/includes/icon.html" with name="reloj" %}Horarios</a></li>
             <li><a href="{% url 'editar_perfil_profesional' %}">{% include "core/includes/icon.html" with name="usuario" %}Editar perfil</a></li>
-            {% if es_personal %}<li><a href="{% url 'panel_personal' %}">{% include "core/includes/icon.html" with name="escudo" %}Gestión</a></li>{% endif %}
-            {% elif es_personal %}
-            <li><a href="{% url 'panel_personal' %}">{% include "core/includes/icon.html" with name="inicio" %}Panel de gestión</a></li>
+            {% if es_administrador %}<li><a href="{% url 'panel_administrador' %}">{% include "core/includes/icon.html" with name="escudo" %}Administración</a></li>{% endif %}
+            {% elif es_administrador %}
+            <li><a href="{% url 'panel_administrador' %}">{% include "core/includes/icon.html" with name="inicio" %}Administración</a></li>
             {% else %}
             <li><a href="{% url 'buscar_profesionales' %}">{% include "core/includes/icon.html" with name="buscar" %}Buscar especialista</a></li>
             <li><a href="{% url 'login' %}">{% include "core/includes/icon.html" with name="usuario" %}Ingresar</a></li>
@@ -161,13 +161,13 @@
             <h2>Especialistas</h2>
             <p><a href="{% url 'registro_pro' %}">Unirme como especialista</a></p>
             <p><a href="{% url 'formclinic' %}">Registrar un centro</a></p>
-            {% if user_role != 'paciente' and user_role != 'profesional' and not es_personal %}
+            {% if user_role != 'paciente' and user_role != 'profesional' and not es_administrador %}
             <p><a href="{% url 'home' %}#sedes">Sedes</a></p>
             {% endif %}
         </div>
         <div>
             <h2>Ayuda</h2>
-            {% if user_role != 'paciente' and user_role != 'profesional' and not es_personal %}
+            {% if user_role != 'paciente' and user_role != 'profesional' and not es_administrador %}
             <p><a href="{% url 'home' %}#preguntas">Preguntas frecuentes</a></p>
             <p><a href="{% url 'home' %}#tratamientos">Tratamientos</a></p>
             {% endif %}
@@ -176,7 +176,7 @@
     <p class="legal">Bogotá, Colombia. La reserva en línea no tiene costo de plataforma.</p>
 </footer>
 
-{% if user_role == 'paciente' or user_role == 'profesional' or es_personal %}
+{% if user_role == 'paciente' or user_role == 'profesional' or es_administrador %}
 <nav class="tabbar" aria-label="Navegación de la aplicación">
     {% with actual=request.resolver_match.url_name %}
     {% if user_role == 'paciente' %}
@@ -192,7 +192,7 @@
     <a href="{% url 'disponibilidad' %}" {% if actual == 'disponibilidad' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="reloj" %}Horarios</a>
     <a href="{% url 'notificaciones' %}" {% if actual == 'notificaciones' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="campana" %}Avisos</a>
     {% else %}
-    <a href="{% url 'panel_personal' %}" {% if actual == 'panel_personal' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="inicio" %}Inicio</a>
+    <a href="{% url 'panel_administrador' %}" {% if actual == 'panel_administrador' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="inicio" %}Inicio</a>
     <a href="{% url 'notificaciones' %}" {% if actual == 'notificaciones' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="campana" %}Avisos</a>
     <a href="{% url 'password_change' %}" {% if actual == 'password_change' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="usuario" %}Cuenta</a>
     {% endif %}

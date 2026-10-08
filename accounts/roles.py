@@ -4,23 +4,19 @@ from django.contrib.auth.models import Group
 GROUP_PACIENTE = "Paciente"
 GROUP_PROFESIONAL = "Profesional"
 GROUP_ADMINISTRADOR = "Administrador"
-GROUP_ADMINISTRATIVO = "Administrativo"
 
 ROL_PACIENTE = "paciente"
 ROL_PROFESIONAL = "profesional"
 ROL_ADMINISTRADOR = "administrador"
-ROL_ADMINISTRATIVO = "administrativo"
 
-# Roles de personal: se asignan por grupo, no por perfil.
+# Roles que se asignan por grupo y no por perfil. Punto de extensión para roles futuros.
 GRUPO_POR_ROL = {
     ROL_ADMINISTRADOR: GROUP_ADMINISTRADOR,
-    ROL_ADMINISTRATIVO: GROUP_ADMINISTRATIVO,
 }
-ROLES_PERSONAL = frozenset(GRUPO_POR_ROL)
 
 
 def ensure_groups():
-    for nombre in (GROUP_PACIENTE, GROUP_PROFESIONAL, GROUP_ADMINISTRADOR, GROUP_ADMINISTRATIVO):
+    for nombre in (GROUP_PACIENTE, GROUP_PROFESIONAL, GROUP_ADMINISTRADOR):
         Group.objects.get_or_create(name=nombre)
 
 
@@ -34,13 +30,13 @@ def assign_profesional_group(user):
     user.groups.add(Group.objects.get(name=GROUP_PROFESIONAL))
 
 
-def assign_personal_group(user, rol):
-    """Agrega el grupo Administrador o Administrativo. No toca los perfiles."""
+def assign_group_role(user, rol):
+    """Agrega un rol de grupo (hoy solo Administrador). No toca los perfiles."""
     ensure_groups()
     user.groups.add(Group.objects.get(name=GRUPO_POR_ROL[rol]))
 
 
-def remove_personal_group(user, rol):
+def remove_group_role(user, rol):
     ensure_groups()
     user.groups.remove(Group.objects.get(name=GRUPO_POR_ROL[rol]))
 
@@ -71,8 +67,8 @@ def roles_de(user):
     return roles
 
 
-def es_personal(user):
-    return bool(roles_de(user) & ROLES_PERSONAL)
+def es_administrador(user):
+    return ROL_ADMINISTRADOR in roles_de(user)
 
 
 def user_role(user):
@@ -80,7 +76,7 @@ def user_role(user):
     if not user.is_authenticated:
         return None
     roles = roles_de(user)
-    for rol in (ROL_PROFESIONAL, ROL_PACIENTE, ROL_ADMINISTRADOR, ROL_ADMINISTRATIVO):
+    for rol in (ROL_PROFESIONAL, ROL_PACIENTE, ROL_ADMINISTRADOR):
         if rol in roles:
             return rol
     return "unknown"
@@ -92,8 +88,8 @@ def dashboard_url_name(user):
         return "perfil_profesional"
     if role == ROL_PACIENTE:
         return "perfil"
-    if role in ROLES_PERSONAL:
-        return "panel_personal"
+    if role == ROL_ADMINISTRADOR:
+        return "panel_administrador"
     if user.is_staff or user.is_superuser:
         return "admin:index"
     return "home"

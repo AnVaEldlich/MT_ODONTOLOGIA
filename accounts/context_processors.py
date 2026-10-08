@@ -3,7 +3,7 @@ from django.urls import NoReverseMatch, reverse
 from comunicacion.models import Notificacion
 from comunicacion.services import mensajes_sin_leer
 
-from .roles import ROL_ADMINISTRADOR, ROLES_PERSONAL, dashboard_url_name, roles_de, user_role
+from .roles import ROL_ADMINISTRADOR, dashboard_url_name, roles_de, user_role
 
 
 def role(request):
@@ -25,7 +25,6 @@ def role(request):
     return {
         "user_role": user_role(request.user),
         "roles": roles,
-        "es_personal": bool(roles & ROLES_PERSONAL),
         "es_administrador": ROL_ADMINISTRADOR in roles,
         "notificaciones_sin_leer": sin_leer,
         "mensajes_sin_leer": chat_sin_leer,

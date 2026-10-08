@@ -4,7 +4,7 @@ from accounts.roles import ensure_groups
 
 
 class Command(BaseCommand):
-    help = "Crea los grupos Paciente, Profesional, Administrador y Administrativo"
+    help = "Crea los grupos Paciente, Profesional y Administrador"
 
     def handle(self, *args, **options):
         ensure_groups()

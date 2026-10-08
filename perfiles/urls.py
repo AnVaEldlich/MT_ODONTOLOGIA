@@ -11,5 +11,5 @@ urlpatterns = [
     path("profesional/editar/", views.editar_perfil_profesional, name="editar_perfil_profesional"),
     path("profesional/foto/", views.actualizar_foto_profesional, name="foto_profesional"),
     path("profesional/pacientes/<int:paciente_id>/", views.ficha_paciente, name="ficha_paciente"),
-    path("personal/", views.panel_personal, name="panel_personal"),
+    path("administrador/", views.panel_administrador, name="panel_administrador"),
 ]

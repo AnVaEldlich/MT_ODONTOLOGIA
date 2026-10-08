@@ -11,7 +11,7 @@ from django.utils import timezone
 from accounts.forms import PacientePerfilForm, ProfesionalPerfilForm
 from accounts.imagenes import guardar_foto, quitar_foto
 from accounts.models import Paciente, Profesional
-from accounts.roles import ROL_ADMINISTRADOR, ROL_ADMINISTRATIVO, dashboard_url_name, roles_de
+from accounts.roles import ROL_ADMINISTRADOR, dashboard_url_name
 from citas.models import Cita
 from citas.services import profesional_atiende
 from clinica.models import Disponibilidad
@@ -38,14 +38,14 @@ def dashboard(request):
     return redirect(dashboard_url_name(request.user))
 
 
-@rol_requerido(ROL_ADMINISTRADOR, ROL_ADMINISTRATIVO)
-def panel_personal(request):
+@rol_requerido(ROL_ADMINISTRADOR)
+def panel_administrador(request):
     hoy = timezone.localdate()
     inicio = timezone.make_aware(datetime.combine(hoy, datetime.min.time()))
     citas_hoy = Cita.objects.filter(fecha_hora__gte=inicio, fecha_hora__lt=inicio + timedelta(days=1))
     return render(
         request,
-        "perfiles/panel_personal.html",
+        "perfiles/panel_administrador.html",
         {
             "stats": {
                 "pacientes": Paciente.objects.count(),
@@ -53,7 +53,6 @@ def panel_personal(request):
                 "citas_hoy": citas_hoy.exclude(estado=Cita.ESTADO_CANCELADA).count(),
                 "por_verificar": Profesional.objects.filter(is_verified=False).count(),
             },
-            "es_admin": ROL_ADMINISTRADOR in roles_de(request.user),
         },
     )
 

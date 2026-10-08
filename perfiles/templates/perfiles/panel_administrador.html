@@ -1,15 +1,15 @@
 {% extends "core/base.html" %}
-{% block title %}Panel de gestión — MT Odontología{% endblock %}
+{% block title %}Panel del administrador — MT Odontología{% endblock %}
 {% block body_class %}app-layout{% endblock %}
 {% block main_class %}page{% endblock %}
 {% block content %}
 <div class="portal">
-    {% include "core/includes/portal_nav_personal.html" %}
+    {% include "core/includes/portal_nav_administrador.html" %}
     <div>
         <section class="card">
             <div class="page-head">
                 <div>
-                    <p class="kicker">{% include "core/includes/icon.html" with name="escudo" %}{% if es_admin %}Administrador{% else %}Administrativo{% endif %}</p>
+                    <p class="kicker">{% include "core/includes/icon.html" with name="escudo" %}Administrador</p>
                     <h1>Hola, {{ user.first_name|default:user.username }}</h1>
                     <p class="meta">Pacientes, citas y profesionales del consultorio en un solo lugar.</p>
                 </div>
@@ -18,9 +18,7 @@
                 <div class="stat"><div class="num">{{ stats.pacientes }}</div><div class="label">Pacientes</div></div>
                 <div class="stat"><div class="num">{{ stats.sin_cuenta }}</div><div class="label">Sin cuenta en el portal</div></div>
                 <div class="stat"><div class="num">{{ stats.citas_hoy }}</div><div class="label">Citas de hoy</div></div>
-                {% if es_admin %}
                 <div class="stat"><div class="num">{{ stats.por_verificar }}</div><div class="label">Profesionales por verificar</div></div>
-                {% endif %}
             </div>
         </section>
 
