@@ -2,10 +2,12 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Q, Value
 from django.db.models.functions import Concat
+from django.urls import reverse
 
 from auditoria.models import AuditLog
 from auditoria.services import registrar, snapshot
 from clinica.services import asignar_especialidad_principal, asignar_especialidades, asignar_sedes
+from comunicacion.services import notificar
 from historia.services import abrir_historia
 
 from .models import Paciente, Profesional
@@ -162,6 +164,49 @@ def create_profesional(cleaned):
     assign_profesional_group(user)
     asignar_especialidad_principal(profesional, profesional.especialidad)
     return user, profesional
+
+
+def buscar_profesionales(q="", estado=""):
+    """Lista para el Administrador. `estado`: 'pendientes', 'verificados' o '' (todos)."""
+    profesionales = Profesional.objects.select_related("user").order_by("is_verified", "-created_at")
+    if estado == "pendientes":
+        profesionales = profesionales.filter(is_verified=False)
+    elif estado == "verificados":
+        profesionales = profesionales.filter(is_verified=True)
+    termino = (q or "").strip()
+    if termino:
+        profesionales = profesionales.filter(
+            Q(user__first_name__icontains=termino)
+            | Q(user__last_name__icontains=termino)
+            | Q(user__email__icontains=termino)
+            | Q(id_number__icontains=termino)
+            | Q(especialidad__icontains=termino)
+        )
+    return profesionales
+
+
+@transaction.atomic
+def verificar_profesional(profesional, *, verificado, request=None):
+    """Cambia is_verified, deja auditoría y avisa al profesional. Solo lo llama el Administrador."""
+    if profesional.is_verified == verificado:
+        return profesional
+    profesional.is_verified = verificado
+    profesional.save(update_fields=["is_verified", "updated_at"])
+    registrar(
+        request,
+        accion=AuditLog.ACCION_VERIFICAR if verificado else AuditLog.ACCION_DESVERIFICAR,
+        objeto=profesional,
+        antes={"is_verified": not verificado},
+        despues={"is_verified": verificado},
+    )
+    if verificado:
+        titulo = "Tu perfil fue verificado"
+        mensaje = "Ya apareces en la búsqueda pública y los pacientes pueden reservarte."
+    else:
+        titulo = "Tu perfil dejó de estar verificado"
+        mensaje = "Tu ficha pública quedó oculta mientras el equipo revisa tus datos."
+    notificar(usuario=profesional.user, titulo=titulo, mensaje=mensaje, enlace=reverse("perfil_profesional"))
+    return profesional
 
 
 @transaction.atomic

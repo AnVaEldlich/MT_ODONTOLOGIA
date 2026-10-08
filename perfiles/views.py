@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -6,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.utils import timezone
 
@@ -15,9 +17,11 @@ from accounts.models import Paciente, Profesional
 from accounts.roles import ROL_ADMINISTRADOR, dashboard_url_name
 from accounts.services import (
     buscar_pacientes,
+    buscar_profesionales,
     create_paciente_sin_cuenta,
     pacientes_de_profesional,
     update_paciente_datos,
+    verificar_profesional,
 )
 from citas.models import Cita
 from citas.services import profesional_atiende
@@ -63,6 +67,47 @@ def panel_administrador(request):
             },
         },
     )
+
+
+@rol_requerido(ROL_ADMINISTRADOR)
+def profesionales_gestion(request):
+    q = request.GET.get("q", "").strip()
+    estado = request.GET.get("estado", "")
+    if estado not in ("pendientes", "verificados"):
+        estado = ""
+    pagina = Paginator(buscar_profesionales(q, estado), 30).get_page(request.GET.get("pagina"))
+    return render(
+        request,
+        "perfiles/profesionales_gestion.html",
+        {"pagina": pagina, "q": q, "estado": estado},
+    )
+
+
+@rol_requerido(ROL_ADMINISTRADOR)
+@require_POST
+def verificar_profesional_gestion(request, pk):
+    return _cambiar_verificacion(request, pk, verificado=True)
+
+
+@rol_requerido(ROL_ADMINISTRADOR)
+@require_POST
+def desverificar_profesional_gestion(request, pk):
+    return _cambiar_verificacion(request, pk, verificado=False)
+
+
+def _cambiar_verificacion(request, pk, *, verificado):
+    profesional = get_object_or_404(Profesional.objects.select_related("user"), pk=pk)
+    verificar_profesional(profesional, verificado=verificado, request=request)
+    if verificado:
+        messages.success(request, f"{profesional.get_full_name()} quedó verificado y ya aparece en la búsqueda.")
+    else:
+        messages.success(request, f"{profesional.get_full_name()} dejó de estar verificado. Su ficha pública está oculta.")
+    # Vuelve a la lista con los mismos filtros que tenía el administrador.
+    filtros = {clave: request.POST[clave] for clave in ("q", "estado") if request.POST.get(clave)}
+    destino = reverse("profesionales_gestion")
+    if filtros:
+        destino = f"{destino}?{urlencode(filtros)}"
+    return redirect(destino)
 
 
 @rol_requerido(ROL_ADMINISTRADOR)

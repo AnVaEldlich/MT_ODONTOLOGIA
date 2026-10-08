@@ -1,0 +1,84 @@
+{% extends "core/base.html" %}
+{% block title %}Profesionales — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_administrador.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Profesionales</h1>
+            <p>Verifica a quien ya revisaste. Un perfil verificado aparece en la búsqueda pública y recibe reservas.</p>
+        </div>
+        <div class="card-title-row toolbar">
+            <form method="get" class="form-actions" role="search" novalidate>
+                <input type="hidden" name="estado" value="{{ estado }}">
+                <div class="field">
+                    <label for="pro-q" class="visually-hidden">Buscar profesional</label>
+                    <input id="pro-q" type="search" name="q" value="{{ q }}" placeholder="Nombre, correo, documento o especialidad">
+                </div>
+                <button class="btn btn-ghost btn-sm" type="submit">{% include "core/includes/icon.html" with name="buscar" %}Buscar</button>
+                {% if q %}<a class="btn btn-ghost btn-sm" href="{% url 'profesionales_gestion' %}?estado={{ estado }}">Limpiar</a>{% endif %}
+            </form>
+            <div class="segmented" role="group" aria-label="Filtrar por verificación">
+                <a {% if not estado %}aria-current="true"{% endif %} href="{% url 'profesionales_gestion' %}?q={{ q|urlencode }}">Todos</a>
+                <a {% if estado == 'pendientes' %}aria-current="true"{% endif %} href="{% url 'profesionales_gestion' %}?estado=pendientes&q={{ q|urlencode }}">Por verificar</a>
+                <a {% if estado == 'verificados' %}aria-current="true"{% endif %} href="{% url 'profesionales_gestion' %}?estado=verificados&q={{ q|urlencode }}">Verificados</a>
+            </div>
+        </div>
+        <section class="card scroll-x">
+            {% if pagina.object_list %}
+            <table class="table">
+                <thead>
+                    <tr><th>Profesional</th><th>Documento</th><th>Especialidad</th><th>Registro</th><th>Estado</th><th>Acciones</th></tr>
+                </thead>
+                <tbody>
+                    {% for profesional in pagina.object_list %}
+                    <tr>
+                        <td data-label="Profesional">
+                            <a href="{% url 'perfil_publico' profesional.pk %}">{{ profesional.get_full_name }}</a><br>
+                            <span class="meta">{{ profesional.user.email }}</span>
+                        </td>
+                        <td data-label="Documento">{{ profesional.id_type }} {{ profesional.id_number }}</td>
+                        <td data-label="Especialidad">{{ profesional.etiqueta_especialidad }}</td>
+                        <td data-label="Registro"><span class="when">{{ profesional.created_at|date:"d/m/Y" }}</span></td>
+                        <td data-label="Estado">
+                            {% if profesional.is_verified %}<span class="badge ok sin-punto">Verificado</span>{% else %}<span class="badge warn sin-punto">En revisión</span>{% endif %}
+                        </td>
+                        <td data-label="Acciones">
+                            {% if profesional.is_verified %}
+                            <form method="post" action="{% url 'desverificar_profesional' profesional.pk %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="q" value="{{ q }}"><input type="hidden" name="estado" value="{{ estado }}">
+                                <button class="btn btn-ghost btn-sm" type="submit" title="Su ficha pública quedará oculta">Quitar verificación</button>
+                            </form>
+                            {% else %}
+                            <form method="post" action="{% url 'verificar_profesional' profesional.pk %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="q" value="{{ q }}"><input type="hidden" name="estado" value="{{ estado }}">
+                                <button class="btn btn-primary btn-sm" type="submit" title="Aparecerá en la búsqueda pública">{% include "core/includes/icon.html" with name="check" %}Verificar</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if pagina.has_other_pages %}
+            <div class="form-actions">
+                {% if pagina.has_previous %}<a class="btn btn-ghost btn-sm" href="?q={{ q|urlencode }}&estado={{ estado }}&pagina={{ pagina.previous_page_number }}">Anterior</a>{% endif %}
+                <span class="meta">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+                {% if pagina.has_next %}<a class="btn btn-ghost btn-sm" href="?q={{ q|urlencode }}&estado={{ estado }}&pagina={{ pagina.next_page_number }}">Siguiente</a>{% endif %}
+            </div>
+            {% endif %}
+            {% elif estado == 'pendientes' and not q %}
+            {% include "core/includes/vacio.html" with titulo="Nadie espera verificación" texto="Todos los profesionales registrados ya están verificados." compacto=True %}
+            {% elif q %}
+            {% include "core/includes/vacio.html" with tipo="busqueda" titulo="Nadie coincide con esa búsqueda" texto="Prueba con el correo o parte del apellido." compacto=True %}
+            {% else %}
+            {% include "core/includes/vacio.html" with titulo="Todavía no hay profesionales" texto="Cuando alguien se registre como especialista aparecerá aquí." compacto=True %}
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

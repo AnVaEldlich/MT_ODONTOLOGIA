@@ -42,6 +42,14 @@
                     <a class="btn btn-ghost btn-sm" href="{% url 'nuevo_paciente_gestion' %}">Registrar</a>
                 </li>
                 <li>
+                    <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="escudo" clase="lg" %}</span>
+                    <div>
+                        <h3>Profesionales</h3>
+                        <p>Verifica a los especialistas revisados para que aparezcan en la búsqueda.</p>
+                    </div>
+                    <a class="btn btn-ghost btn-sm" href="{% url 'profesionales_gestion' %}?estado=pendientes">{% if stats.por_verificar %}Revisar {{ stats.por_verificar }}{% else %}Abrir{% endif %}</a>
+                </li>
+                <li>
                     <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="documento" clase="lg" %}</span>
                     <div>
                         <h3>Auditoría</h3>
