@@ -35,6 +35,7 @@
             {% include "core/includes/vacio.html" with tipo="cita" titulo="Todavía no publicas horarios" texto="Mientras no haya franjas, el paciente puede proponer cualquier hora futura." compacto=True %}
             {% endif %}
         </section>
+        {% if tiene_sedes %}
         <form class="card form-narrow" method="post" novalidate>
             {% csrf_token %}
             <input type="hidden" name="accion" value="franja">
@@ -44,6 +45,13 @@
                 <button class="btn btn-primary" type="submit">{% include "core/includes/icon.html" with name="mas" %}Publicar horario</button>
             </div>
         </form>
+        {% else %}
+        <section class="card form-narrow">
+            <h2>Nueva franja</h2>
+            {% url 'editar_perfil_profesional' as editar_url %}
+            {% include "core/includes/vacio.html" with titulo="Todavía no tienes sedes" texto="Marca en tu perfil las sedes donde atiendes. Después podrás publicar horarios en ellas." enlace=editar_url accion="Elegir mis sedes" compacto=True %}
+        </section>
+        {% endif %}
         <section class="card">
             <h2>Bloqueos</h2>
             {% if bloqueos %}

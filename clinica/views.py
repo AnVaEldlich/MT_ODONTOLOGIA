@@ -55,8 +55,14 @@ def perfil_publico(request, pk):
 def disponibilidad(request):
     profesional = request.user.profesional
     accion = request.POST.get("accion") if request.method == "POST" else ""
-    form = DisponibilidadForm(request.POST if accion == "franja" else None)
-    bloqueo_form = BloqueoForm(request.POST if accion == "bloqueo" else None, prefix="bloqueo")
+    form = DisponibilidadForm(request.POST if accion == "franja" else None, profesional=profesional)
+    bloqueo_form = BloqueoForm(
+        request.POST if accion == "bloqueo" else None, prefix="bloqueo", profesional=profesional
+    )
+    tiene_sedes = form.sedes.exists()
+    if accion == "franja" and not tiene_sedes:
+        messages.error(request, "Primero elige tus sedes en el perfil. Sin sede no se puede publicar un horario.")
+        return redirect("disponibilidad")
     if accion == "franja" and form.is_valid():
         franja = form.save(commit=False)
         franja.profesional = profesional
@@ -78,7 +84,13 @@ def disponibilidad(request):
     return render(
         request,
         "clinica/disponibilidad.html",
-        {"form": form, "bloqueo_form": bloqueo_form, "franjas": franjas, "bloqueos": bloqueos},
+        {
+            "form": form,
+            "bloqueo_form": bloqueo_form,
+            "franjas": franjas,
+            "bloqueos": bloqueos,
+            "tiene_sedes": tiene_sedes,
+        },
     )
 
 

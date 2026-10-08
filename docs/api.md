@@ -46,7 +46,7 @@ No hay API JSON. El contrato actual son vistas HTML y nombres de URL. Usar siemp
 | `confirmar_cita` | `/citas/<pk>/confirmar/` | POST. Solo citas pendientes de su agenda |
 | `atender_cita` | `/citas/<pk>/atender/` | POST. Solo una confirmada de su agenda |
 | `inasistencia_cita` | `/citas/<pk>/no-asistio/` | POST. Pendiente o confirmada de su agenda |
-| `disponibilidad` | `/clinica/disponibilidad/` | solo sus franjas y bloqueos |
+| `disponibilidad` | `/clinica/disponibilidad/` | solo sus franjas y bloqueos. La sede debe ser una de sus `AsignacionSede` activas; sin sedes, enlaza a `editar_perfil_profesional` |
 | `desactivar_disponibilidad` | `/clinica/disponibilidad/<pk>/desactivar/` | POST. No borra citas ya pedidas |
 | `ficha_paciente` | `/perfiles/profesional/pacientes/<paciente_id>/` | 404 si ese paciente no tiene citas con él |
 | `detalle_factura_profesional` | `/facturacion/profesional/<pk>/` | solo facturas que él emitió. POST registra un pago |
