@@ -35,6 +35,8 @@ class Paciente(models.Model):
     gender = models.CharField(max_length=20, verbose_name="Género")
 
     phone = models.CharField(max_length=20, verbose_name="Teléfono")
+    # Correo de contacto. Un paciente registrado por el consultorio puede no tener cuenta.
+    correo = models.EmailField(blank=True, default="", verbose_name="Correo")
     address = models.CharField(max_length=255, verbose_name="Dirección")
     city = models.CharField(max_length=100, verbose_name="Ciudad")
     department = models.CharField(max_length=50, verbose_name="Departamento")
@@ -92,6 +94,12 @@ class Paciente(models.Model):
     def iniciales(self):
         letras = f"{(self.first_name or '')[:1]}{(self.last_name or '')[:1]}".upper()
         return letras or "MT"
+
+    @property
+    def correo_contacto(self):
+        if self.correo:
+            return self.correo
+        return self.user.email if self.user_id else ""
 
 
 class Profesional(models.Model):

@@ -1,10 +1,100 @@
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.db.models import Q, Value
+from django.db.models.functions import Concat
 
+from auditoria.models import AuditLog
+from auditoria.services import registrar, snapshot
 from clinica.services import asignar_especialidad_principal, asignar_especialidades, asignar_sedes
 
 from .models import Paciente, Profesional
 from .roles import assign_paciente_group, assign_profesional_group
+
+# Datos administrativos del paciente: los únicos que el Administrador puede ver y editar.
+CAMPOS_ADMINISTRATIVOS = (
+    "first_name",
+    "last_name",
+    "id_type",
+    "id_number",
+    "birth_date",
+    "gender",
+    "phone",
+    "correo",
+    "address",
+    "city",
+    "department",
+    "emergency_contact",
+    "emergency_phone",
+    "eps",
+)
+
+
+def buscar_pacientes(q):
+    """Busca por nombre, apellido, nombre completo, documento, teléfono o correo."""
+    pacientes = Paciente.objects.select_related("user")
+    termino = (q or "").strip()
+    if not termino:
+        return pacientes
+    return pacientes.annotate(nombre_completo=Concat("first_name", Value(" "), "last_name")).filter(
+        Q(first_name__icontains=termino)
+        | Q(last_name__icontains=termino)
+        | Q(nombre_completo__icontains=termino)
+        | Q(id_number__icontains=termino)
+        | Q(phone__icontains=termino)
+        | Q(correo__icontains=termino)
+        | Q(user__email__icontains=termino)
+    )
+
+
+@transaction.atomic
+def create_paciente_sin_cuenta(cleaned, request=None):
+    """Alta hecha por el consultorio. El paciente no tiene usuario hasta que se le invite al portal."""
+    paciente = Paciente.objects.create(**_valores_administrativos(cleaned))
+    registrar(request, accion=AuditLog.ACCION_CREAR, objeto=paciente, paciente=paciente)
+    return paciente
+
+
+@transaction.atomic
+def update_paciente_datos(paciente, cleaned, request=None):
+    """Edita solo datos administrativos y deja rastro de qué cambió."""
+    # El ModelForm ya tocó la instancia en memoria; el "antes" real está en la base.
+    antes = snapshot(Paciente.objects.get(pk=paciente.pk), CAMPOS_ADMINISTRATIVOS)
+    for campo, valor in _valores_administrativos(cleaned).items():
+        setattr(paciente, campo, valor)
+    paciente.save(update_fields=list(CAMPOS_ADMINISTRATIVOS))
+    _sincronizar_nombre_de_cuenta(paciente)
+    registrar(
+        request,
+        accion=AuditLog.ACCION_EDITAR,
+        objeto=paciente,
+        paciente=paciente,
+        antes=antes,
+        despues=snapshot(paciente, CAMPOS_ADMINISTRATIVOS),
+    )
+    return paciente
+
+
+def _valores_administrativos(cleaned):
+    valores = {}
+    for campo in CAMPOS_ADMINISTRATIVOS:
+        valor = cleaned.get(campo)
+        if isinstance(valor, str):
+            valor = valor.strip()
+        if valor == "" and Paciente._meta.get_field(campo).null:
+            valor = None
+        valores[campo] = valor
+    return valores
+
+
+def _sincronizar_nombre_de_cuenta(paciente):
+    # El correo de la cuenta (username) no se toca: cambiarlo rompería el inicio de sesión.
+    user = paciente.user
+    if user is None:
+        return
+    user.first_name = paciente.first_name
+    user.last_name = paciente.last_name
+    user.save(update_fields=["first_name", "last_name"])
+
 
 @transaction.atomic
 def create_paciente(cleaned):
@@ -26,6 +116,7 @@ def create_paciente(cleaned):
         birth_date=cleaned["birth_date"],
         gender=cleaned["gender"],
         phone=cleaned["phone"],
+        correo=email,
         address=cleaned["address"],
         city=cleaned["city"],
         department=cleaned["department"],

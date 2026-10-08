@@ -1,0 +1,61 @@
+{% extends "core/base.html" %}
+{% block title %}Pacientes — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_administrador.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Pacientes</h1>
+            <p>Busca por nombre, documento, teléfono o correo. También los que aún no tienen cuenta.</p>
+        </div>
+        <div class="card-title-row toolbar">
+            <form method="get" class="form-actions" role="search" novalidate>
+                <div class="field">
+                    <label for="pac-q" class="visually-hidden">Buscar paciente</label>
+                    <input id="pac-q" type="search" name="q" value="{{ q }}" placeholder="Nombre, documento, teléfono o correo" autofocus>
+                </div>
+                <button class="btn btn-ghost btn-sm" type="submit">{% include "core/includes/icon.html" with name="buscar" %}Buscar</button>
+                {% if q %}<a class="btn btn-ghost btn-sm" href="{% url 'pacientes_gestion' %}">Limpiar</a>{% endif %}
+            </form>
+            <a class="btn btn-primary btn-sm" href="{% url 'nuevo_paciente_gestion' %}">{% include "core/includes/icon.html" with name="mas" %}Nuevo paciente</a>
+        </div>
+        <section class="card scroll-x">
+            {% if pagina.object_list %}
+            <table class="table">
+                <thead>
+                    <tr><th>Paciente</th><th>Documento</th><th>Teléfono</th><th>Correo</th><th>Cuenta</th><th></th></tr>
+                </thead>
+                <tbody>
+                    {% for paciente in pagina.object_list %}
+                    <tr>
+                        <td data-label="Paciente"><a href="{% url 'ficha_administrativa' paciente.pk %}">{{ paciente.first_name }} {{ paciente.last_name }}</a></td>
+                        <td data-label="Documento">{{ paciente.id_type|upper }} {{ paciente.id_number }}</td>
+                        <td data-label="Teléfono">{{ paciente.phone }}</td>
+                        <td data-label="Correo">{{ paciente.correo_contacto|default:"—" }}</td>
+                        <td data-label="Cuenta">{% if paciente.user %}<span class="badge ok sin-punto">Con cuenta</span>{% else %}<span class="badge sin-punto">Sin cuenta</span>{% endif %}</td>
+                        <td data-label=""><a class="btn btn-ghost btn-sm" href="{% url 'editar_paciente_gestion' paciente.pk %}">Editar</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if pagina.has_other_pages %}
+            <div class="form-actions">
+                {% if pagina.has_previous %}<a class="btn btn-ghost btn-sm" href="?q={{ q|urlencode }}&pagina={{ pagina.previous_page_number }}">Anterior</a>{% endif %}
+                <span class="meta">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+                {% if pagina.has_next %}<a class="btn btn-ghost btn-sm" href="?q={{ q|urlencode }}&pagina={{ pagina.next_page_number }}">Siguiente</a>{% endif %}
+            </div>
+            {% endif %}
+            {% else %}
+            {% url 'nuevo_paciente_gestion' as nuevo_url %}
+            {% if q %}
+            {% include "core/includes/vacio.html" with tipo="busqueda" titulo="Nadie coincide con esa búsqueda" texto="Prueba con el documento o con parte del apellido." enlace=nuevo_url accion="Registrar paciente nuevo" boton_clase="btn-ghost" compacto=True %}
+            {% else %}
+            {% include "core/includes/vacio.html" with titulo="Todavía no hay pacientes" texto="Registra el primero con sus datos de contacto." enlace=nuevo_url accion="Nuevo paciente" boton_clase="btn-ghost" compacto=True %}
+            {% endif %}
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

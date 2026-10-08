@@ -422,6 +422,7 @@ small, .small { font-size: 0.85rem; }
     font-size: 0.93rem;
     padding: 0.45rem 0.65rem;
     border-radius: 999px;
+    white-space: nowrap;
     transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 
@@ -1170,6 +1171,15 @@ img.avatar {
 
 a.who-row { color: inherit; text-decoration: none; }
 .who-row { display: flex; gap: 0.75rem; align-items: center; }
+
+/* Ficha: pares etiqueta/valor en columnas */
+.datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.75rem 1.25rem; margin: 0; }
+.datos div { min-width: 0; }
+.datos dt { font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; }
+.datos dd { margin: 0.15rem 0 0; overflow-wrap: anywhere; }
+.bloqueado { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.9rem 1rem; border-radius: var(--radius-sm); background: var(--bg-muted); border: 1px dashed var(--line-strong); color: var(--text-secondary); }
+.bloqueado .icon { flex: none; margin-top: 0.15rem; }
+.filtros-acciones { align-self: end; margin-top: 0; padding-bottom: 0.35rem; }
 
 /* ---------- Resultados y perfil ---------- */
 

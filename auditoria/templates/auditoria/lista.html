@@ -35,7 +35,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="form-actions">
+                <div class="form-actions filtros-acciones">
                     <button class="btn btn-primary btn-sm" type="submit">{% include "core/includes/icon.html" with name="buscar" %}Filtrar</button>
                     {% if hay_filtros %}<a class="btn btn-ghost btn-sm" href="{% url 'auditoria_lista' %}">Limpiar</a>{% endif %}
                 </div>

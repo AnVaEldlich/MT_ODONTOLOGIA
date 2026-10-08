@@ -1,0 +1,88 @@
+{% extends "core/base.html" %}
+{% block title %}Ficha de {{ paciente.first_name }} — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_administrador.html" %}
+    <div>
+        <div class="page-head">
+            <div class="who-row">
+                {% include "core/includes/avatar.html" with foto=paciente.foto iniciales=paciente.iniciales tamano="sm" alt="" %}
+                <h1>{{ paciente.first_name }} {{ paciente.last_name }}</h1>
+            </div>
+            <p>{{ paciente.id_type|upper }} {{ paciente.id_number }} · {% if paciente.user %}<span class="badge ok sin-punto">Con cuenta</span>{% else %}<span class="badge sin-punto">Sin cuenta en el portal</span>{% endif %}</p>
+            <div class="actions">
+                <a class="btn btn-primary btn-sm" href="{% url 'editar_paciente_gestion' paciente.pk %}">{% include "core/includes/icon.html" with name="editar" %}Editar datos</a>
+                <a class="btn btn-ghost btn-sm" href="{% url 'pacientes_gestion' %}">Volver a pacientes</a>
+            </div>
+        </div>
+
+        <section class="card">
+            <h2>Datos personales</h2>
+            <dl class="datos">
+                <div><dt>Nacimiento</dt><dd>{{ paciente.birth_date|date:"d/m/Y" }}</dd></div>
+                <div><dt>Género</dt><dd>{{ paciente.gender|capfirst }}</dd></div>
+                <div><dt>Teléfono</dt><dd>{{ paciente.phone }}</dd></div>
+                <div><dt>Correo</dt><dd>{{ paciente.correo_contacto|default:"—" }}</dd></div>
+                <div><dt>Dirección</dt><dd>{{ paciente.address }}</dd></div>
+                <div><dt>Ciudad</dt><dd>{{ paciente.city }}{% if paciente.department %} · {{ paciente.department|capfirst }}{% endif %}</dd></div>
+                <div><dt>EPS</dt><dd>{{ paciente.eps|default:"—" }}</dd></div>
+                <div><dt>Contacto de emergencia</dt><dd>{{ paciente.emergency_contact|default:"—" }}{% if paciente.emergency_phone %} · {{ paciente.emergency_phone }}{% endif %}</dd></div>
+                <div><dt>Registro</dt><dd>{{ paciente.created_at|date:"d/m/Y" }}</dd></div>
+            </dl>
+        </section>
+
+        <section class="card">
+            <h2>Información médica</h2>
+            {% if puede_ver_clinica %}
+            <p class="meta">Eres el profesional tratante. La historia, el odontograma y las evoluciones están en la ficha clínica.</p>
+            <a class="btn btn-ghost btn-sm" href="{% url 'ficha_paciente' paciente.pk %}">{% include "core/includes/icon.html" with name="documento" %}Abrir ficha clínica</a>
+            {% else %}
+            <div class="bloqueado">
+                {% include "core/includes/icon.html" with name="escudo" %}
+                <p>Reservada al profesional que atiende al paciente. Los datos clínicos no se muestran en la administración.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="card">
+            <h2>Historial de procedimientos</h2>
+            {% if procedimientos %}
+            <ul class="cita-list">
+                {% for cita in procedimientos %}
+                <li>
+                    <div>
+                        <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
+                        <div class="who">{% if cita.tratamiento %}{{ cita.tratamiento.nombre }}{% else %}Consulta{% endif %} · {{ cita.profesional.get_full_name }}</div>
+                    </div>
+                    <span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            {% include "core/includes/vacio.html" with tipo="cita" titulo="Sin procedimientos atendidos" texto="Aquí aparecerán las citas atendidas con su tratamiento." compacto=True %}
+            {% endif %}
+            {% if proximas %}
+            <h3>Próximas citas</h3>
+            <ul class="cita-list">
+                {% for cita in proximas %}
+                <li>
+                    <div>
+                        <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
+                        <div class="who">{{ cita.profesional.get_full_name }}</div>
+                    </div>
+                    <span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </section>
+
+        <section class="card">
+            <h2>Documentos</h2>
+            {% include "core/includes/vacio.html" with titulo="Sin documentos adjuntos" texto="Consentimientos, radiografías y soportes se adjuntarán aquí en una próxima etapa." compacto=True %}
+        </section>
+    </div>
+</div>
+{% endblock %}

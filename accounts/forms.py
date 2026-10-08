@@ -394,3 +394,82 @@ class PacientePerfilForm(forms.ModelForm):
             "medications": forms.Textarea(attrs={"rows": 3}),
             "dental_history": forms.Textarea(attrs={"rows": 3}),
         }
+
+
+# Mismos valores que el registro público (register.html) para que la búsqueda y los filtros coincidan.
+ID_TYPE_PACIENTE_CHOICES = [
+    ("cc", "Cédula de Ciudadanía"),
+    ("ce", "Cédula de Extranjería"),
+    ("ti", "Tarjeta de Identidad"),
+    ("pasaporte", "Pasaporte"),
+]
+GENERO_CHOICES = [
+    ("masculino", "Masculino"),
+    ("femenino", "Femenino"),
+    ("otro", "Otro"),
+    ("prefiero-no-decir", "Prefiero no decir"),
+]
+DEPARTAMENTO_CHOICES = [
+    ("antioquia", "Antioquia"),
+    ("bogota", "Bogotá D.C."),
+    ("valle", "Valle del Cauca"),
+    ("cundinamarca", "Cundinamarca"),
+    ("atlantico", "Atlántico"),
+    ("tolima", "Tolima"),
+    ("otro", "Otro"),
+]
+
+
+class PacienteGestionForm(forms.ModelForm):
+    """Datos administrativos que registra el consultorio. Sin campos clínicos ni contraseña."""
+
+    id_type = forms.ChoiceField(label="Tipo de documento", choices=[("", "Selecciona el tipo"), *ID_TYPE_PACIENTE_CHOICES])
+    gender = forms.ChoiceField(label="Género", choices=[("", "Selecciona"), *GENERO_CHOICES])
+    department = forms.ChoiceField(label="Departamento", choices=[("", "Selecciona"), *DEPARTAMENTO_CHOICES])
+
+    class Meta:
+        model = Paciente
+        fields = (
+            "first_name",
+            "last_name",
+            "id_type",
+            "id_number",
+            "birth_date",
+            "gender",
+            "phone",
+            "correo",
+            "address",
+            "city",
+            "department",
+            "emergency_contact",
+            "emergency_phone",
+            "eps",
+        )
+        widgets = {
+            "birth_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+            "id_number": forms.TextInput(attrs={"inputmode": "numeric", "autocomplete": "off"}),
+            "phone": forms.TextInput(attrs={"inputmode": "tel"}),
+            "emergency_phone": forms.TextInput(attrs={"inputmode": "tel"}),
+        }
+        labels = {"correo": "Correo de contacto"}
+        help_texts = {
+            "correo": "Opcional. Si el paciente tiene cuenta, el correo de acceso no cambia desde aquí.",
+        }
+        error_messages = {
+            "id_number": {"unique": "Este documento ya está registrado."},
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._conservar_valor_fuera_de_lista("department", DEPARTAMENTO_CHOICES)
+        self._conservar_valor_fuera_de_lista("gender", GENERO_CHOICES)
+        self._conservar_valor_fuera_de_lista("id_type", ID_TYPE_PACIENTE_CHOICES)
+
+    def _conservar_valor_fuera_de_lista(self, campo, opciones):
+        # Datos antiguos pueden tener un valor libre; no se pierde al editar.
+        actual = getattr(self.instance, campo, "") if self.instance.pk else ""
+        if actual and actual not in dict(opciones):
+            self.fields[campo].choices = [*self.fields[campo].choices, (actual, actual)]
+
+    def clean_id_number(self):
+        return self.cleaned_data["id_number"].strip()

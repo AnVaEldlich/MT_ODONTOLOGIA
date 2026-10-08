@@ -1,0 +1,28 @@
+{% extends "core/base.html" %}
+{% block title %}{% if paciente %}Editar paciente{% else %}Nuevo paciente{% endif %} — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_administrador.html" %}
+    <div>
+        <div class="page-head">
+            {% if paciente %}
+            <h1>Editar a {{ paciente.first_name }} {{ paciente.last_name }}</h1>
+            <p>Solo datos personales y de contacto. La historia clínica la lleva el profesional.</p>
+            {% else %}
+            <h1>Nuevo paciente</h1>
+            <p>Registro hecho por el consultorio. El paciente no necesita cuenta para tener citas.</p>
+            {% endif %}
+        </div>
+        <form class="card form-narrow" method="post" novalidate>
+            {% csrf_token %}
+            {% include "core/includes/fields.html" %}
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">{% if paciente %}Guardar cambios{% else %}Registrar paciente{% endif %}</button>
+                <a class="btn btn-ghost" href="{% if paciente %}{% url 'ficha_administrativa' paciente.pk %}{% else %}{% url 'pacientes_gestion' %}{% endif %}">Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -61,7 +61,7 @@
             {% elif user_role == 'paciente' %}
             <a class="btn btn-primary btn-sm" href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="calendario" %}Agendar cita</a>
             {% elif es_administrador %}
-            <a class="btn btn-primary btn-sm" href="{% url 'panel_administrador' %}">{% include "core/includes/icon.html" with name="escudo" %}Panel</a>
+            <a class="btn btn-primary btn-sm" href="{% url 'nuevo_paciente_gestion' %}">{% include "core/includes/icon.html" with name="mas" %}Nuevo paciente</a>
             {% else %}
             <a class="btn btn-primary btn-sm" href="{% url 'buscar_profesionales' %}">{% include "core/includes/icon.html" with name="calendario" %}Agendar cita</a>
             {% endif %}
@@ -193,6 +193,8 @@
     <a href="{% url 'notificaciones' %}" {% if actual == 'notificaciones' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="campana" %}Avisos</a>
     {% else %}
     <a href="{% url 'panel_administrador' %}" {% if actual == 'panel_administrador' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="inicio" %}Inicio</a>
+    <a href="{% url 'pacientes_gestion' %}" {% if actual == 'pacientes_gestion' or actual == 'ficha_administrativa' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="usuarios" %}Pacientes</a>
+    <a href="{% url 'nuevo_paciente_gestion' %}" {% if actual == 'nuevo_paciente_gestion' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="mas" %}Nuevo</a>
     <a href="{% url 'notificaciones' %}" {% if actual == 'notificaciones' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="campana" %}Avisos</a>
     <a href="{% url 'password_change' %}" {% if actual == 'password_change' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="usuario" %}Cuenta</a>
     {% endif %}

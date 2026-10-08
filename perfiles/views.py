@@ -3,15 +3,17 @@ from datetime import datetime, timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 from django.utils import timezone
 
-from accounts.forms import PacientePerfilForm, ProfesionalPerfilForm
+from accounts.forms import PacienteGestionForm, PacientePerfilForm, ProfesionalPerfilForm
 from accounts.imagenes import guardar_foto, quitar_foto
 from accounts.models import Paciente, Profesional
 from accounts.roles import ROL_ADMINISTRADOR, dashboard_url_name
+from accounts.services import buscar_pacientes, create_paciente_sin_cuenta, update_paciente_datos
 from citas.models import Cita
 from citas.services import profesional_atiende
 from clinica.models import Disponibilidad
@@ -53,6 +55,59 @@ def panel_administrador(request):
                 "citas_hoy": citas_hoy.exclude(estado=Cita.ESTADO_CANCELADA).count(),
                 "por_verificar": Profesional.objects.filter(is_verified=False).count(),
             },
+        },
+    )
+
+
+@rol_requerido(ROL_ADMINISTRADOR)
+def pacientes_gestion(request):
+    q = request.GET.get("q", "").strip()
+    pagina = Paginator(buscar_pacientes(q), 30).get_page(request.GET.get("pagina"))
+    return render(request, "perfiles/pacientes_gestion.html", {"pagina": pagina, "q": q})
+
+
+@rol_requerido(ROL_ADMINISTRADOR)
+def nuevo_paciente_gestion(request):
+    form = PacienteGestionForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        paciente = create_paciente_sin_cuenta(form.cleaned_data, request)
+        messages.success(request, f"Paciente {paciente.first_name} {paciente.last_name} registrado.")
+        return redirect("ficha_administrativa", paciente_id=paciente.pk)
+    return render(request, "perfiles/paciente_form.html", {"form": form, "paciente": None})
+
+
+@rol_requerido(ROL_ADMINISTRADOR)
+def editar_paciente_gestion(request, paciente_id):
+    paciente = get_object_or_404(Paciente, pk=paciente_id)
+    form = PacienteGestionForm(request.POST or None, instance=paciente)
+    if request.method == "POST" and form.is_valid():
+        update_paciente_datos(paciente, form.cleaned_data, request)
+        messages.success(request, "Datos del paciente actualizados.")
+        return redirect("ficha_administrativa", paciente_id=paciente.pk)
+    return render(request, "perfiles/paciente_form.html", {"form": form, "paciente": paciente})
+
+
+@rol_requerido(ROL_ADMINISTRADOR)
+def ficha_administrativa(request, paciente_id):
+    paciente = get_object_or_404(Paciente.objects.select_related("user"), pk=paciente_id)
+    profesional = getattr(request.user, "profesional", None)
+    # La parte clínica solo se abre si quien mira es Profesional y ha atendido al paciente.
+    puede_ver_clinica = profesional is not None and profesional_atiende(profesional, paciente)
+    procedimientos = (
+        paciente.citas.filter(estado=Cita.ESTADO_ATENDIDA)
+        .select_related("profesional__user", "tratamiento")
+        .order_by("-fecha_hora")[:20]
+    )
+    return render(
+        request,
+        "perfiles/ficha_administrativa.html",
+        {
+            "paciente": paciente,
+            "puede_ver_clinica": puede_ver_clinica,
+            "procedimientos": procedimientos,
+            "proximas": paciente.citas.filter(
+                estado__in=[Cita.ESTADO_PENDIENTE, Cita.ESTADO_CONFIRMADA], fecha_hora__gte=timezone.now()
+            ).order_by("fecha_hora")[:5],
         },
     )
 

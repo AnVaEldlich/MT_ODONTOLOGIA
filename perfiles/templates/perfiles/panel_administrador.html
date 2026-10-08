@@ -26,6 +26,30 @@
             <h2>Qué puedes hacer aquí</h2>
             <ol class="setup-list">
                 <li>
+                    <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="usuarios" clase="lg" %}</span>
+                    <div>
+                        <h3>Pacientes</h3>
+                        <p>Busca por nombre, documento, teléfono o correo y edita sus datos de contacto.</p>
+                    </div>
+                    <a class="btn btn-primary btn-sm" href="{% url 'pacientes_gestion' %}">Abrir</a>
+                </li>
+                <li>
+                    <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="mas" clase="lg" %}</span>
+                    <div>
+                        <h3>Nuevo paciente</h3>
+                        <p>Registra a quien llega al consultorio aunque no tenga cuenta en el portal.</p>
+                    </div>
+                    <a class="btn btn-ghost btn-sm" href="{% url 'nuevo_paciente_gestion' %}">Registrar</a>
+                </li>
+                <li>
+                    <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="documento" clase="lg" %}</span>
+                    <div>
+                        <h3>Auditoría</h3>
+                        <p>Quién creó, editó o consultó datos de pacientes.</p>
+                    </div>
+                    <a class="btn btn-ghost btn-sm" href="{% url 'auditoria_lista' %}">Ver</a>
+                </li>
+                <li>
                     <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="campana" clase="lg" %}</span>
                     <div>
                         <h3>Avisos</h3>
