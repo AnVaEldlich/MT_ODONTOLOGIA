@@ -1,0 +1,90 @@
+{% extends "core/base.html" %}
+{% block title %}Auditoría — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_administrador.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Auditoría</h1>
+            <p>Quién creó, editó o consultó datos de pacientes. Los cambios clínicos muestran solo qué campos se tocaron.</p>
+        </div>
+
+        <section class="card">
+            <form method="get" class="form-row" novalidate>
+                <div class="field">
+                    <label for="aud-q">Paciente o usuario</label>
+                    <input id="aud-q" type="search" name="q" value="{{ q }}" placeholder="Nombre, documento o correo">
+                </div>
+                <div class="field">
+                    <label for="aud-accion">Acción</label>
+                    <select id="aud-accion" name="accion">
+                        <option value="">Todas</option>
+                        {% for valor, etiqueta in acciones %}
+                        <option value="{{ valor }}" {% if valor == accion %}selected{% endif %}>{{ etiqueta }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="aud-modelo">Dato</label>
+                    <select id="aud-modelo" name="modelo">
+                        <option value="">Todos</option>
+                        {% for valor, etiqueta in modelos %}
+                        <option value="{{ valor }}" {% if valor == modelo %}selected{% endif %}>{{ etiqueta|capfirst }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary btn-sm" type="submit">{% include "core/includes/icon.html" with name="buscar" %}Filtrar</button>
+                    {% if hay_filtros %}<a class="btn btn-ghost btn-sm" href="{% url 'auditoria_lista' %}">Limpiar</a>{% endif %}
+                </div>
+            </form>
+        </section>
+
+        <section class="card scroll-x">
+            {% if pagina.object_list %}
+            <table class="table">
+                <thead>
+                    <tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Dato</th><th>Paciente</th><th>Cambios</th><th>IP</th></tr>
+                </thead>
+                <tbody>
+                    {% for fila in pagina.object_list %}
+                    <tr>
+                        <td data-label="Fecha"><span class="when">{{ fila.created_at|date:"d/m/Y H:i" }}</span></td>
+                        <td data-label="Usuario">{% if fila.usuario %}{{ fila.usuario.get_full_name|default:fila.usuario.email }}{% else %}—{% endif %}</td>
+                        <td data-label="Acción">{{ fila.get_accion_display }}</td>
+                        <td data-label="Dato">{{ fila.modelo_nombre|capfirst }}{% if fila.objeto_id %} #{{ fila.objeto_id }}{% endif %}{% if fila.clinico %} <span class="badge warn sin-punto">Clínico</span>{% endif %}</td>
+                        <td data-label="Paciente">{% if fila.paciente %}{{ fila.paciente.first_name }} {{ fila.paciente.last_name }}{% else %}—{% endif %}</td>
+                        <td data-label="Cambios">
+                            {% if fila.campos_cambiados %}
+                            {% if fila.clinico %}
+                            {{ fila.campos_cambiados|join:", " }}
+                            {% else %}
+                            <ul class="cambios">
+                                {% for campo, antes, despues in fila.detalle_cambios %}
+                                <li><strong>{{ campo }}</strong>: {{ antes|default:"—" }} → {{ despues|default:"—" }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            {% else %}—{% endif %}
+                        </td>
+                        <td data-label="IP">{{ fila.ip|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if pagina.has_other_pages %}
+            <div class="form-actions">
+                {% if pagina.has_previous %}<a class="btn btn-ghost btn-sm" href="?q={{ q|urlencode }}&accion={{ accion }}&modelo={{ modelo }}&pagina={{ pagina.previous_page_number }}">Anterior</a>{% endif %}
+                <span class="meta">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+                {% if pagina.has_next %}<a class="btn btn-ghost btn-sm" href="?q={{ q|urlencode }}&accion={{ accion }}&modelo={{ modelo }}&pagina={{ pagina.next_page_number }}">Siguiente</a>{% endif %}
+            </div>
+            {% endif %}
+            {% else %}
+            {% include "core/includes/vacio.html" with titulo="Sin registros" texto="Cuando alguien cree, edite o consulte datos de un paciente quedará aquí." compacto=True %}
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

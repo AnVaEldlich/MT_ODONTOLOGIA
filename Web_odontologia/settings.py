@@ -98,6 +98,7 @@ INSTALLED_APPS = [
     "historia",
     "facturacion",
     "comunicacion",
+    "auditoria",
     "channels",
 ]
 

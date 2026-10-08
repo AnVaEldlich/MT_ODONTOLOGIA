@@ -1,6 +1,7 @@
 {% with actual=request.resolver_match.url_name %}
 <nav class="portal-nav" aria-label="Panel del administrador">
     <a href="{% url 'panel_administrador' %}" {% if actual == 'panel_administrador' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="inicio" %}Inicio</a>
+    <a href="{% url 'auditoria_lista' %}" {% if actual == 'auditoria_lista' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="documento" %}Auditoría</a>
     <a href="{% url 'notificaciones' %}" {% if actual == 'notificaciones' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="campana" %}Avisos{% if notificaciones_sin_leer %} <span class="badge danger sin-punto">{{ notificaciones_sin_leer }}</span>{% endif %}</a>
     <a href="{% url 'password_change' %}" {% if actual == 'password_change' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="usuario" %}Contraseña</a>
 </nav>

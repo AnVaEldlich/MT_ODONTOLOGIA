@@ -1125,6 +1125,9 @@ textarea { min-height: 6rem; resize: vertical; }
 .table tbody tr { transition: background var(--dur) var(--ease); }
 .table tbody tr:hover { background: color-mix(in srgb, var(--brand-soft) 55%, transparent); }
 .table tbody tr:last-child td { border-bottom: 0; }
+.table .cambios { margin: 0; padding: 0; list-style: none; font-size: 0.85rem; color: var(--text-secondary); }
+.table .cambios li + li { margin-top: 0.2rem; }
+.table .cambios strong { color: var(--text-primary); }
 
 .scroll-x { overflow-x: auto; }
 
