@@ -73,6 +73,19 @@ Cuentas ficticias que crea `seed_demo` (contraseña `demo1234`, solo si la cuent
 - Paciente: `paciente@demo.com`
 - Profesional: `ana.torres@demo.com`
 
+## Roles
+
+Tres roles, resueltos en `accounts/roles.py`: `Paciente` y `Profesional` (por perfil) y `Administrador` (por grupo o superusuario). Una misma cuenta puede tener varios; `roles_de(user)` los devuelve y `perfiles.decorators.rol_requerido("administrador")` protege las vistas de administración.
+
+```bash
+python manage.py setup_groups                                   # crea los grupos Paciente, Profesional y Administrador
+python manage.py asignar_rol correo@clinica.com administrador   # a una cuenta existente
+python manage.py asignar_rol nueva@clinica.com administrador --crear --nombre "Marta Ruiz"   # crea la cuenta y pide la contraseña
+python manage.py asignar_rol correo@clinica.com administrador --quitar
+```
+
+El Administrador entra por `/perfiles/administrador/`: registra y edita pacientes (con o sin cuenta), verifica profesionales y consulta la auditoría (`/auditoria/`). No ve historia clínica, evoluciones ni odontograma; si además es profesional, solo las de sus propios pacientes. Los datos médicos viven únicamente en `HistoriaClinica`; el paciente los lee y el profesional tratante los edita.
+
 ## MySQL local con Docker (opcional)
 
 Úsalo solo si no tienes ya un MySQL. El archivo `docker-compose.yml` crea el volumen `odontologia_mysql` y no toca otro servidor.

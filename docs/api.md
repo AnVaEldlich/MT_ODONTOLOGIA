@@ -48,14 +48,31 @@ No hay API JSON. El contrato actual son vistas HTML y nombres de URL. Usar siemp
 | `inasistencia_cita` | `/citas/<pk>/no-asistio/` | POST. Pendiente o confirmada de su agenda |
 | `disponibilidad` | `/clinica/disponibilidad/` | solo sus franjas y bloqueos. La sede debe ser una de sus `AsignacionSede` activas; sin sedes, enlaza a `editar_perfil_profesional` |
 | `desactivar_disponibilidad` | `/clinica/disponibilidad/<pk>/desactivar/` | POST. No borra citas ya pedidas |
-| `ficha_paciente` | `/perfiles/profesional/pacientes/<paciente_id>/` | 404 si ese paciente no tiene citas con él |
+| `mis_pacientes` | `/perfiles/profesional/pacientes/` | solo pacientes con una cita con él. `?q=` busca por nombre, documento, teléfono o correo |
+| `ficha_paciente` | `/perfiles/profesional/pacientes/<paciente_id>/` | 404 si ese paciente no tiene citas con él. Abrirla deja una fila `ver` en auditoría; guardar historia, evolución, odontograma o receta deja `crear`/`editar` con `clinico=True` |
 | `detalle_factura_profesional` | `/facturacion/profesional/<pk>/` | solo facturas que él emitió. POST registra un pago |
+
+## Administrador
+
+Grupo `Administrador` (o superusuario). Un profesional puede tener además este rol; aun así solo abre la ficha clínica de sus propios pacientes. Todas las vistas usan `rol_requerido("administrador")`.
+
+| Nombre | Path | Regla |
+| --- | --- | --- |
+| `panel_administrador` | `/perfiles/administrador/` | conteos y accesos |
+| `pacientes_gestion` | `/perfiles/administrador/pacientes/` | lista paginada. `?q=` busca por nombre, nombre completo, documento, teléfono o correo (propio o de la cuenta) |
+| `nuevo_paciente_gestion` | `/perfiles/administrador/pacientes/nuevo/` | GET/POST. Crea un paciente sin cuenta; documento único. Audita `crear` |
+| `ficha_administrativa` | `/perfiles/administrador/pacientes/<paciente_id>/` | datos personales, procedimientos (citas atendidas) y documentos. La información médica solo se enlaza si quien mira es el profesional tratante |
+| `editar_paciente_gestion` | `/perfiles/administrador/pacientes/<paciente_id>/editar/` | GET/POST. Solo datos administrativos; no toca el correo de la cuenta. Audita `editar` con antes/después |
+| `profesionales_gestion` | `/perfiles/administrador/profesionales/` | `?estado=pendientes|verificados`, `?q=` por nombre, correo, documento o especialidad |
+| `verificar_profesional` | `/perfiles/administrador/profesionales/<pk>/verificar/` | POST. Audita `verificar` y avisa al profesional |
+| `desverificar_profesional` | `/perfiles/administrador/profesionales/<pk>/desverificar/` | POST. Audita `desverificar`; la ficha pública deja de verse |
+| `auditoria_lista` | `/auditoria/` | lectura. `?q=` (paciente o usuario), `?accion=`, `?modelo=`, `?pagina=`. Las filas clínicas muestran solo los nombres de campo |
 
 ## Compartido
 
 | Nombre | Path | Regla |
 | --- | --- | --- |
-| `dashboard` | `/perfiles/dashboard/` | redirige según `accounts.roles.dashboard_url_name` |
+| `dashboard` | `/perfiles/dashboard/` | redirige según `accounts.roles.dashboard_url_name`: profesional → `perfil_profesional`, paciente → `perfil`, administrador → `panel_administrador` |
 | `password_change` | `/accounts/contrasena/` | `login_required`. Pide la contraseña actual; al guardar vuelve al panel del rol |
 
 Un endpoint JSON nuevo se documenta aquí y requiere ADR si cambia el modelo server-rendered.
