@@ -63,6 +63,7 @@ def _etiquetar_nueva_contrasena(fields):
     fields["new_password1"].help_text = "Mínimo 8 caracteres, sin ser solo números."
     fields["new_password1"].widget = _password_widget("new-password")
     fields["new_password2"].label = "Repite la nueva contraseña"
+    fields["new_password2"].help_text = ""
     fields["new_password2"].widget = _password_widget("new-password")
 
 
