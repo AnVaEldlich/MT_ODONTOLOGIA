@@ -23,6 +23,8 @@ ENV_KEYS = (
     "SECURE_HSTS_PRELOAD",
     "SENTRY_DSN",
     "REDIS_URL",
+    "EMAIL_HOST",
+    "EMAIL_BACKEND",
 )
 
 PROD_ENV = {
@@ -119,6 +121,23 @@ def test_con_debug_no_fuerza_https(monkeypatch):
     assert not hasattr(settings, "SESSION_COOKIE_SECURE")
     assert settings.SECURE_CONTENT_TYPE_NOSNIFF is True
     assert settings.X_FRAME_OPTIONS == "DENY"
+
+
+def test_email_usa_consola_sin_host_y_smtp_con_host(monkeypatch):
+    sin_host = load_settings(monkeypatch, DEBUG="True", USE_SQLITE="True")
+    assert sin_host.EMAIL_BACKEND == "django.core.mail.backends.console.EmailBackend"
+
+    con_host = load_settings(monkeypatch, DEBUG="True", USE_SQLITE="True", EMAIL_HOST="smtp.example.com")
+    assert con_host.EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend"
+
+    forzado = load_settings(
+        monkeypatch,
+        DEBUG="True",
+        USE_SQLITE="True",
+        EMAIL_HOST="smtp.example.com",
+        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+    )
+    assert forzado.EMAIL_BACKEND == "django.core.mail.backends.locmem.EmailBackend"
 
 
 def test_use_sqlite_es_false_por_defecto_fuera_de_pytest(monkeypatch):

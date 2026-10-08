@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import authenticate
+from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -48,6 +49,40 @@ class LoginForm(forms.Form):
 
     def get_user(self):
         return self.user_cache
+
+
+def _password_widget(autocomplete):
+    return forms.PasswordInput(attrs={"placeholder": "••••••••", "autocomplete": autocomplete})
+
+
+def _etiquetar_nueva_contrasena(fields):
+    fields["new_password1"].label = "Nueva contraseña"
+    fields["new_password1"].help_text = "Mínimo 8 caracteres, sin ser solo números."
+    fields["new_password1"].widget = _password_widget("new-password")
+    fields["new_password2"].label = "Repite la nueva contraseña"
+    fields["new_password2"].widget = _password_widget("new-password")
+
+
+class RecuperarContrasenaForm(PasswordResetForm):
+    email = forms.EmailField(
+        label="Correo electrónico",
+        max_length=254,
+        widget=forms.EmailInput(attrs={"placeholder": "tu@email.com", "autocomplete": "email"}),
+    )
+
+
+class NuevaContrasenaForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _etiquetar_nueva_contrasena(self.fields)
+
+
+class CambiarContrasenaForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["old_password"].label = "Contraseña actual"
+        self.fields["old_password"].widget = _password_widget("current-password")
+        _etiquetar_nueva_contrasena(self.fields)
 
 
 class PatientRegisterForm(forms.Form):

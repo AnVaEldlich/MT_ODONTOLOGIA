@@ -1,16 +1,22 @@
 """Account management views for patient and professional registration."""
 from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
+from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import redirect, render
+from django.urls import reverse, reverse_lazy
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from .forms import (
+    CambiarContrasenaForm,
     ClinicCenterForm,
     LoginForm,
+    NuevaContrasenaForm,
     PatientRegisterForm,
     ProfessionalRegisterForm,
+    RecuperarContrasenaForm,
 )
 from .roles import dashboard_url_name
 
@@ -42,6 +48,41 @@ def logout_view(request):
     logout(request)
     messages.info(request, "Has cerrado sesión.")
     return redirect("home")
+
+
+class RecuperarContrasenaView(auth_views.PasswordResetView):
+    """Pide el correo y envía el enlace. Responde igual exista o no la cuenta."""
+
+    template_name = "accounts/password_reset_form.html"
+    form_class = RecuperarContrasenaForm
+    email_template_name = "accounts/password_reset_email.txt"
+    subject_template_name = "accounts/password_reset_subject.txt"
+    success_url = reverse_lazy("password_reset_done")
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("password_change")
+        return super().dispatch(request, *args, **kwargs)
+
+
+class RecuperarContrasenaEnviadoView(auth_views.PasswordResetDoneView):
+    template_name = "accounts/password_reset_done.html"
+
+
+class NuevaContrasenaView(SuccessMessageMixin, auth_views.PasswordResetConfirmView):
+    template_name = "accounts/password_reset_confirm.html"
+    form_class = NuevaContrasenaForm
+    success_url = reverse_lazy("login")
+    success_message = "Tu contraseña cambió. Ingresa con la nueva."
+
+
+class CambiarContrasenaView(SuccessMessageMixin, auth_views.PasswordChangeView):
+    template_name = "accounts/password_change_form.html"
+    form_class = CambiarContrasenaForm
+    success_message = "Contraseña actualizada. Tu sesión sigue abierta."
+
+    def get_success_url(self):
+        return reverse(dashboard_url_name(self.request.user))
 
 
 def register(request):

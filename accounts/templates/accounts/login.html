@@ -38,6 +38,7 @@
             {% if form.password.errors %}<p class="err">{{ form.password.errors.0 }}</p>{% endif %}
         </div>
         <button class="btn btn-brand btn-block btn-lg" type="submit">Ingresar</button>
+        <p class="register-link"><a href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a></p>
         <p class="register-link">¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate</a></p>
         <p class="register-link"><a href="{% url 'registro_pro' %}">Soy especialista</a></p>
     </form>

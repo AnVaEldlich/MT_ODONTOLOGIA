@@ -203,12 +203,14 @@ LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "home"
 
-# Email
-EMAIL_BACKEND = os.getenv(
-    "EMAIL_BACKEND",
-    "django.core.mail.backends.console.EmailBackend",
+# Email. Sin EMAIL_HOST los correos (recuperar contraseña) se imprimen en la
+# consola; con EMAIL_HOST se envían por SMTP. EMAIL_BACKEND explícito gana.
+EMAIL_HOST = os.getenv("EMAIL_HOST", "").strip()
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "").strip() or (
+    "django.core.mail.backends.smtp.EmailBackend"
+    if EMAIL_HOST
+    else "django.core.mail.backends.console.EmailBackend"
 )
-EMAIL_HOST = os.getenv("EMAIL_HOST", "")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")

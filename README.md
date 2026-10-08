@@ -20,6 +20,16 @@ Para desarrollo local pon en tu `.env`:
 
 En producción (`DEBUG=False`) son obligatorias `SECRET_KEY`, `ALLOWED_HOSTS` (dominios reales separados por coma) y `CSRF_TRUSTED_ORIGINS` (con esquema, `https://dominio`). Además se activan `SECURE_SSL_REDIRECT`, HSTS de un año con subdominios y preload, `SECURE_PROXY_SSL_HEADER` (`X-Forwarded-Proto`), cookies de sesión y CSRF seguras, `SECURE_CONTENT_TYPE_NOSNIFF` y `X_FRAME_OPTIONS=DENY`. Se pueden ajustar con `SECURE_SSL_REDIRECT`, `SECURE_HSTS_SECONDS`, `SECURE_HSTS_INCLUDE_SUBDOMAINS` y `SECURE_HSTS_PRELOAD`. `render.yaml` ya define lo necesario para Render.
 
+### Correo
+
+Recuperar contraseña (`/accounts/recuperar/`) envía un enlace por correo. Sin `EMAIL_HOST`, Django usa el backend de consola: el correo completo, con el enlace, aparece en la terminal donde corre `runserver`. Para enviarlo de verdad define en `.env`:
+
+- `EMAIL_HOST`, `EMAIL_PORT` (587 por defecto), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` (True por defecto).
+- `DEFAULT_FROM_EMAIL`: el remitente que ve el paciente.
+- `EMAIL_BACKEND`: solo si quieres forzar otro backend; con `EMAIL_HOST` ya se usa SMTP.
+
+El cambio de contraseña con sesión abierta está en `/accounts/contrasena/`, enlazado desde la edición de perfil del paciente y del profesional.
+
 La lista completa, con ejemplos, está en [.env.example](.env.example).
 
 ## Si ya tienes MySQL con datos

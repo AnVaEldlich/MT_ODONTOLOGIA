@@ -17,6 +17,11 @@
             <button class="btn btn-primary" type="submit">Guardar cambios</button>
             <a class="btn btn-ghost" href="{% url 'perfil' %}">Volver</a>
         </form>
+        <section class="card form-narrow">
+            <h2>Tu cuenta</h2>
+            <p class="meta">Ingresas con {{ request.user.email }}.</p>
+            <a class="btn btn-ghost" href="{% url 'password_change' %}">{% include "core/includes/icon.html" with name="escudo" %}Cambiar contraseña</a>
+        </section>
         <p><a href="{% url 'crear_resena' %}">Contar tu experiencia</a></p>
     </div>
 </div>
