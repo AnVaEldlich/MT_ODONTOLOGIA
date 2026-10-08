@@ -1868,6 +1868,10 @@ button.stat-accion:focus-visible { outline: none; box-shadow: var(--ring); }
 .checkbox-item label,
 .checkbox label { font-weight: 500; margin: 0; }
 .checkbox-group { display: grid; gap: 0.1rem; }
+/* CheckboxSelectMultiple de Django: un <div> por opción con el <label> envolviendo el input. */
+.checkbox-list > div { margin: 0.35rem 0; }
+.checkbox-list label { display: flex; gap: 0.6rem; align-items: center; font-weight: 500; margin: 0; cursor: pointer; }
+.checkbox-list input { flex: none; }
 .button-group { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1rem; }
 .login-link, .register-link, .back-link { margin-top: 0.9rem; color: var(--text-secondary); }
 .register-link { text-align: center; }

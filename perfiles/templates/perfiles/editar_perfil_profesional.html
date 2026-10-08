@@ -1,0 +1,35 @@
+{% extends "core/base.html" %}
+{% block title %}Editar perfil — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_profesional.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Tu perfil</h1>
+            <p>{{ profesional.get_full_name }} · {{ profesional.get_id_type_display }} {{ profesional.id_number }}</p>
+        </div>
+        <form class="card form-narrow" method="post" novalidate>
+            {% csrf_token %}
+            {% include "core/includes/fields.html" %}
+            <p class="meta">
+                {% if profesional.is_verified %}
+                {% include "core/includes/icon.html" with name="check-circulo" %} Perfil verificado. El equipo mantiene esa marca; no se edita aquí.
+                {% else %}
+                {% include "core/includes/icon.html" with name="info" %} La verificación la hace el equipo con tu documento. No se edita aquí.
+                {% endif %}
+            </p>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Guardar cambios</button>
+                <a class="btn btn-ghost" href="{% url 'perfil_profesional' %}">Volver</a>
+            </div>
+        </form>
+        <section class="card form-narrow">
+            <h2>Tu cuenta</h2>
+            <p class="meta">Ingresas con {{ request.user.email }}.</p>
+            <a class="btn btn-ghost" href="{% url 'password_change' %}">{% include "core/includes/icon.html" with name="escudo" %}Cambiar contraseña</a>
+        </section>
+    </div>
+</div>
+{% endblock %}

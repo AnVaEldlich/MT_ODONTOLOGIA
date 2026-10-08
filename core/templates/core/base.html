@@ -44,6 +44,7 @@
                 {% elif user_role == 'profesional' %}
                 <li><a href="{% url 'perfil_profesional' %}">Mi panel</a></li>
                 <li><a href="{% url 'disponibilidad' %}">Horarios</a></li>
+                <li><a href="{% url 'editar_perfil_profesional' %}">Perfil</a></li>
                 <li><a href="{% url 'notificaciones' %}">Avisos{% if notificaciones_sin_leer %} <span class="badge danger sin-punto">{{ notificaciones_sin_leer }}</span>{% endif %}</a></li>
                 <li><a href="{% url 'chat_lista' %}">Mensajes{% if mensajes_sin_leer %} <span class="badge danger sin-punto">{{ mensajes_sin_leer }}</span>{% endif %}</a></li>
                 {% else %}
@@ -88,6 +89,7 @@
             <li><a href="{% url 'perfil_profesional' %}">{% include "core/includes/icon.html" with name="inicio" %}Mi panel</a></li>
             <li><a href="{% url 'agenda_profesional' %}">{% include "core/includes/icon.html" with name="agenda" %}Agenda</a></li>
             <li><a href="{% url 'disponibilidad' %}">{% include "core/includes/icon.html" with name="reloj" %}Horarios</a></li>
+            <li><a href="{% url 'editar_perfil_profesional' %}">{% include "core/includes/icon.html" with name="usuario" %}Editar perfil</a></li>
             {% else %}
             <li><a href="{% url 'buscar_profesionales' %}">{% include "core/includes/icon.html" with name="buscar" %}Buscar especialista</a></li>
             <li><a href="{% url 'login' %}">{% include "core/includes/icon.html" with name="usuario" %}Ingresar</a></li>

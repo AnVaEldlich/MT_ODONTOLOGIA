@@ -9,6 +9,6 @@
     <a href="{% url 'mis_facturas' %}" {% if actual == 'mis_facturas' or actual == 'detalle_factura' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="recibo" %}Facturas</a>
     <a href="{% url 'mis_recetas' %}" {% if actual == 'mis_recetas' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="pastilla" %}Recetas</a>
     <a href="{% url 'notificaciones' %}" {% if actual == 'notificaciones' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="campana" %}Avisos{% if notificaciones_sin_leer %} <span class="badge danger sin-punto">{{ notificaciones_sin_leer }}</span>{% endif %}</a>
-    <a href="{% url 'editar_perfil' %}" {% if actual == 'editar_perfil' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="usuario" %}Perfil</a>
+    <a href="{% url 'editar_perfil' %}" {% if actual == 'editar_perfil' or actual == 'password_change' %}aria-current="page"{% endif %}>{% include "core/includes/icon.html" with name="usuario" %}Perfil</a>
 </nav>
 {% endwith %}

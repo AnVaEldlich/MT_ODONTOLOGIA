@@ -13,6 +13,9 @@ No hay API JSON. El contrato actual son vistas HTML y nombres de URL. Usar siemp
 | `registro_pro` | GET | `/accounts/registro_pro/` |
 | `registerprofesional` | GET, POST | `/accounts/registerprofesional/` |
 | `formclinic` | GET, POST | `/accounts/formclinic/` |
+| `password_reset` | GET, POST | `/accounts/recuperar/` — pide el correo; responde igual exista o no la cuenta |
+| `password_reset_done` | GET | `/accounts/recuperar/enviado/` |
+| `password_reset_confirm` | GET, POST | `/accounts/recuperar/<uidb64>/<token>/` — enlace de un solo uso; al guardar redirige a `login` |
 
 ## Paciente
 
@@ -38,6 +41,7 @@ No hay API JSON. El contrato actual son vistas HTML y nombres de URL. Usar siemp
 | Nombre | Path | Regla |
 | --- | --- | --- |
 | `perfil_profesional` | `/perfiles/profesional/` | solo profesional |
+| `editar_perfil_profesional` | `/perfiles/profesional/editar/` | solo su perfil: nombre, contacto, especialidades y sedes. No toca `is_verified` ni el documento |
 | `agenda_profesional` | `/citas/agenda/` | solo su agenda. `?vista=dia` o `semana` |
 | `confirmar_cita` | `/citas/<pk>/confirmar/` | POST. Solo citas pendientes de su agenda |
 | `atender_cita` | `/citas/<pk>/atender/` | POST. Solo una confirmada de su agenda |
@@ -52,5 +56,6 @@ No hay API JSON. El contrato actual son vistas HTML y nombres de URL. Usar siemp
 | Nombre | Path | Regla |
 | --- | --- | --- |
 | `dashboard` | `/perfiles/dashboard/` | redirige según `accounts.roles.dashboard_url_name` |
+| `password_change` | `/accounts/contrasena/` | `login_required`. Pide la contraseña actual; al guardar vuelve al panel del rol |
 
 Un endpoint JSON nuevo se documenta aquí y requiere ADR si cambia el modelo server-rendered.

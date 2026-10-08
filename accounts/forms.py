@@ -5,8 +5,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
+from clinica.models import Especialidad, Sede
+from clinica.services import sedes_con_horarios
+
 from .models import ClinicCenter, Paciente, Profesional
-from .services import create_paciente, create_profesional
+from .services import create_paciente, create_profesional, update_profesional
 
 
 def _password_errors(password):
@@ -263,6 +266,107 @@ class ClinicCenterForm(forms.ModelForm):
             *self.fields["specialists_range"].choices,
         ]
         self.fields["city"].widget.attrs["placeholder"] = "Introducir la ciudad"
+
+
+class ProfesionalPerfilForm(forms.ModelForm):
+    """Lo que el profesional edita de sí mismo. Identificación e is_verified quedan fuera a propósito."""
+
+    first_name = forms.CharField(
+        label="Nombre",
+        max_length=100,
+        widget=forms.TextInput(attrs={"autocomplete": "given-name"}),
+    )
+    last_name = forms.CharField(
+        label="Apellidos",
+        max_length=100,
+        widget=forms.TextInput(attrs={"autocomplete": "family-name"}),
+    )
+    especialidades = forms.ModelMultipleChoiceField(
+        label="Otras especialidades",
+        queryset=Especialidad.objects.filter(activa=True),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "checkbox-list"}),
+        help_text="La principal se marca sola. Agrega las demás que atiendes.",
+    )
+    sedes = forms.ModelMultipleChoiceField(
+        label="Sedes donde atiendes",
+        queryset=Sede.objects.filter(activa=True),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "checkbox-list"}),
+        help_text="Solo estas sedes aparecen al publicar horarios.",
+    )
+    sede_principal = forms.ModelChoiceField(
+        label="Sede principal",
+        queryset=Sede.objects.filter(activa=True),
+        required=False,
+        empty_label="La primera de la lista",
+        help_text="Con esa sede se muestra tu calendario en la ficha pública.",
+    )
+
+    class Meta:
+        model = Profesional
+        fields = ("especialidad", "ubicacion", "codigo_pais", "telefono")
+        labels = {"ubicacion": "Ciudad o sede de consulta", "codigo_pais": "Indicativo", "telefono": "Celular"}
+        widgets = {
+            "codigo_pais": forms.Select(choices=[("+57", "+57"), ("+1", "+1"), ("+52", "+52"), ("+34", "+34")]),
+            "telefono": forms.TextInput(attrs={"inputmode": "tel", "autocomplete": "tel-national"}),
+        }
+
+    field_order = (
+        "first_name",
+        "last_name",
+        "especialidad",
+        "especialidades",
+        "ubicacion",
+        "codigo_pais",
+        "telefono",
+        "sedes",
+        "sede_principal",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        profesional = self.instance
+        self.fields["especialidad"].label = "Especialidad principal"
+        self.fields["first_name"].initial = profesional.user.first_name
+        self.fields["last_name"].initial = profesional.user.last_name
+        self.fields["especialidades"].initial = [
+            item.especialidad_id for item in profesional.especialidades_asignadas.all() if not item.principal
+        ]
+        asignaciones = list(profesional.sedes_asignadas.all())
+        self.fields["sedes"].initial = [item.sede_id for item in asignaciones]
+        self.fields["sede_principal"].initial = next(
+            (item.sede_id for item in asignaciones if item.principal), None
+        )
+        if not self.fields["sedes"].queryset.exists():
+            self.fields["sedes"].help_text = "Todavía no hay sedes registradas. El equipo las crea desde la administración."
+
+    def clean_telefono(self):
+        digits = "".join(ch for ch in self.cleaned_data["telefono"] if ch.isdigit())
+        if len(digits) < 7 or len(digits) > 15:
+            raise forms.ValidationError("Escribe un celular válido, de 7 a 15 dígitos.")
+        return digits
+
+    def clean(self):
+        cleaned = super().clean()
+        sedes = cleaned.get("sedes")
+        principal = cleaned.get("sede_principal")
+        if sedes is None:
+            return cleaned
+        elegidas = {sede.pk for sede in sedes}
+        if principal is not None and principal.pk not in elegidas:
+            self.add_error("sede_principal", "La sede principal debe estar entre las sedes que marcaste.")
+        ocupadas = sedes_con_horarios(self.instance) - elegidas
+        if ocupadas:
+            nombres = ", ".join(Sede.objects.filter(pk__in=ocupadas).values_list("nombre", flat=True))
+            self.add_error(
+                "sedes",
+                f"Tienes horarios publicados en {nombres}. Deja de publicarlos antes de quitar la sede.",
+            )
+        return cleaned
+
+    def save(self, commit=True):
+        return update_profesional(self.instance, self.cleaned_data)
 
 
 class PacientePerfilForm(forms.ModelForm):

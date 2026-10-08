@@ -8,7 +8,59 @@ from accounts.models import Profesional
 from comunicacion.models import Resena
 
 from .catalogo import CATALOGO_TRATAMIENTOS
-from .models import Especialidad, ProfesionalEspecialidad, Sede, Tratamiento
+from .models import (
+    AsignacionSede,
+    Disponibilidad,
+    Especialidad,
+    ProfesionalEspecialidad,
+    Sede,
+    Tratamiento,
+)
+
+
+def sedes_del_profesional(profesional):
+    """Sedes activas donde el profesional está asignado. Es la lista que puede elegir al publicar horarios."""
+    return Sede.objects.filter(activa=True, profesionales_asignados__profesional=profesional).distinct()
+
+
+def sedes_con_horarios(profesional):
+    """Ids de sede con franjas activas. No se quita una sede mientras tenga horarios publicados."""
+    return set(
+        Disponibilidad.objects.filter(profesional=profesional, activa=True)
+        .values_list("sede_id", flat=True)
+        .distinct()
+    )
+
+
+@transaction.atomic
+def asignar_especialidades(profesional, especialidades, codigo_principal):
+    """Deja al profesional con la principal (por código) más las elegidas; quita el resto."""
+    principal = asignar_especialidad_principal(profesional, codigo_principal)
+    elegidas = {item.pk for item in especialidades} | {principal.especialidad_id}
+    ProfesionalEspecialidad.objects.filter(profesional=profesional).exclude(
+        especialidad_id__in=elegidas
+    ).delete()
+    for especialidad in especialidades:
+        ProfesionalEspecialidad.objects.get_or_create(profesional=profesional, especialidad=especialidad)
+
+
+@transaction.atomic
+def asignar_sedes(profesional, sedes, principal=None):
+    """Sincroniza AsignacionSede con la lista elegida. La principal se conserva si sigue en la lista."""
+    sedes = list(sedes)
+    ids = {sede.pk for sede in sedes}
+    if principal is not None and principal.pk not in ids:
+        principal = None
+    if principal is None:
+        actual = AsignacionSede.objects.filter(profesional=profesional, principal=True, sede_id__in=ids).first()
+        principal = actual.sede if actual else (sedes[0] if sedes else None)
+    AsignacionSede.objects.filter(profesional=profesional).exclude(sede_id__in=ids).delete()
+    for sede in sedes:
+        AsignacionSede.objects.update_or_create(
+            profesional=profesional,
+            sede=sede,
+            defaults={"principal": principal is not None and sede.pk == principal.pk},
+        )
 
 
 def asignar_especialidad_principal(profesional, codigo):

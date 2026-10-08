@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 from django.utils import timezone
 
-from accounts.forms import PacientePerfilForm
+from accounts.forms import PacientePerfilForm, ProfesionalPerfilForm
 from accounts.imagenes import guardar_foto, quitar_foto
 from accounts.models import Paciente
 from accounts.roles import dashboard_url_name
@@ -110,6 +110,7 @@ def perfil_profesional(request):
     ).order_by("fecha_hora")[:8]
     tiene_horarios = Disponibilidad.objects.filter(profesional=profesional, activa=True).exists()
     pasos = {
+        "sedes": profesional.sedes_asignadas.exists(),
         "horarios": tiene_horarios,
         "foto": bool(profesional.foto),
         "verificado": profesional.is_verified,
@@ -132,6 +133,21 @@ def perfil_profesional(request):
             "pasos": pasos,
             "consulta_lista": all(pasos.values()),
         },
+    )
+
+
+@profesional_required
+def editar_perfil_profesional(request):
+    profesional = request.user.profesional
+    form = ProfesionalPerfilForm(request.POST or None, instance=profesional)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Perfil actualizado. Así te verán los pacientes.")
+        return redirect("perfil_profesional")
+    return render(
+        request,
+        "perfiles/editar_perfil_profesional.html",
+        {"form": form, "profesional": profesional},
     )
 
 

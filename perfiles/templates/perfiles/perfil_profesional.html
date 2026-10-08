@@ -32,6 +32,7 @@
                         <span class="badge ok sin-punto">{% include "core/includes/icon.html" with name="check-circulo" %}{{ insignia }}</span>
                         {% endif %}
                         {% endfor %}
+                        <a class="badge sin-punto" href="{% url 'editar_perfil_profesional' %}">{% include "core/includes/icon.html" with name="editar" %}Editar perfil</a>
                         <a class="badge sin-punto" href="{% url 'perfil_publico' profesional.pk %}">Ver ficha pública {% include "core/includes/icon.html" with name="flecha" %}</a>
                     </p>
                 </div>
@@ -47,8 +48,20 @@
         {% if not consulta_lista %}
         <section class="card">
             <h2>Prepara tu consulta</h2>
-            <p class="meta">Tres pasos. Los pacientes te encuentran cuando el perfil está verificado y hay horarios.</p>
+            <p class="meta">Cuatro pasos. Los pacientes te encuentran cuando el perfil está verificado y hay horarios.</p>
             <ol class="setup-list">
+                <li>
+                    <span class="icon-tile{% if pasos.sedes %} book{% endif %}" aria-hidden="true">{% include "core/includes/icon.html" with name="pin" clase="lg" %}</span>
+                    <div>
+                        <h3>Elige dónde atiendes</h3>
+                        <p>{% if pasos.sedes %}Ya tienes sede. Puedes ajustar tus datos cuando quieras.{% else %}Marca tus sedes en el perfil: sin sede no puedes publicar horarios.{% endif %}</p>
+                    </div>
+                    {% if pasos.sedes %}
+                    <span class="badge ok sin-punto">Listo</span>
+                    {% else %}
+                    <a class="btn btn-primary btn-sm" href="{% url 'editar_perfil_profesional' %}">Editar perfil</a>
+                    {% endif %}
+                </li>
                 <li>
                     <span class="icon-tile{% if pasos.horarios %} book{% endif %}" aria-hidden="true">{% include "core/includes/icon.html" with name="reloj" clase="lg" %}</span>
                     <div>
@@ -58,7 +71,7 @@
                     {% if pasos.horarios %}
                     <span class="badge ok sin-punto">Listo</span>
                     {% else %}
-                    <a class="btn btn-primary btn-sm" href="{% url 'disponibilidad' %}">Abrir horarios</a>
+                    <a class="btn {% if pasos.sedes %}btn-primary{% else %}btn-ghost{% endif %} btn-sm" href="{% url 'disponibilidad' %}">Abrir horarios</a>
                     {% endif %}
                 </li>
                 <li>

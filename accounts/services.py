@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import transaction
 
-from clinica.services import asignar_especialidad_principal
+from clinica.services import asignar_especialidad_principal, asignar_especialidades, asignar_sedes
 
 from .models import Paciente, Profesional
 from .roles import assign_paciente_group, assign_profesional_group
@@ -66,3 +66,22 @@ def create_profesional(cleaned):
     assign_profesional_group(user)
     asignar_especialidad_principal(profesional, profesional.especialidad)
     return user, profesional
+
+
+@transaction.atomic
+def update_profesional(profesional, cleaned):
+    """Datos que el propio profesional edita. Identificación e is_verified no pasan por aquí."""
+    user = profesional.user
+    user.first_name = cleaned["first_name"].strip()
+    user.last_name = cleaned["last_name"].strip()
+    user.save(update_fields=["first_name", "last_name"])
+
+    profesional.especialidad = cleaned["especialidad"]
+    profesional.ubicacion = cleaned["ubicacion"].strip()
+    profesional.codigo_pais = cleaned["codigo_pais"]
+    profesional.telefono = cleaned["telefono"]
+    profesional.save(update_fields=["especialidad", "ubicacion", "codigo_pais", "telefono", "updated_at"])
+
+    asignar_especialidades(profesional, cleaned["especialidades"], profesional.especialidad)
+    asignar_sedes(profesional, cleaned["sedes"], cleaned.get("sede_principal"))
+    return profesional
