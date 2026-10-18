@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo navegación pública — MT Odontología</title>
+  <link rel="stylesheet" href="../estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <div class="barra-interna">
+      <a class="marca" href="../index.html">
+        <img src="../imagenes/logo.svg" alt="Logo">
+        MT Odontología
+      </a>
+      <ul class="nav-principal">
+        <li><a class="activo" href="publico.html">Inicio</a></li>
+        <li><a href="#especialistas">Especialistas</a></li>
+        <li><a href="#ingresar">Ingresar</a></li>
+        <li><a href="#cuenta">Crear cuenta</a></li>
+        <li><a href="../esquema-navegacion.html">← Esquema</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <section class="hero">
+      <h1>Demo: zona pública</h1>
+      <p>Así navega un visitante antes de iniciar sesión. Los enlaces siguientes simulan el menú real.</p>
+    </section>
+
+    <section class="tarjeta" id="especialistas">
+      <h2>Buscar especialistas</h2>
+      <p>Directorio público de profesionales verificados. Desde aquí se abre la ficha y luego <em>Agendar cita</em> (exige login de paciente).</p>
+      <ul>
+        <li>Ortodoncia · Endodoncia · Periodoncia</li>
+        <li>Filtro por ciudad / sede</li>
+      </ul>
+    </section>
+
+    <section class="tarjeta" id="ingresar">
+      <h2>Ingresar</h2>
+      <p>Hipervínculo a la pantalla de autenticación. Tras el login, el sistema redirige al panel del rol.</p>
+    </section>
+
+    <section class="tarjeta" id="cuenta">
+      <h2>Crear cuenta</h2>
+      <ul>
+        <li>Registro de paciente</li>
+        <li>Soy especialista (registro profesional)</li>
+        <li>Registrar un centro médico</li>
+      </ul>
+    </section>
+
+    <p>
+      <a class="boton" href="paciente.html">Simular login como paciente →</a>
+      <a class="boton secundario" href="../esquema-navegacion.html">Volver al esquema</a>
+    </p>
+  </main>
+</body>
+</html>

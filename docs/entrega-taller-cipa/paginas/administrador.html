@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo navegación administrador — MT Odontología</title>
+  <link rel="stylesheet" href="../estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <div class="barra-interna">
+      <a class="marca" href="../index.html">
+        <img src="../imagenes/logo.svg" alt="Logo">
+        MT Odontología · Admin
+      </a>
+      <ul class="nav-principal">
+        <li><a class="activo" href="#panel">Panel</a></li>
+        <li><a href="#profesionales">Profesionales</a></li>
+        <li><a href="#pacientes">Pacientes</a></li>
+        <li><a href="#auditoria">Auditoría</a></li>
+        <li><a href="../esquema-navegacion.html">← Esquema</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <section class="hero">
+      <h1>Demo: navegación del administrador</h1>
+      <p>Gestión de usuarios y verificación. La ficha clínica profunda sigue ligada al profesional tratante.</p>
+    </section>
+
+    <section class="tarjeta" id="panel">
+      <h2>Panel de administración</h2>
+      <p>Accesos a profesionales, pacientes y cuenta.</p>
+    </section>
+
+    <section class="tarjeta" id="profesionales">
+      <h2>Profesionales</h2>
+      <ul>
+        <li>Listar y buscar</li>
+        <li>Verificar / desverificar perfil público</li>
+      </ul>
+    </section>
+
+    <section class="tarjeta" id="pacientes">
+      <h2>Pacientes</h2>
+      <ul>
+        <li>Alta administrativa de paciente</li>
+        <li>Ficha administrativa y edición de contacto</li>
+      </ul>
+    </section>
+
+    <section class="tarjeta" id="auditoria">
+      <h2>Auditoría</h2>
+      <p>Registro de lecturas y cambios clínicos sensibles (quién, cuándo, qué).</p>
+    </section>
+
+    <p>
+      <a class="boton" href="../mvc.html">Ir al avance MVC →</a>
+      <a class="boton secundario" href="profesional.html">← Profesional</a>
+    </p>
+  </main>
+</body>
+</html>

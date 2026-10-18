@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo navegación profesional — MT Odontología</title>
+  <link rel="stylesheet" href="../estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <div class="barra-interna">
+      <a class="marca" href="../index.html">
+        <img src="../imagenes/logo.svg" alt="Logo">
+        MT Odontología · Profesional
+      </a>
+      <ul class="nav-principal">
+        <li><a href="#panel">Panel</a></li>
+        <li><a class="activo" href="#agenda">Agenda</a></li>
+        <li><a href="#pacientes">Mis pacientes</a></li>
+        <li><a href="#horarios">Horarios / sedes</a></li>
+        <li><a href="../esquema-navegacion.html">← Esquema</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <section class="hero">
+      <h1>Demo: navegación del profesional</h1>
+      <p>El profesional no ve “Mis citas” del paciente. Gestiona agenda, pacientes y disponibilidad.</p>
+    </section>
+
+    <section class="tarjeta" id="panel">
+      <h2>Panel profesional</h2>
+      <p>Resumen del día, checklist “Prepara tu consulta”, publicaciones y acceso rápido.</p>
+    </section>
+
+    <section class="tarjeta" id="agenda">
+      <h2>Agenda</h2>
+      <ul>
+        <li>Vista día / semana</li>
+        <li>Confirmar · Atender · Marcar no asistió · Cancelar</li>
+      </ul>
+      <span class="chip">Botón principal</span>
+    </section>
+
+    <section class="tarjeta" id="pacientes">
+      <h2>Mis pacientes</h2>
+      <p>Listado de pacientes con cita previa; ficha clínica, odontograma, recetas y facturación.</p>
+    </section>
+
+    <section class="tarjeta" id="horarios">
+      <h2>Sedes y horarios</h2>
+      <p>
+        Desde el panel se abren modales HTML: <em>Elegir sede</em> y <em>Publicar horarios</em>,
+        sin salir a otra pantalla. También existe la vista completa de disponibilidad.
+      </p>
+    </section>
+
+    <p>
+      <a class="boton" href="administrador.html">Ver menú administrador →</a>
+      <a class="boton secundario" href="paciente.html">← Paciente</a>
+    </p>
+  </main>
+</body>
+</html>

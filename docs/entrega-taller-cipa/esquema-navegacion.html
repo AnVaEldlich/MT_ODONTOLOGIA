@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Esquema de navegación HTML — MT Odontología</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <div class="barra-interna">
+      <a class="marca" href="index.html">
+        <img src="imagenes/logo.svg" alt="Logo MT Odontología">
+        MT Odontología
+      </a>
+      <ul class="nav-principal">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a class="activo" href="esquema-navegacion.html">Esquema de navegación</a></li>
+        <li><a href="mvc.html">Avance MVC</a></li>
+        <li><a href="paginas/publico.html">Demo público</a></li>
+        <li><a href="paginas/paciente.html">Demo paciente</a></li>
+        <li><a href="paginas/profesional.html">Demo profesional</a></li>
+        <li><a href="paginas/administrador.html">Demo administrador</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <section class="hero">
+      <h1>Esquema de navegación HTML</h1>
+      <p>
+        Mapa de pantallas del software odontológico. La navegación cambia según el rol:
+        visitante, paciente, profesional u administrador. Cada bloque enlaza a una
+        página HTML de demostración.
+      </p>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Menú rápido (anclas internas)</h2>
+      <div class="lista-anclas">
+        <a href="#publico">Público</a>
+        <a href="#paciente">Paciente</a>
+        <a href="#profesional">Profesional</a>
+        <a href="#administrador">Administrador</a>
+        <a href="#flujo-cita">Flujo de una cita</a>
+        <a href="#tabla-urls">Tabla de rutas</a>
+      </div>
+      <p class="meta">Estas anclas simulan el menú interno de una página larga, como en el taller de HTML.</p>
+    </section>
+
+    <section class="tarjeta seccion-ancla" id="publico">
+      <h2>1. Zona pública (sin iniciar sesión)</h2>
+      <span class="chip">Visitante</span>
+      <div class="nodo">
+        <h3>Pantallas</h3>
+        <ul>
+          <li><a href="paginas/publico.html">Inicio / landing</a> — presentación del servicio</li>
+          <li>Buscar especialistas</li>
+          <li>Ficha pública del profesional</li>
+          <li>Ingresar · Crear cuenta (paciente) · Soy especialista · Registrar centro</li>
+        </ul>
+      </div>
+      <p><a class="boton" href="paginas/publico.html">Ver demo de navegación pública</a></p>
+    </section>
+
+    <section class="tarjeta seccion-ancla" id="paciente">
+      <h2>2. Navegación del paciente</h2>
+      <span class="chip">Rol: Paciente</span>
+      <div class="nodo">
+        <h3>Menú lateral / portal</h3>
+        <ul>
+          <li>Mi perfil</li>
+          <li><strong>Agendar cita</strong> (acción principal)</li>
+          <li>Mis citas (pendientes, confirmadas, canceladas)</li>
+          <li>Mi historia clínica (lectura)</li>
+          <li>Facturas y notificaciones</li>
+          <li>Editar perfil · Salir</li>
+        </ul>
+      </div>
+      <p><a class="boton" href="paginas/paciente.html">Ver demo paciente</a></p>
+    </section>
+
+    <section class="tarjeta seccion-ancla" id="profesional">
+      <h2>3. Navegación del profesional</h2>
+      <span class="chip">Rol: Profesional</span>
+      <div class="nodo">
+        <h3>Menú del consultorio</h3>
+        <ul>
+          <li>Panel profesional</li>
+          <li><strong>Agenda</strong> (día / semana)</li>
+          <li>Mis pacientes · Ficha clínica</li>
+          <li>Disponibilidad / horarios y sedes</li>
+          <li>Editar perfil · Notificaciones · Salir</li>
+        </ul>
+        <p class="meta">El paciente no ve Agenda; el profesional no ve Mis citas. Cada rol solo navega lo suyo.</p>
+      </div>
+      <p><a class="boton" href="paginas/profesional.html">Ver demo profesional</a></p>
+    </section>
+
+    <section class="tarjeta seccion-ancla" id="administrador">
+      <h2>4. Navegación del administrador</h2>
+      <span class="chip">Rol: Administrador</span>
+      <div class="nodo">
+        <ul>
+          <li>Panel de administración</li>
+          <li>Gestionar profesionales (verificar / desverificar)</li>
+          <li>Gestionar pacientes · Nuevo paciente</li>
+          <li>Auditoría de acciones sensibles</li>
+        </ul>
+      </div>
+      <p><a class="boton" href="paginas/administrador.html">Ver demo administrador</a></p>
+    </section>
+
+    <section class="tarjeta seccion-ancla" id="flujo-cita">
+      <h2>5. Flujo de navegación: agendar una cita</h2>
+      <div class="flujo">
+        <div class="caja-flujo">Inicio</div>
+        <span class="flecha">→</span>
+        <div class="caja-flujo">Buscar especialista</div>
+        <span class="flecha">→</span>
+        <div class="caja-flujo">Ficha pública</div>
+        <span class="flecha">→</span>
+        <div class="caja-flujo">Agendar cita</div>
+        <span class="flecha">→</span>
+        <div class="caja-flujo">Mis citas</div>
+      </div>
+      <p>
+        Tras un POST exitoso el sistema muestra un mensaje de éxito y
+        <strong>redirige a la lista del rol</strong> (Mis citas o Agenda), sin dejar el formulario vacío.
+      </p>
+    </section>
+
+    <section class="tarjeta seccion-ancla" id="tabla-urls">
+      <h2>6. Tabla de rutas principales del proyecto</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Rol</th>
+            <th>Nombre de ruta</th>
+            <th>Path aproximado</th>
+            <th>Pantalla</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Público</td>
+            <td><code>home</code></td>
+            <td><code>/</code></td>
+            <td>Página de inicio</td>
+          </tr>
+          <tr>
+            <td>Público</td>
+            <td><code>buscar_profesionales</code></td>
+            <td><code>/especialistas/</code></td>
+            <td>Directorio</td>
+          </tr>
+          <tr>
+            <td>Paciente</td>
+            <td><code>solicitar_cita</code></td>
+            <td><code>/citas/solicitar/</code></td>
+            <td>Agendar cita</td>
+          </tr>
+          <tr>
+            <td>Paciente</td>
+            <td><code>mis_citas</code></td>
+            <td><code>/citas/mis-citas/</code></td>
+            <td>Listado de citas</td>
+          </tr>
+          <tr>
+            <td>Profesional</td>
+            <td><code>agenda_profesional</code></td>
+            <td><code>/citas/agenda/</code></td>
+            <td>Agenda del consultorio</td>
+          </tr>
+          <tr>
+            <td>Profesional</td>
+            <td><code>perfil_profesional</code></td>
+            <td><code>/perfiles/profesional/</code></td>
+            <td>Panel (sedes y horarios en modal)</td>
+          </tr>
+          <tr>
+            <td>Administrador</td>
+            <td><code>panel_administrador</code></td>
+            <td><code>/perfiles/administrador/</code></td>
+            <td>Gestión</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <p>
+      <a class="boton secundario" href="index.html">Volver al índice</a>
+      <a class="boton" href="mvc.html">Continuar al avance MVC</a>
+    </p>
+  </main>
+
+  <footer class="pie">
+    Esquema de navegación HTML · Proyecto final MT Odontología
+  </footer>
+</body>
+</html>

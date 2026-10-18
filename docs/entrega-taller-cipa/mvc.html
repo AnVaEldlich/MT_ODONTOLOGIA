@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avance MVC — MT Odontología</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <div class="barra-interna">
+      <a class="marca" href="index.html">
+        <img src="imagenes/logo.svg" alt="Logo MT Odontología">
+        MT Odontología
+      </a>
+      <ul class="nav-principal">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="esquema-navegacion.html">Esquema de navegación</a></li>
+        <li><a class="activo" href="mvc.html">Avance MVC</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <section class="hero">
+      <h1>Avance MVC del proyecto final</h1>
+      <p>
+        Aplicación del patrón <strong>Modelo–Vista–Controlador</strong> al software
+        odontológico <em>MT Odontología</em>, implementado con Django 5 (Python),
+        plantillas HTML y CSS.
+      </p>
+    </section>
+
+    <section class="tarjeta">
+      <h2>1. ¿Qué es MVC en este proyecto?</h2>
+      <p>
+        MVC separa los datos clínicos y de agenda (<strong>Modelo</strong>), la
+        interfaz que ve el usuario (<strong>Vista</strong>) y la lógica que recibe
+        la petición y decide qué hacer (<strong>Controlador</strong>).
+      </p>
+      <div class="flujo">
+        <div class="caja-flujo modelo">Modelo<br><small>models.py / BD</small></div>
+        <span class="flecha">↔</span>
+        <div class="caja-flujo controlador">Controlador<br><small>views + forms + services</small></div>
+        <span class="flecha">↔</span>
+        <div class="caja-flujo vista">Vista<br><small>templates HTML</small></div>
+      </div>
+      <p class="meta">
+        En Django el patrón se llama a menudo <strong>MTV</strong> (Model–Template–View):
+        la “View” de Django actúa como el Controlador clásico, y el Template es la Vista.
+        En esta entrega usamos los nombres académicos MVC alineados con el código real.
+      </p>
+    </section>
+
+    <section class="tarjeta">
+      <h2>2. Correspondencia con el código</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Capa MVC</th>
+            <th>En Django / este proyecto</th>
+            <th>Ejemplo odontológico</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Modelo</strong></td>
+            <td><code>app/models.py</code> + MySQL/SQLite</td>
+            <td><code>Cita</code>, <code>Paciente</code>, <code>Profesional</code>, <code>Sede</code>, <code>Disponibilidad</code></td>
+          </tr>
+          <tr>
+            <td><strong>Vista</strong></td>
+            <td><code>app/templates/…/*.html</code> + <code>base.css</code></td>
+            <td><code>mis_citas.html</code>, <code>agenda</code>, panel profesional, formularios</td>
+          </tr>
+          <tr>
+            <td><strong>Controlador</strong></td>
+            <td><code>views.py</code> + <code>forms.py</code> + <code>services.py</code> + <code>urls.py</code></td>
+            <td>Crear cita, cancelar, confirmar, publicar horarios, elegir sedes</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="tarjeta">
+      <h2>3. Caso de uso: agendar una cita</h2>
+      <ol>
+        <li><strong>Vista:</strong> el paciente ve el formulario HTML de “Agendar cita”.</li>
+        <li><strong>Controlador:</strong> la vista Django recibe el POST, valida el formulario y llama al servicio <code>create_cita</code>.</li>
+        <li><strong>Modelo:</strong> se guarda un registro <code>Cita</code> con estado <em>pendiente</em>, profesional, paciente y fecha.</li>
+        <li><strong>Vista de resultado:</strong> mensaje de éxito y redirección a <em>Mis citas</em>.</li>
+      </ol>
+      <div class="diagrama-codigo">
+<span class="comentario"># Flujo simplificado (Controlador)</span><br>
+<span class="clave">def</span> solicitar_cita(request):<br>
+&nbsp;&nbsp;form = CitaForm(request.POST <span class="clave">or</span> None)<br>
+&nbsp;&nbsp;<span class="clave">if</span> form.is_valid():<br>
+&nbsp;&nbsp;&nbsp;&nbsp;create_cita(...)&nbsp;&nbsp;<span class="comentario"># reglas: solape, duración, disponibilidad</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;messages.success(...)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="clave">return</span> redirect(<span class="ruta">"mis_citas"</span>)<br>
+&nbsp;&nbsp;<span class="clave">return</span> render(request, <span class="ruta">"citas/solicitar.html"</span>, {"form": form})
+      </div>
+    </section>
+
+    <section class="tarjeta">
+      <h2>4. Apps del proyecto (dominios)</h2>
+      <div class="rejilla">
+        <div class="nodo">
+          <h3>accounts</h3>
+          <p>Autenticación: login, registro paciente/profesional, centros médicos.</p>
+        </div>
+        <div class="nodo">
+          <h3>perfiles</h3>
+          <p>Paneles por rol, edición de perfil, gestión administrativa.</p>
+        </div>
+        <div class="nodo">
+          <h3>citas</h3>
+          <p>Agendar, cancelar, reprogramar, agenda y estados de la cita.</p>
+        </div>
+        <div class="nodo">
+          <h3>clinica</h3>
+          <p>Sedes, consultorios, especialidades y disponibilidad horaria.</p>
+        </div>
+        <div class="nodo">
+          <h3>historia / facturación / comunicación</h3>
+          <p>Historia clínica, odontograma, facturas, notificaciones y reseñas.</p>
+        </div>
+        <div class="nodo">
+          <h3>core</h3>
+          <p>Chrome público: <code>base.html</code>, CSS compartido, página de inicio.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="tarjeta">
+      <h2>5. Modelo: entidades principales</h2>
+      <ul>
+        <li><strong>Paciente / Profesional:</strong> datos de persona y rol (grupo Django).</li>
+        <li><strong>Cita:</strong> fecha-hora, motivo, estado (<em>pendiente → confirmada / cancelada / atendida / no asistió</em>).</li>
+        <li><strong>Sede y AsignacionSede:</strong> dónde atiende el especialista.</li>
+        <li><strong>Disponibilidad:</strong> franjas publicadas por día y hora.</li>
+        <li><strong>Historia clínica / odontograma / recetas:</strong> datos sensibles de salud.</li>
+      </ul>
+      <p class="meta">Las reglas de negocio (quién cancela, solapes, transiciones de estado) viven en <code>services.py</code>, no en la plantilla.</p>
+    </section>
+
+    <section class="tarjeta">
+      <h2>6. Vista: interfaz HTML</h2>
+      <ul>
+        <li>Todas las pantallas extienden <code>core/templates/core/base.html</code>.</li>
+        <li>Estilos con tokens CSS en <code>core/static/css/base.css</code>.</li>
+        <li>Textos de la interfaz en español; un botón principal por pantalla.</li>
+        <li>Navbar distinta por rol: el paciente no ve Agenda; el profesional no ve Mis citas.</li>
+      </ul>
+    </section>
+
+    <section class="tarjeta">
+      <h2>7. Controlador: responsabilidades</h2>
+      <ul>
+        <li><strong>Autorizar:</strong> decoradores <code>login_required</code>, <code>paciente_required</code>, <code>profesional_required</code>.</li>
+        <li><strong>Validar entrada:</strong> formularios Django (<code>Form</code> / <code>ModelForm</code>) con CSRF.</li>
+        <li><strong>Aplicar reglas:</strong> servicios como <code>create_cita</code>, <code>asignar_sedes</code>, <code>publicar_franjas</code>.</li>
+        <li><strong>Responder:</strong> renderizar HTML o redirigir con <code>messages.success</code> / <code>messages.error</code>.</li>
+      </ul>
+    </section>
+
+    <section class="tarjeta">
+      <h2>8. Diagrama de secuencia (resumen)</h2>
+      <ol>
+        <li>Usuario → navegador (Vista HTML).</li>
+        <li>Navegador → URL Django (<code>urls.py</code>) → función en <code>views.py</code> (Controlador).</li>
+        <li>Controlador → Formulario → Servicio → Modelo ORM → base de datos.</li>
+        <li>Controlador → plantilla HTML actualizada (Vista).</li>
+      </ol>
+      <p>
+        Ejemplo reciente del proyecto: al registrar un centro médico (<code>formclinic</code>),
+        el controlador guarda el interés y publica una <strong>Sede</strong> para que el
+        profesional la elija desde un modal en su panel, sin cambiar de pantalla.
+      </p>
+    </section>
+
+    <section class="tarjeta">
+      <h2>9. Avance logrado (estado del proyecto)</h2>
+      <ul>
+        <li>Autenticación y roles Paciente / Profesional / Administrador.</li>
+        <li>Agenda de citas con estados y validación de solapes.</li>
+        <li>Sedes, horarios y panel profesional con modales HTML.</li>
+        <li>Historia clínica, facturación, notificaciones y verificación de profesionales.</li>
+        <li>Despliegue preparado (gunicorn, WhiteNoise) y pruebas con pytest.</li>
+      </ul>
+    </section>
+
+    <p>
+      <a class="boton secundario" href="esquema-navegacion.html">Ver esquema de navegación</a>
+      <a class="boton" href="index.html">Volver al índice</a>
+    </p>
+  </main>
+
+  <footer class="pie">
+    Avance MVC · Proyecto final MT Odontología · Entrega CIPA
+  </footer>
+</body>
+</html>
