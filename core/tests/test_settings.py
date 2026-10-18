@@ -25,6 +25,11 @@ ENV_KEYS = (
     "REDIS_URL",
     "EMAIL_HOST",
     "EMAIL_BACKEND",
+    "DB_NAME",
+    "DB_USER",
+    "DB_PASSWORD",
+    "DB_HOST",
+    "DB_PORT",
 )
 
 PROD_ENV = {
@@ -143,8 +148,27 @@ def test_email_usa_consola_sin_host_y_smtp_con_host(monkeypatch):
 def test_use_sqlite_es_false_por_defecto_fuera_de_pytest(monkeypatch):
     # settings.py fuerza SQLite si detecta pytest; aquí se simula un proceso normal.
     monkeypatch.delitem(sys.modules, "pytest")
-    settings = load_settings(monkeypatch, **{k: v for k, v in PROD_ENV.items() if k != "USE_SQLITE"})
+    settings = load_settings(
+        monkeypatch,
+        **{k: v for k, v in PROD_ENV.items() if k != "USE_SQLITE"},
+        DB_NAME="clinica",
+        DB_USER="odontologia_app",
+        DB_PASSWORD="clave",
+    )
     assert settings.DATABASES["default"]["ENGINE"] == "django.db.backends.mysql"
+    assert settings.DATABASES["default"]["USER"] == "odontologia_app"
+
+
+def test_debug_sin_use_sqlite_usa_sqlite(monkeypatch):
+    monkeypatch.delitem(sys.modules, "pytest")
+    settings = load_settings(monkeypatch, DEBUG="True")
+    assert settings.DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3"
+
+
+def test_mysql_sin_credenciales_falla(monkeypatch):
+    monkeypatch.delitem(sys.modules, "pytest")
+    with pytest.raises(ImproperlyConfigured, match="DB_NAME"):
+        load_settings(monkeypatch, **{k: v for k, v in PROD_ENV.items() if k != "USE_SQLITE"})
 
 
 def test_variable_del_entorno_gana_sobre_dotenv(monkeypatch, tmp_path):

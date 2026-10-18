@@ -32,6 +32,15 @@ El cambio de contraseña con sesión abierta está en `/accounts/contrasena/`, e
 
 La lista completa, con ejemplos, está en [.env.example](.env.example).
 
+## MySQL Workbench (base nueva en tu PC)
+
+1. Conéctate en Workbench como `root` (la contraseña que pusiste al instalar MySQL 8).
+2. Ejecuta el script `docs/mysql-workbench.sql` (crea `odontologia_ejemplo` y el usuario `odontologia_app`).
+3. En `.env`: `USE_SQLITE=False` y los mismos `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST` y `DB_PORT` que en ese script (o los de tu conexión Workbench si usas otro usuario).
+4. `python manage.py migrate` y, si quieres datos de prueba, `python manage.py seed_demo`.
+
+Si prefieres usar solo `root` en Workbench, crea el esquema `odontologia_ejemplo` a mano y pon `DB_USER=root` y tu contraseña en el `.env`.
+
 ## Si ya tienes MySQL con datos
 
 No crees otra base y no corras un `docker compose` encima del mismo puerto si tu servidor ya está en el `3306`.

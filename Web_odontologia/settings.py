@@ -1,7 +1,6 @@
 """
 Django settings for Web_odontologia project.
 """
-
 import os
 import sys
 from pathlib import Path
@@ -149,7 +148,8 @@ else:
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-_use_sqlite = _under_pytest or _env_bool("USE_SQLITE", False)
+# Local DEBUG without USE_SQLITE uses SQLite. Production (DEBUG=False) uses MySQL.
+_use_sqlite = _under_pytest or _env_bool("USE_SQLITE", DEBUG)
 
 if _use_sqlite:
     DATABASES = {
@@ -159,13 +159,20 @@ if _use_sqlite:
         }
     }
 else:
+    db_name = os.getenv("DB_NAME", "").strip()
+    db_user = os.getenv("DB_USER", "").strip()
+    if not db_name or not db_user:
+        raise ImproperlyConfigured(
+            "MySQL está activo. Define DB_NAME y DB_USER en el .env, "
+            "o pon USE_SQLITE=True para trabajar en SQLite."
+        )
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": os.getenv("DB_NAME", "db_de_odontologia"),
-            "USER": os.getenv("DB_USER", "root"),
+            "NAME": db_name,
+            "USER": db_user,
             "PASSWORD": os.getenv("DB_PASSWORD", ""),
-            "HOST": os.getenv("DB_HOST", "localhost"),
+            "HOST": os.getenv("DB_HOST", "127.0.0.1"),
             "PORT": os.getenv("DB_PORT", "3306"),
             "OPTIONS": {
                 "charset": "utf8mb4",
