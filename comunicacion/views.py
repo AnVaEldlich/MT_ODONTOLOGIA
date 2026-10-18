@@ -174,6 +174,10 @@ def chat_detalle(request, pk):
             "conversacion": conversacion,
             "mensajes": mensajes,
             "ultimo_id": ultimo.pk if ultimo else 0,
+            "avatares_chat": {
+                conversacion.paciente.user_id: _cara_chat(conversacion.paciente),
+                conversacion.profesional.user_id: _cara_chat(conversacion.profesional),
+            },
         },
     )
 
@@ -216,6 +220,13 @@ def chat_mensajes(request, pk):
     return JsonResponse(
         {"mensajes": [serializar_mensaje(item, request.user.pk) for item in mensajes]}
     )
+
+
+def _cara_chat(perfil):
+    return {
+        "src": perfil.foto.url if perfil.foto else "",
+        "iniciales": perfil.iniciales(),
+    }
 
 
 def _entero(valor):

@@ -19,6 +19,34 @@
         return input ? input.value : "";
     }
 
+    const avatares = (function () {
+        const nodo = document.getElementById("chat-avatares");
+        if (!nodo) {
+            return {};
+        }
+        try {
+            return JSON.parse(nodo.textContent);
+        } catch (error) {
+            return {};
+        }
+    })();
+
+    function cara(remitenteId) {
+        const datos = avatares[String(remitenteId)] || { src: "", iniciales: "?" };
+        if (datos.src) {
+            const img = document.createElement("img");
+            img.className = "avatar sm";
+            img.src = datos.src;
+            img.alt = "";
+            return img;
+        }
+        const fallback = document.createElement("div");
+        fallback.className = "avatar sm";
+        fallback.setAttribute("aria-hidden", "true");
+        fallback.textContent = datos.iniciales || "?";
+        return fallback;
+    }
+
     function burbuja(mensaje) {
         const previa = log.querySelector("[data-id='" + mensaje.id + "']");
         if (previa) {
@@ -28,8 +56,15 @@
         if (vacio) {
             vacio.remove();
         }
+        const aviso = document.getElementById("chat-aviso");
+        if (aviso) {
+            aviso.remove();
+        }
+        const propia = String(mensaje.remitente_id) === usuario;
+        const fila = document.createElement("div");
+        fila.className = "bubble-row " + (propia ? "propia" : "ajena");
         const articulo = document.createElement("article");
-        articulo.className = "bubble " + (String(mensaje.remitente_id) === usuario ? "propia" : "ajena");
+        articulo.className = "bubble";
         articulo.dataset.id = mensaje.id;
         const texto = document.createElement("p");
         texto.className = "bubble-text";
@@ -39,7 +74,7 @@
         const hora = document.createElement("time");
         hora.textContent = mensaje.hora;
         meta.appendChild(hora);
-        if (String(mensaje.remitente_id) === usuario) {
+        if (propia) {
             const estado = document.createElement("span");
             estado.className = "lectura";
             estado.textContent = mensaje.leido ? "Leído" : "Enviado";
@@ -48,13 +83,15 @@
         }
         articulo.appendChild(texto);
         articulo.appendChild(meta);
-        log.appendChild(articulo);
+        fila.appendChild(cara(mensaje.remitente_id));
+        fila.appendChild(articulo);
+        log.appendChild(fila);
         ultimo = String(mensaje.id);
         log.scrollTop = log.scrollHeight;
     }
 
     function marcarLeidos() {
-        log.querySelectorAll(".bubble.propia .lectura").forEach(function (nodo) {
+        log.querySelectorAll(".bubble-row.propia .lectura").forEach(function (nodo) {
             nodo.textContent = "Leído";
         });
     }

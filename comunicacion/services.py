@@ -1,6 +1,7 @@
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db.models import Avg, Count, Exists, OuterRef
+from django.urls import reverse
 from django.utils import timezone
 
 from accounts.models import Profesional
@@ -286,19 +287,48 @@ def enviar_mensaje(*, conversacion, remitente, texto):
     limpio = _texto(texto, LARGO_MENSAJE, "El mensaje")
     if _excede_ritmo(remitente.pk):
         raise ValidationError("Estás enviando mensajes muy seguido. Espera un momento.")
-    return Mensaje.objects.create(
+    mensaje = Mensaje.objects.create(
         conversacion=conversacion,
         remitente=remitente,
         texto=limpio,
     )
+    _avisar_mensaje(conversacion, remitente, limpio)
+    return mensaje
 
 
 def marcar_leidos(conversacion, lector):
-    return (
+    actualizados = (
         Mensaje.objects.filter(conversacion=conversacion, leido=False)
         .exclude(remitente=lector)
         .update(leido=True)
     )
+    Notificacion.objects.filter(
+        usuario=lector,
+        leida=False,
+        enlace=_enlace_chat(conversacion),
+    ).update(leida=True)
+    return actualizados
+
+
+def _avisar_mensaje(conversacion, remitente, texto):
+    """Aviso en la campana del otro participante. El remitente no se notifica a sí mismo."""
+    if remitente.pk == conversacion.paciente.user_id:
+        destino = conversacion.profesional.user
+    else:
+        destino = conversacion.paciente.user
+    if destino.pk == remitente.pk:
+        return
+    nombre = (remitente.get_full_name() or remitente.get_username() or "Alguien").strip()
+    notificar(
+        usuario=destino,
+        titulo=f"Mensaje de {nombre}",
+        mensaje=texto,
+        enlace=_enlace_chat(conversacion),
+    )
+
+
+def _enlace_chat(conversacion):
+    return reverse("chat_detalle", args=[conversacion.pk])
 
 
 def serializar_mensaje(mensaje, lector_id):

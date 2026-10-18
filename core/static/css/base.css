@@ -788,7 +788,6 @@ small, .small { font-size: 0.85rem; }
 .card > h2:not(:first-child) { margin-top: 1.1rem; }
 
 .card.interactive,
-.feed-card,
 .choice,
 .pro-card,
 .stat,
@@ -796,10 +795,23 @@ small, .small { font-size: 0.85rem; }
     transition: transform var(--dur-slow) var(--ease), box-shadow var(--dur-slow) var(--ease), border-color var(--dur) var(--ease);
 }
 
-.feed-card:hover,
 .choice:hover,
 .pro-card:hover,
 .service-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+.app-layout .feed-card,
+.app-layout .card,
+.app-layout .stat {
+    transition: none;
+}
+
+.app-layout .feed-card:hover,
+.app-layout .card:hover,
+.app-layout .stat:hover,
+.app-layout .pro-card:hover,
+.app-layout .service-card:hover {
+    transform: none;
+}
 
 .portal > div > * + *,
 .feed > * + *,
@@ -2228,8 +2240,19 @@ button.stat-accion:focus-visible { outline: none; box-shadow: var(--ring); }
     scroll-behavior: smooth;
 }
 
+.bubble-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.45rem;
+    max-width: min(36rem, 92%);
+}
+
+.bubble-row.propia { margin-left: auto; flex-direction: row-reverse; }
+
+.bubble-row .avatar { flex: 0 0 auto; }
+
 .bubble {
-    max-width: min(34rem, 85%);
+    max-width: 100%;
     padding: 0.6rem 0.85rem;
     border-radius: 16px 16px 16px 6px;
     background: var(--bg-muted);
@@ -2237,8 +2260,7 @@ button.stat-accion:focus-visible { outline: none; box-shadow: var(--ring); }
     animation: entrar var(--dur-slow) var(--ease);
 }
 
-.bubble.propia {
-    margin-left: auto;
+.bubble-row.propia .bubble {
     border-radius: 16px 16px 6px 16px;
     background: linear-gradient(135deg, var(--brand-soft), color-mix(in srgb, var(--brand-soft) 60%, var(--bg-card)));
     border-color: color-mix(in srgb, var(--brand) 25%, transparent);

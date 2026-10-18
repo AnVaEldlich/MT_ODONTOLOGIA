@@ -90,6 +90,7 @@ def test_cita_cancelada_no_abre_chat(client, django_user_model):
 
 @pytest.mark.django_db
 def test_tercero_no_lee_ni_escribe(client, django_user_model):
+    cache.clear()
     dueno, paciente = _paciente(django_user_model, "dueno@test.com", "9003")
     pro_user, profesional = _profesional(django_user_model, "pro.tercero@test.com")
     _cita(paciente, profesional)
@@ -108,7 +109,11 @@ def test_tercero_no_lee_ni_escribe(client, django_user_model):
     client.force_login(pro_user)
     detalle = client.get(reverse("chat_detalle", args=[conversacion.pk]))
     assert detalle.status_code == 200
-    assert "Hola desde la cita" in detalle.content.decode()
+    html = detalle.content.decode()
+    assert "Hola desde la cita" in html
+    assert "no es para urgencias" not in html
+    assert "bubble-row ajena" in html
+    assert 'class="avatar sm"' in html
     assert Mensaje.objects.get().leido is True
 
 
@@ -121,6 +126,8 @@ def test_envio_lectura_y_limite(client, django_user_model):
     client.force_login(user)
     client.get(reverse("chat_con_profesional", args=[profesional.pk]))
     conversacion = Conversacion.objects.get()
+    primera = client.get(reverse("chat_detalle", args=[conversacion.pk]))
+    assert "no es para urgencias" in primera.content.decode()
     envio = client.post(
         reverse("chat_enviar", args=[conversacion.pk]),
         {"texto": "  Confirmo   la hora  "},
@@ -139,7 +146,12 @@ def test_envio_lectura_y_limite(client, django_user_model):
     lista = client.get(reverse("chat_lista"))
     assert lista.status_code == 200
     assert "sin leer" in lista.content.decode()
+    campana = client.get(reverse("perfil_profesional")).content.decode()
+    assert "notificaciones-indicador" in campana
+    assert "Mensaje de" in campana
     client.get(reverse("chat_detalle", args=[conversacion.pk]))
+    campana = client.get(reverse("perfil_profesional")).content.decode()
+    assert "notificaciones-indicador" not in campana
     client.force_login(user)
     datos = client.get(reverse("chat_mensajes", args=[conversacion.pk])).json()
     assert datos["mensajes"][0]["leido"] is True

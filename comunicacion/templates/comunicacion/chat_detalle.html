@@ -10,40 +10,42 @@
     {% include "core/includes/portal_nav_profesional.html" %}
     {% endif %}
     <div>
-        <p class="meta"><a href="{% url 'chat_lista' %}">{% include "core/includes/icon.html" with name="flecha" clase="volver" %} Volver a mensajes</a></p>
         <section class="card chat-panel" id="chat" data-conversacion="{{ conversacion.pk }}" data-usuario="{{ request.user.pk }}" data-ultimo="{{ ultimo_id }}" data-enviar="{% url 'chat_enviar' conversacion.pk %}" data-leer="{% url 'chat_mensajes' conversacion.pk %}">
+            {{ avatares_chat|json_script:"chat-avatares" }}
             <div class="chat-head">
-                <div class="who-row">
-                    {% if user_role == 'paciente' %}
-                    {% include "core/includes/avatar.html" with foto=conversacion.profesional.foto iniciales=conversacion.profesional.iniciales tamano="sm" alt="" %}
-                    {% else %}
-                    {% include "core/includes/avatar.html" with foto=conversacion.paciente.foto iniciales=conversacion.paciente.iniciales tamano="sm" alt="" %}
-                    {% endif %}
-                    <div>
-                        <h1 class="chat-titulo">
-                            {% if user_role == 'paciente' %}
-                            {{ conversacion.profesional.get_full_name }}
-                            {% else %}
-                            {{ conversacion.paciente.first_name }} {{ conversacion.paciente.last_name }}
-                            {% endif %}
-                        </h1>
-                        <p class="meta">{% if user_role == 'paciente' %}{{ conversacion.profesional.etiqueta_especialidad }}{% else %}Paciente{% endif %}</p>
-                    </div>
+                <div>
+                    <h1 class="chat-titulo">
+                        {% if user_role == 'paciente' %}
+                        {{ conversacion.profesional.get_full_name }}
+                        {% else %}
+                        {{ conversacion.paciente.first_name }} {{ conversacion.paciente.last_name }}
+                        {% endif %}
+                    </h1>
+                    <p class="meta">{% if user_role == 'paciente' %}{{ conversacion.profesional.etiqueta_especialidad }}{% else %}Paciente{% endif %}</p>
                 </div>
                 <span class="chat-estado" id="chat-estado" data-modo="conectando" role="status">Conectando…</span>
             </div>
-            <p class="alert warning">{% include "core/includes/icon.html" with name="alerta" %}<span>Este chat no es para urgencias médicas. Si necesitas atención inmediata, acude a un servicio de urgencias.</span></p>
+            {% if not mensajes %}
+            <p class="alert warning" id="chat-aviso">{% include "core/includes/icon.html" with name="alerta" %}<span>Este chat no es para urgencias médicas. Si necesitas atención inmediata, acude a un servicio de urgencias.</span></p>
+            {% endif %}
             <div class="chat-log" id="chat-log" aria-live="polite">
                 {% for mensaje in mensajes %}
-                <article class="bubble {% if mensaje.remitente_id == request.user.id %}propia{% else %}ajena{% endif %}" data-id="{{ mensaje.pk }}">
-                    <p class="bubble-text">{{ mensaje.texto }}</p>
-                    <p class="meta">
-                        <time datetime="{{ mensaje.created_at|date:'c' }}">{{ mensaje.created_at|date:"H:i" }}</time>
-                        {% if mensaje.remitente_id == request.user.id %}
-                        <span class="lectura">{% if mensaje.leido %}Leído{% else %}Enviado{% endif %}</span>
-                        {% endif %}
-                    </p>
-                </article>
+                <div class="bubble-row {% if mensaje.remitente_id == request.user.id %}propia{% else %}ajena{% endif %}">
+                    {% if mensaje.remitente_id == conversacion.paciente.user_id %}
+                    {% include "core/includes/avatar.html" with foto=conversacion.paciente.foto iniciales=conversacion.paciente.iniciales tamano="sm" alt="" %}
+                    {% else %}
+                    {% include "core/includes/avatar.html" with foto=conversacion.profesional.foto iniciales=conversacion.profesional.iniciales tamano="sm" alt="" %}
+                    {% endif %}
+                    <article class="bubble" data-id="{{ mensaje.pk }}">
+                        <p class="bubble-text">{{ mensaje.texto }}</p>
+                        <p class="meta">
+                            <time datetime="{{ mensaje.created_at|date:'c' }}">{{ mensaje.created_at|date:"H:i" }}</time>
+                            {% if mensaje.remitente_id == request.user.id %}
+                            <span class="lectura">{% if mensaje.leido %}Leído{% else %}Enviado{% endif %}</span>
+                            {% endif %}
+                        </p>
+                    </article>
+                </div>
                 {% empty %}
                 <div class="empty compact" id="chat-vacio">
                     <div class="empty-art" aria-hidden="true">{% include "core/includes/ilus/vacio.html" with tipo="chat" %}</div>
