@@ -48,56 +48,48 @@
         {% if not consulta_lista %}
         <section class="card">
             <h2>Prepara tu consulta</h2>
-            <p class="meta">Cuatro pasos. Los pacientes te encuentran cuando el perfil está verificado y hay horarios.</p>
+            <p class="meta">Solo quedan los pasos pendientes. Cuando termines, esta lista desaparece.</p>
             <ol class="setup-list">
+                {% if not pasos.sedes %}
                 <li>
-                    <span class="icon-tile{% if pasos.sedes %} book{% endif %}" aria-hidden="true">{% include "core/includes/icon.html" with name="pin" clase="lg" %}</span>
+                    <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="pin" clase="lg" %}</span>
                     <div>
                         <h3>Elige dónde atiendes</h3>
-                        <p>{% if pasos.sedes %}Ya tienes sede. Puedes ajustar tus datos cuando quieras.{% else %}Marca tus sedes en el perfil: sin sede no puedes publicar horarios.{% endif %}</p>
+                        <p>Marca tus sedes en el perfil: sin sede no puedes publicar horarios.</p>
                     </div>
-                    {% if pasos.sedes %}
-                    <span class="badge ok sin-punto">Listo</span>
-                    {% else %}
-                    <a class="btn btn-primary btn-sm" href="{% url 'editar_perfil_profesional' %}">Editar perfil</a>
-                    {% endif %}
+                    <button type="button" class="btn btn-primary btn-sm" data-abre-dialog="sedes-dialog" aria-haspopup="dialog" aria-controls="sedes-dialog">Elegir sede</button>
                 </li>
+                {% endif %}
+                {% if not pasos.horarios %}
                 <li>
-                    <span class="icon-tile{% if pasos.horarios %} book{% endif %}" aria-hidden="true">{% include "core/includes/icon.html" with name="reloj" clase="lg" %}</span>
+                    <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="reloj" clase="lg" %}</span>
                     <div>
                         <h3>Publica tus horarios</h3>
-                        <p>{% if pasos.horarios %}Ya tienes agenda abierta.{% else %}Sin horas publicadas nadie puede reservarte.{% endif %}</p>
+                        <p>Sin horas publicadas nadie puede reservarte.</p>
                     </div>
-                    {% if pasos.horarios %}
-                    <span class="badge ok sin-punto">Listo</span>
-                    {% else %}
-                    <a class="btn {% if pasos.sedes %}btn-primary{% else %}btn-ghost{% endif %} btn-sm" href="{% url 'disponibilidad' %}">Abrir horarios</a>
-                    {% endif %}
+                    <button type="button" class="btn {% if pasos.sedes %}btn-primary{% else %}btn-ghost{% endif %} btn-sm" data-abre-dialog="horarios-dialog" aria-haspopup="dialog" aria-controls="horarios-dialog">Publicar horarios</button>
                 </li>
+                {% endif %}
+                {% if not pasos.foto %}
                 <li>
-                    <span class="icon-tile{% if pasos.foto %} book{% endif %}" aria-hidden="true">{% include "core/includes/icon.html" with name="camara" clase="lg" %}</span>
+                    <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="camara" clase="lg" %}</span>
                     <div>
                         <h3>Pon tu foto de consultorio</h3>
-                        <p>{% if pasos.foto %}Tu ficha ya tiene foto.{% else %}Los pacientes reconocen mejor un rostro que unas iniciales.{% endif %}</p>
+                        <p>Los pacientes reconocen mejor un rostro que unas iniciales.</p>
                     </div>
-                    {% if pasos.foto %}
-                    <span class="badge ok sin-punto">Listo</span>
-                    {% else %}
                     <button type="button" class="btn btn-ghost btn-sm" data-foto-open="foto" data-tiene="0">Subir foto</button>
-                    {% endif %}
                 </li>
+                {% endif %}
+                {% if not pasos.verificado %}
                 <li>
-                    <span class="icon-tile{% if pasos.verificado %} book{% endif %}" aria-hidden="true">{% include "core/includes/icon.html" with name="escudo" clase="lg" %}</span>
+                    <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="escudo" clase="lg" %}</span>
                     <div>
                         <h3>Espera la verificación</h3>
-                        <p>{% if pasos.verificado %}Ya apareces en la búsqueda pública.{% else %}Puedes usar el panel ahora. La ficha pública se publica cuando el equipo confirma tus datos.{% endif %}</p>
+                        <p>Puedes usar el panel ahora. La ficha pública se publica cuando el equipo confirma tus datos.</p>
                     </div>
-                    {% if pasos.verificado %}
-                    <span class="badge ok sin-punto">Listo</span>
-                    {% else %}
                     <span class="badge warn sin-punto">En revisión</span>
-                    {% endif %}
                 </li>
+                {% endif %}
             </ol>
         </section>
         {% endif %}
@@ -162,7 +154,10 @@
 </div>
 {% url 'foto_profesional' as foto_url %}
 {% include "perfiles/includes/foto_dialog.html" with accion=foto_url %}
+{% include "perfiles/includes/sedes_dialog.html" %}
+{% include "perfiles/includes/horarios_dialog.html" %}
 {% endblock %}
 {% block extra_js %}
 <script src="{% static 'js/foto.js' %}"></script>
+<script src="{% static 'js/panel_rapido.js' %}"></script>
 {% endblock %}

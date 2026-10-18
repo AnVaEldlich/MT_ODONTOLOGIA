@@ -1,8 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import BloqueoHorario, Consultorio, Disponibilidad
-from .services import sedes_del_profesional
+from .models import BloqueoHorario, Consultorio, Disponibilidad, Sede
+from .services import sedes_con_horarios, sedes_del_profesional, sincronizar_centros_a_sedes
 
 
 def _limitar_a_sedes_del_profesional(form, profesional):
@@ -16,10 +16,71 @@ def _limitar_a_sedes_del_profesional(form, profesional):
     return sedes
 
 
+class ElegirSedesForm(forms.Form):
+    """Modal del panel: marcar sedes sin abrir la pantalla completa de edición."""
+
+    sedes = forms.ModelMultipleChoiceField(
+        label="Sedes donde atiendes",
+        queryset=Sede.objects.none(),
+        required=True,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "checkbox-list"}),
+        error_messages={"required": "Marca al menos una sede."},
+    )
+    sede_principal = forms.ModelChoiceField(
+        label="Sede principal",
+        queryset=Sede.objects.none(),
+        required=False,
+        empty_label="La primera de la lista",
+    )
+
+    def __init__(self, *args, profesional, **kwargs):
+        super().__init__(*args, **kwargs)
+        sincronizar_centros_a_sedes()
+        catalogo = Sede.objects.filter(activa=True).order_by("ciudad", "nombre")
+        self.fields["sedes"].queryset = catalogo
+        self.fields["sede_principal"].queryset = catalogo
+        asignaciones = list(profesional.sedes_asignadas.select_related("sede"))
+        self.fields["sedes"].initial = [item.sede_id for item in asignaciones]
+        self.fields["sede_principal"].initial = next(
+            (item.sede_id for item in asignaciones if item.principal),
+            None,
+        )
+        self.profesional = profesional
+        if not catalogo.exists():
+            self.fields["sedes"].help_text = (
+                "Todavía no hay centros registrados. Usa «Registrar un centro» en el pie de la página pública."
+            )
+
+    def clean(self):
+        cleaned = super().clean()
+        sedes = cleaned.get("sedes")
+        principal = cleaned.get("sede_principal")
+        if not sedes:
+            return cleaned
+        elegidas = {sede.pk for sede in sedes}
+        if principal is not None and principal.pk not in elegidas:
+            self.add_error("sede_principal", "La sede principal debe estar entre las sedes que marcaste.")
+        ocupadas = sedes_con_horarios(self.profesional) - elegidas
+        if ocupadas:
+            nombres = ", ".join(Sede.objects.filter(pk__in=ocupadas).values_list("nombre", flat=True))
+            self.add_error(
+                "sedes",
+                f"Tienes horarios publicados en {nombres}. Deja de publicarlos antes de quitar la sede.",
+            )
+        return cleaned
+
+
 class DisponibilidadForm(forms.ModelForm):
+    dias = forms.MultipleChoiceField(
+        label="Días",
+        choices=Disponibilidad.DIA_SEMANA,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "checkbox-list"}),
+        help_text="Puedes marcar varios. Se publica la misma hora en cada día.",
+    )
+
     class Meta:
         model = Disponibilidad
-        fields = ("sede", "consultorio", "dia_semana", "hora_inicio", "hora_fin")
+        fields = ("sede", "consultorio", "hora_inicio", "hora_fin")
         widgets = {
             "hora_inicio": forms.TimeInput(attrs={"type": "time"}, format="%H:%M"),
             "hora_fin": forms.TimeInput(attrs={"type": "time"}, format="%H:%M"),
@@ -30,6 +91,9 @@ class DisponibilidadForm(forms.ModelForm):
         self.sedes = _limitar_a_sedes_del_profesional(self, profesional)
         self.fields["hora_inicio"].input_formats = ["%H:%M"]
         self.fields["hora_fin"].input_formats = ["%H:%M"]
+        if self.sedes.count() == 1 and not self.is_bound:
+            self.fields["sede"].initial = self.sedes.first()
+        self.order_fields(["sede", "consultorio", "dias", "hora_inicio", "hora_fin"])
 
     def clean(self):
         cleaned = super().clean()

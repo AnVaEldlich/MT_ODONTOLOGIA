@@ -1,0 +1,55 @@
+<div class="notificaciones-wrap" data-notificaciones>
+    <button
+        type="button"
+        class="icon-btn notificaciones-btn"
+        data-notificaciones-toggle
+        aria-expanded="false"
+        aria-haspopup="true"
+        aria-controls="notificaciones-panel"
+        aria-label="Notificaciones{% if notificaciones_sin_leer %} ({{ notificaciones_sin_leer }} sin leer){% endif %}"
+        title="Notificaciones"
+    >
+        {% include "core/includes/icon.html" with name="campana" %}
+        {% if notificaciones_sin_leer %}
+        <span class="notificaciones-indicador" aria-hidden="true">{{ notificaciones_sin_leer }}</span>
+        {% endif %}
+    </button>
+    <div class="notificaciones-panel" id="notificaciones-panel" data-notificaciones-panel hidden>
+        <div class="notificaciones-panel-head">
+            <h2 class="notificaciones-panel-titulo">Notificaciones</h2>
+            {% if notificaciones_sin_leer %}
+            <span class="badge danger sin-punto">{{ notificaciones_sin_leer }} sin leer</span>
+            {% endif %}
+        </div>
+        {% if notificaciones_recientes %}
+        <ul class="notificaciones-lista">
+            {% for aviso in notificaciones_recientes %}
+            <li class="notificaciones-item{% if not aviso.leida %} sin-leer{% endif %}">
+                <div class="notificaciones-cuerpo">
+                    <p class="notificaciones-titulo">{{ aviso.titulo }}</p>
+                    <p class="notificaciones-mensaje">{{ aviso.mensaje|truncatechars:120 }}</p>
+                    <p class="meta">{{ aviso.created_at|date:"d/m/Y H:i" }}</p>
+                </div>
+                <div class="notificaciones-acciones">
+                    {% if aviso.enlace %}
+                    <a class="btn btn-ghost btn-sm" href="{{ aviso.enlace }}">Abrir</a>
+                    {% endif %}
+                    {% if not aviso.leida %}
+                    <form method="post" action="{% url 'marcar_notificacion' aviso.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="siguiente" value="{{ request.path }}">
+                        <button class="btn btn-ghost btn-sm" type="submit">Leído</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="notificaciones-vacio">No tienes notificaciones. Te avisaremos cuando haya novedades de tus citas.</p>
+        {% endif %}
+        <div class="notificaciones-panel-pie">
+            <a class="btn btn-ghost btn-sm btn-block" href="{% url 'notificaciones' %}">Ver todas las notificaciones</a>
+        </div>
+    </div>
+</div>

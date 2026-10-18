@@ -131,7 +131,10 @@ def formclinic(request):
     form = ClinicCenterForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         form.save()
-        messages.success(request, "Centro médico registrado exitosamente.")
+        messages.success(
+            request,
+            "Centro registrado. Ya aparece como sede para que los especialistas lo elijan en su panel.",
+        )
         return redirect("formclinic")
 
     return render(request, "accounts/formclinic.html", {"form": form})

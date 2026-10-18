@@ -40,6 +40,12 @@
             {% csrf_token %}
             <input type="hidden" name="accion" value="franja">
             <h2>Nueva franja</h2>
+            <p class="meta">Si solo atiendes en una sede, ya queda elegida. Marca los días y usa un atajo si el horario se repite.</p>
+            <div class="actions" data-atajos-horario>
+                <button type="button" class="btn btn-ghost btn-sm" data-dias="0,1,2,3,4" data-inicio="08:00" data-fin="12:00">Lun–vie, mañana</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-dias="0,1,2,3,4" data-inicio="14:00" data-fin="18:00">Lun–vie, tarde</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-dias="5" data-inicio="08:00" data-fin="13:00">Sábado</button>
+            </div>
             {% include "core/includes/fields.html" with form=form %}
             <div class="form-actions">
                 <button class="btn btn-primary" type="submit">{% include "core/includes/icon.html" with name="mas" %}Publicar horario</button>
@@ -48,8 +54,8 @@
         {% else %}
         <section class="card form-narrow">
             <h2>Nueva franja</h2>
-            {% url 'editar_perfil_profesional' as editar_url %}
-            {% include "core/includes/vacio.html" with titulo="Todavía no tienes sedes" texto="Marca en tu perfil las sedes donde atiendes. Después podrás publicar horarios en ellas." enlace=editar_url accion="Elegir mis sedes" compacto=True %}
+            {% url 'perfil_profesional' as panel_url %}
+            {% include "core/includes/vacio.html" with titulo="Todavía no tienes sedes" texto="En tu panel, pulsa «Elegir sede» y marca los centros donde atiendes. Después podrás publicar horarios aquí." enlace=panel_url accion="Ir al panel" compacto=True %}
         </section>
         {% endif %}
         <section class="card">
@@ -78,9 +84,12 @@
             <h2>Bloquear un horario</h2>
             {% include "core/includes/fields.html" with form=bloqueo_form %}
             <div class="form-actions">
-                <button class="btn btn-primary" type="submit">Guardar bloqueo</button>
+                <button class="btn btn-ghost" type="submit">Guardar bloqueo</button>
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'clinica/js/disponibilidad.js' %}"></script>
 {% endblock %}

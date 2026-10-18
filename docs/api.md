@@ -12,7 +12,7 @@ No hay API JSON. El contrato actual son vistas HTML y nombres de URL. Usar siemp
 | `register` | GET, POST | `/accounts/register/` |
 | `registro_pro` | GET | `/accounts/registro_pro/` |
 | `registerprofesional` | GET, POST | `/accounts/registerprofesional/` |
-| `formclinic` | GET, POST | `/accounts/formclinic/` |
+| `formclinic` | GET, POST | `/accounts/formclinic/` — registra el centro y publica una `Sede` activa |
 | `password_reset` | GET, POST | `/accounts/recuperar/` — pide el correo; responde igual exista o no la cuenta |
 | `password_reset_done` | GET | `/accounts/recuperar/enviado/` |
 | `password_reset_confirm` | GET, POST | `/accounts/recuperar/<uidb64>/<token>/` — enlace de un solo uso; al guardar redirige a `login` |
@@ -40,13 +40,15 @@ No hay API JSON. El contrato actual son vistas HTML y nombres de URL. Usar siemp
 
 | Nombre | Path | Regla |
 | --- | --- | --- |
-| `perfil_profesional` | `/perfiles/profesional/` | solo profesional |
+| `perfil_profesional` | `/perfiles/profesional/` | solo profesional. Incluye modales para elegir sedes y publicar horarios |
 | `editar_perfil_profesional` | `/perfiles/profesional/editar/` | solo su perfil: nombre, contacto, especialidades y sedes. No toca `is_verified` ni el documento |
+| `elegir_sedes_rapido` | `/perfiles/profesional/sedes/` | POST. Asigna sedes desde el panel sin salir de la vista |
+| `publicar_horarios_rapido` | `/perfiles/profesional/horarios/` | POST. Publica franjas desde el panel; requiere sedes asignadas |
 | `agenda_profesional` | `/citas/agenda/` | solo su agenda. `?vista=dia` o `semana` |
 | `confirmar_cita` | `/citas/<pk>/confirmar/` | POST. Solo citas pendientes de su agenda |
 | `atender_cita` | `/citas/<pk>/atender/` | POST. Solo una confirmada de su agenda |
 | `inasistencia_cita` | `/citas/<pk>/no-asistio/` | POST. Pendiente o confirmada de su agenda |
-| `disponibilidad` | `/clinica/disponibilidad/` | solo sus franjas y bloqueos. La sede debe ser una de sus `AsignacionSede` activas; sin sedes, enlaza a `editar_perfil_profesional` |
+| `disponibilidad` | `/clinica/disponibilidad/` | solo sus franjas y bloqueos. La sede debe ser una de sus `AsignacionSede` activas; sin sedes, enlaza a `perfil_profesional` |
 | `desactivar_disponibilidad` | `/clinica/disponibilidad/<pk>/desactivar/` | POST. No borra citas ya pedidas |
 | `mis_pacientes` | `/perfiles/profesional/pacientes/` | solo pacientes con una cita con él. `?q=` busca por nombre, documento, teléfono o correo |
 | `ficha_paciente` | `/perfiles/profesional/pacientes/<paciente_id>/` | 404 si ese paciente no tiene citas con él. Abrirla deja una fila `ver` en auditoría; guardar historia, evolución, odontograma o receta deja `crear`/`editar` con `clinico=True` |

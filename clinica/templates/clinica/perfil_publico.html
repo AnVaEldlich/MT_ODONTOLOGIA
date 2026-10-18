@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block title %}{{ tarjeta.nombre }} — MT Odontología{% endblock %}
 {% block content %}
 <div class="profile">
@@ -19,7 +20,9 @@
                         {% include "core/includes/stars.html" with opiniones=tarjeta.opiniones promedio=tarjeta.promedio estrellas=tarjeta.estrellas %}
                         <p class="chips">
                             {% for insignia in resumen.insignias %}
-                            {% if insignia == "Perfil verificado" %}
+                            {% if "seguidores" in insignia %}
+                            <button type="button" class="badge sin-punto badge-accion" data-abre-dialog="seguidores-dialog" aria-haspopup="dialog" aria-controls="seguidores-dialog">{{ insignia }}</button>
+                            {% elif insignia == "Perfil verificado" %}
                             <span class="badge ok sin-punto">{% include "core/includes/icon.html" with name="check-circulo" %}{{ insignia }}</span>
                             {% else %}
                             <span class="badge sin-punto">{{ insignia }}</span>
@@ -31,7 +34,10 @@
                 <div class="stats">
                     <div class="stat"><div class="num">{{ resumen.atendidos }}</div><div class="label">Pacientes atendidos</div></div>
                     <div class="stat"><div class="num">{% if resumen.promedio %}{{ resumen.promedio }}{% else %}—{% endif %}</div><div class="label">Calificación</div></div>
-                    <div class="stat"><div class="num">{{ resumen.seguidores }}</div><div class="label">Seguidores</div></div>
+                    <button type="button" class="stat stat-accion" id="seguidores-abrir" aria-haspopup="dialog" aria-controls="seguidores-dialog">
+                        <div class="num">{{ resumen.seguidores }}</div>
+                        <div class="label">Seguidores</div>
+                    </button>
                 </div>
                 <div class="actions cover-actions">
                     {% if user_role == 'paciente' %}
@@ -136,4 +142,8 @@
         </aside>
     </div>
 </div>
+{% include "perfiles/includes/seguidores_dialog.html" %}
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/seguidos.js' %}?v=2"></script>
 {% endblock %}

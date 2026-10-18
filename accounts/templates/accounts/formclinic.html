@@ -1,83 +1,96 @@
-{% extends 'core/base.html' %}
+{% extends "core/base.html" %}
 {% load static %}
 
 {% block title %}Registro centro médico — MT Odontología{% endblock %}
-
-{% block body_class %}auth-layout{% endblock %}
-
+{% block body_class %}app-layout{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/formclinic.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="form-section">
+<div class="container centro-registro">
+    <header class="page-head centrado">
         <h1>Regístrese como centro médico</h1>
+        <p>Conecte su clínica con más pacientes y haga crecer su práctica en la plataforma.</p>
+    </header>
 
-        <form id="registrationForm" method="POST" action="{% url 'formclinic' %}">
-            {% csrf_token %}
-            {% if form.non_field_errors %}
-            {% for error in form.non_field_errors %}
-            <p class="form-error">{{ error }}</p>
-            {% endfor %}
-            {% endif %}
+    <form class="card centro-form" method="post" action="{% url 'formclinic' %}" novalidate>
+        {% csrf_token %}
+        {% for error in form.non_field_errors %}
+        <div class="alert error">{% include "core/includes/icon.html" with name="alerta" %}<span>{{ error }}</span></div>
+        {% endfor %}
 
-            <div class="form-group">
-                <label for="{{ form.clinic_name.id_for_label }}">
-                    Nombre de la clínica/centro <span class="required">*</span>
-                </label>
+        <div class="field{% if form.clinic_name.errors %} has-error{% endif %}">
+            <label for="{{ form.clinic_name.id_for_label }}">Nombre de la clínica/centro <span class="required" aria-hidden="true">*</span></label>
+            <div class="centro-input">
+                {% include "core/includes/icon.html" with name="documento" %}
                 {{ form.clinic_name }}
-                {% if form.clinic_name.errors %}<p class="form-error">{{ form.clinic_name.errors.0 }}</p>{% endif %}
             </div>
+            {% for error in form.clinic_name.errors %}<div class="err">{{ error }}</div>{% endfor %}
+        </div>
 
-            <div class="form-group">
-                <label for="{{ form.specialists_range.id_for_label }}">
-                    ¿Cuántos especialistas trabajan en el centro? <span class="required">*</span>
-                </label>
+        <div class="field{% if form.specialists_range.errors %} has-error{% endif %}">
+            <label for="{{ form.specialists_range.id_for_label }}">¿Cuántos especialistas trabajan en el centro? <span class="required" aria-hidden="true">*</span></label>
+            <div class="centro-input">
+                {% include "core/includes/icon.html" with name="usuarios" %}
                 {{ form.specialists_range }}
-                {% if form.specialists_range.errors %}<p class="form-error">{{ form.specialists_range.errors.0 }}</p>{% endif %}
             </div>
+            {% for error in form.specialists_range.errors %}<div class="err">{{ error }}</div>{% endfor %}
+        </div>
 
-            <div class="form-group">
-                <label for="{{ form.city.id_for_label }}">
-                    Ciudad <span class="required">*</span>
-                </label>
+        <div class="field{% if form.city.errors %} has-error{% endif %}">
+            <label for="{{ form.city.id_for_label }}">Ciudad <span class="required" aria-hidden="true">*</span></label>
+            <div class="centro-input">
+                {% include "core/includes/icon.html" with name="pin" %}
                 {{ form.city }}
-                {% if form.city.errors %}<p class="form-error">{{ form.city.errors.0 }}</p>{% endif %}
             </div>
-
-            <button type="submit" class="btn btn-submit">
-                Registrarme de forma gratuita
-            </button>
-
-            <div class="back-link">
-                ¿No eres profesional de la salud? <a href="{% url 'registro_pro' %}">Volver</a>
-            </div>
-        </form>
-    </div>
-
-    <div class="benefits-section">
-        <h2>Impulse el prestigio de su centro</h2>
-        <p class="subtitle">Notará los resultados mes a mes</p>
-
-        <div class="benefit-item">
-            <div class="benefit-icon icon-users">👥</div>
-            <div class="benefit-text">
-                <strong>Llegue a 1 millón de pacientes al mes</strong>
-            </div>
+            {% for error in form.city.errors %}<div class="err">{{ error }}</div>{% endfor %}
         </div>
 
-        <div class="benefit-item">
-            <div class="benefit-icon icon-gem">💎</div>
-            <div class="benefit-text">
-                <strong>Sitúe a sus doctores en la plataforma de salud líder en todo el mundo</strong>
+        <div class="field{% if form.departamento.errors %} has-error{% endif %}">
+            <label for="{{ form.departamento.id_for_label }}">Departamento</label>
+            <div class="centro-input">
+                {% include "core/includes/icon.html" with name="pin" %}
+                {{ form.departamento }}
             </div>
+            {% for error in form.departamento.errors %}<div class="err">{{ error }}</div>{% endfor %}
         </div>
 
-        <div class="benefit-item">
-            <div class="benefit-icon icon-check">✓</div>
-            <div class="benefit-text">
-                <strong>Reduzca el ausentismo de pacientes</strong>
-                <span>hasta en un 85%</span>
+        <div class="field{% if form.direccion.errors %} has-error{% endif %}">
+            <label for="{{ form.direccion.id_for_label }}">Dirección</label>
+            <div class="centro-input">
+                {% include "core/includes/icon.html" with name="documento" %}
+                {{ form.direccion }}
             </div>
+            {% for error in form.direccion.errors %}<div class="err">{{ error }}</div>{% endfor %}
         </div>
-    </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Registrarme de forma gratuita{% include "core/includes/icon.html" with name="flecha" %}</button>
+        <p class="centro-volver">¿No eres profesional de la salud? <a href="{% url 'registro_pro' %}">Volver</a></p>
+    </form>
+
+    <section class="centro-prestigio" aria-labelledby="prestigio-titulo">
+        <header class="page-head">
+            <h2 id="prestigio-titulo">Impulse el prestigio de su centro</h2>
+            <p>Forme parte de una plataforma que impulsa el crecimiento y la visibilidad de su clínica.</p>
+        </header>
+        <div class="card-grid three">
+            <article class="card centro-beneficio">
+                <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="usuarios" clase="lg" %}</span>
+                <h3>Llegue a más pacientes</h3>
+                <p>Aumente la visibilidad del centro y atraiga a quienes buscan atención dental.</p>
+            </article>
+            <article class="card centro-beneficio">
+                <span class="icon-tile book" aria-hidden="true">{% include "core/includes/icon.html" with name="estrella" clase="lg" %}</span>
+                <h3>Publique a sus especialistas</h3>
+                <p>Los perfiles verificados y las reseñas aparecen en el directorio de la clínica.</p>
+            </article>
+            <article class="card centro-beneficio">
+                <span class="icon-tile ok" aria-hidden="true">{% include "core/includes/icon.html" with name="check-circulo" clase="lg" %}</span>
+                <h3>Menos citas sin asistencia</h3>
+                <p>Los recordatorios de cita ayudan a que el paciente llegue a tiempo.</p>
+            </article>
+        </div>
+    </section>
 </div>
 {% endblock %}

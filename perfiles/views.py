@@ -25,7 +25,9 @@ from accounts.services import (
 )
 from citas.models import Cita
 from citas.services import profesional_atiende
+from clinica.forms import DisponibilidadForm, ElegirSedesForm
 from clinica.models import Disponibilidad
+from clinica.services import asignar_sedes, publicar_franjas, sincronizar_centros_a_sedes
 from comunicacion.forms import PublicacionForm
 from comunicacion.services import feed_paciente, publicaciones_de, resumen_profesional, tiene_cita_para_chat
 from facturacion.forms import FacturaForm
@@ -222,9 +224,8 @@ def editar_perfil(request):
     return render(request, "perfiles/editar_perfil.html", {"form": form, "paciente": paciente})
 
 
-@profesional_required
-def perfil_profesional(request):
-    profesional = request.user.profesional
+def _contexto_perfil_profesional(profesional, *, form_sedes=None, form_horarios=None, modal_abierto=""):
+    sincronizar_centros_a_sedes()
     ahora = timezone.now()
     citas_qs = profesional.citas.select_related("paciente")
     hoy = timezone.localdate()
@@ -241,25 +242,89 @@ def perfil_profesional(request):
         "foto": bool(profesional.foto),
         "verificado": profesional.is_verified,
     }
+    return {
+        "profesional": profesional,
+        "citas": proximas,
+        "citas_hoy": citas_hoy.order_by("fecha_hora"),
+        "stats": {
+            "hoy": citas_hoy.exclude(estado=Cita.ESTADO_CANCELADA).count(),
+            "pendientes": citas_qs.filter(estado=Cita.ESTADO_PENDIENTE).count(),
+            "confirmadas": citas_qs.filter(estado=Cita.ESTADO_CONFIRMADA).count(),
+        },
+        "resumen": resumen_profesional(profesional),
+        "publicaciones": publicaciones_de(profesional),
+        "form_publicacion": PublicacionForm(),
+        "pasos": pasos,
+        "consulta_lista": all(pasos.values()),
+        "form_sedes": form_sedes or ElegirSedesForm(profesional=profesional),
+        "form_horarios": form_horarios or DisponibilidadForm(profesional=profesional),
+        "modal_abierto": modal_abierto,
+        "tiene_sedes_asignadas": pasos["sedes"],
+    }
+
+
+@profesional_required
+def perfil_profesional(request):
+    profesional = request.user.profesional
     return render(
         request,
         "perfiles/perfil_profesional.html",
-        {
-            "profesional": profesional,
-            "citas": proximas,
-            "citas_hoy": citas_hoy.order_by("fecha_hora"),
-            "stats": {
-                "hoy": citas_hoy.exclude(estado=Cita.ESTADO_CANCELADA).count(),
-                "pendientes": citas_qs.filter(estado=Cita.ESTADO_PENDIENTE).count(),
-                "confirmadas": citas_qs.filter(estado=Cita.ESTADO_CONFIRMADA).count(),
-            },
-            "resumen": resumen_profesional(profesional),
-            "publicaciones": publicaciones_de(profesional),
-            "form_publicacion": PublicacionForm(),
-            "pasos": pasos,
-            "consulta_lista": all(pasos.values()),
-        },
+        _contexto_perfil_profesional(profesional),
     )
+
+
+@profesional_required
+@require_POST
+def elegir_sedes_rapido(request):
+    profesional = request.user.profesional
+    form = ElegirSedesForm(request.POST, profesional=profesional)
+    if not form.is_valid():
+        messages.error(request, "Revisa las sedes marcadas.")
+        return render(
+            request,
+            "perfiles/perfil_profesional.html",
+            _contexto_perfil_profesional(profesional, form_sedes=form, modal_abierto="sedes"),
+        )
+    asignar_sedes(
+        profesional,
+        form.cleaned_data["sedes"],
+        principal=form.cleaned_data.get("sede_principal"),
+    )
+    messages.success(request, "Sedes guardadas. Ya puedes publicar horarios en ellas.")
+    return redirect("perfil_profesional")
+
+
+@profesional_required
+@require_POST
+def publicar_horarios_rapido(request):
+    profesional = request.user.profesional
+    if not profesional.sedes_asignadas.exists():
+        messages.error(request, "Primero elige al menos una sede.")
+        return redirect("perfil_profesional")
+    form = DisponibilidadForm(request.POST, profesional=profesional)
+    if not form.is_valid():
+        messages.error(request, "Revisa los horarios: corrige los campos marcados.")
+        return render(
+            request,
+            "perfiles/perfil_profesional.html",
+            _contexto_perfil_profesional(profesional, form_horarios=form, modal_abierto="horarios"),
+        )
+    datos = form.cleaned_data
+    creadas = publicar_franjas(
+        profesional,
+        datos["sede"],
+        datos.get("consultorio"),
+        [int(dia) for dia in datos["dias"]],
+        datos["hora_inicio"],
+        datos["hora_fin"],
+    )
+    labels = ", ".join(franja.get_dia_semana_display() for franja in creadas)
+    messages.success(
+        request,
+        f"Horario publicado en {datos['sede'].nombre}: {labels}, "
+        f"{datos['hora_inicio'].strftime('%H:%M')}–{datos['hora_fin'].strftime('%H:%M')}.",
+    )
+    return redirect("perfil_profesional")
 
 
 @profesional_required

@@ -1,0 +1,60 @@
+.centro-registro {
+    padding-block: 1.5rem 3rem;
+}
+
+.centro-form {
+    width: min(40rem, 100%);
+    margin: 0 auto 2.75rem;
+}
+
+.centro-input {
+    position: relative;
+}
+
+.centro-input > .icon {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-faint);
+    pointer-events: none;
+}
+
+.centro-input input,
+.centro-input select {
+    padding-left: 2.55rem;
+}
+
+.centro-form .btn-primary {
+    margin-top: 0.35rem;
+}
+
+.centro-volver {
+    margin: 0.9rem 0 0;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+}
+
+.centro-volver a {
+    font-weight: 700;
+}
+
+.centro-prestigio .page-head {
+    margin-bottom: 1rem;
+}
+
+.centro-beneficio h3 {
+    margin: 0.85rem 0 0.35rem;
+    font-size: 1.05rem;
+}
+
+.centro-beneficio p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.centro-beneficio .icon-tile.ok {
+    background: linear-gradient(135deg, var(--ok-bg), var(--bg-card));
+    color: var(--ok);
+}

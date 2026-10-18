@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from accounts.models import Profesional
@@ -40,6 +41,13 @@ def marcar_notificacion(request, pk):
     aviso = get_object_or_404(Notificacion, pk=pk, usuario=request.user)
     marcar_leida(aviso)
     messages.success(request, "Aviso marcado como leído.")
+    siguiente = request.POST.get("siguiente")
+    if siguiente and url_has_allowed_host_and_scheme(
+        siguiente,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return redirect(siguiente)
     return redirect("notificaciones")
 
 

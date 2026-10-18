@@ -1,0 +1,23 @@
+<dialog class="foto-dialog" id="seguidores-dialog" aria-labelledby="seguidores-titulo">
+    <div class="card-title-row">
+        <h2 id="seguidores-titulo">Seguidores</h2>
+        <button class="icon-btn" type="button" id="seguidores-cerrar" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+    </div>
+    {% if lista_seguidores %}
+    <ul class="cita-list seguidos-lista">
+        {% for item in lista_seguidores %}
+        <li>
+            <div class="who-row">
+                {% include "core/includes/avatar.html" with foto=item.paciente.foto iniciales=item.paciente.iniciales tamano="sm" alt="" %}
+                <div>
+                    <div class="when">{{ item.paciente.first_name }} {{ item.paciente.last_name }}</div>
+                    {% if item.paciente.city %}<div class="who">{% include "core/includes/icon.html" with name="pin" %} {{ item.paciente.city }}</div>{% endif %}
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    {% include "core/includes/vacio.html" with titulo="Aún no hay seguidores" texto="Cuando un paciente pulse Seguir en la ficha pública, aparecerá aquí." compacto=True %}
+    {% endif %}
+</dialog>

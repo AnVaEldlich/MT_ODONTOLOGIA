@@ -72,7 +72,7 @@
                 {% endfor %}
             </ul>
             {% else %}
-            {% include "core/includes/vacio.html" with titulo="Sin avisos pendientes" texto="Te escribimos cuando haya una cita por confirmar." compacto=True %}
+            {% include "core/includes/vacio.html" with titulo="Sin notificaciones pendientes" texto="Te escribimos cuando haya una cita por confirmar." compacto=True %}
             {% endif %}
         </section>
 
@@ -121,5 +121,5 @@
 {% endblock %}
 {% block extra_js %}
 <script src="{% static 'js/foto.js' %}"></script>
-<script src="{% static 'js/seguidos.js' %}"></script>
+<script src="{% static 'js/seguidos.js' %}?v=2"></script>
 {% endblock %}

@@ -1,0 +1,32 @@
+<dialog class="foto-dialog" id="horarios-dialog" aria-labelledby="horarios-titulo"{% if modal_abierto == "horarios" %} data-abrir-al-cargar="1"{% endif %}>
+    {% if tiene_sedes_asignadas %}
+    <form method="post" action="{% url 'publicar_horarios_rapido' %}" novalidate>
+        {% csrf_token %}
+        <div class="card-title-row">
+            <h2 id="horarios-titulo">Publicar horarios</h2>
+            <button class="icon-btn" type="button" data-dialog-cerrar="horarios-dialog" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+        </div>
+        <p class="meta">Misma hora en cada día marcado. Puedes usar un atajo y ajustar después.</p>
+        <div class="actions" data-atajos-horario>
+            <button type="button" class="btn btn-ghost btn-sm" data-dias="0,1,2,3,4" data-inicio="08:00" data-fin="12:00">Lun–vie, mañana</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-dias="0,1,2,3,4" data-inicio="14:00" data-fin="18:00">Lun–vie, tarde</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-dias="5" data-inicio="08:00" data-fin="13:00">Sábado</button>
+        </div>
+        {% include "core/includes/fields.html" with form=form_horarios %}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">{% include "core/includes/icon.html" with name="mas" %}Publicar horario</button>
+            <button class="btn btn-ghost" type="button" data-dialog-cerrar="horarios-dialog">Cancelar</button>
+        </div>
+    </form>
+    {% else %}
+    <div class="card-title-row">
+        <h2 id="horarios-titulo">Publicar horarios</h2>
+        <button class="icon-btn" type="button" data-dialog-cerrar="horarios-dialog" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+    </div>
+    <p class="meta">Primero elige al menos una sede. Sin sede no se pueden publicar franjas.</p>
+    <div class="form-actions">
+        <button type="button" class="btn btn-primary" data-abre-dialog="sedes-dialog" data-dialog-cerrar="horarios-dialog">Elegir sede</button>
+        <button class="btn btn-ghost" type="button" data-dialog-cerrar="horarios-dialog">Cerrar</button>
+    </div>
+    {% endif %}
+</dialog>

@@ -4,12 +4,17 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.models import Profesional
 from comunicacion.models import Resena, Seguimiento
-from comunicacion.services import publicaciones_de, resumen_profesional, tiene_cita_para_chat
+from comunicacion.services import (
+    lista_seguidores,
+    publicaciones_de,
+    resumen_profesional,
+    tiene_cita_para_chat,
+)
 from perfiles.decorators import profesional_required
 
 from .forms import BloqueoForm, DisponibilidadForm
 from .models import BloqueoHorario, Disponibilidad
-from .services import directorio, ficha_publica
+from .services import directorio, ficha_publica, publicar_franjas
 
 
 def buscar_profesionales(request):
@@ -42,6 +47,7 @@ def perfil_publico(request, pk):
             "publicaciones": publicaciones_de(profesional),
             "resumen": resumen_profesional(profesional, paciente=paciente),
             "puede_chatear": paciente is not None and tiene_cita_para_chat(paciente, profesional),
+            "lista_seguidores": lista_seguidores(profesional),
             "seguidos": list(
                 Seguimiento.objects.filter(paciente=paciente).values_list("profesional_id", flat=True)
             )
@@ -64,10 +70,19 @@ def disponibilidad(request):
         messages.error(request, "Primero elige tus sedes en el perfil. Sin sede no se puede publicar un horario.")
         return redirect("disponibilidad")
     if accion == "franja" and form.is_valid():
-        franja = form.save(commit=False)
-        franja.profesional = profesional
-        franja.save()
-        messages.success(request, "Horario publicado.")
+        publicar_franjas(
+            profesional,
+            sede=form.cleaned_data["sede"],
+            consultorio=form.cleaned_data.get("consultorio"),
+            dias=form.cleaned_data["dias"],
+            hora_inicio=form.cleaned_data["hora_inicio"],
+            hora_fin=form.cleaned_data["hora_fin"],
+        )
+        cantidad = len(form.cleaned_data["dias"])
+        messages.success(
+            request,
+            "Horario publicado." if cantidad == 1 else f"Horario publicado en {cantidad} días.",
+        )
         return redirect("disponibilidad")
     if accion == "bloqueo" and bloqueo_form.is_valid():
         bloqueo = bloqueo_form.save(commit=False)

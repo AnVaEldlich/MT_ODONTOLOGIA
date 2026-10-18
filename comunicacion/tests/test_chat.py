@@ -190,3 +190,27 @@ def test_perfil_abre_dialogo_de_especialistas_seguidos(client, django_user_model
     assert "seguidos-dialog" in cuerpo
     assert "Leo Vera" in cuerpo
     assert reverse("chat_con_profesional", args=[profesional.pk]) not in cuerpo
+
+
+@pytest.mark.django_db
+def test_ficha_publica_abre_dialogo_de_seguidores(client, django_user_model):
+    _user, paciente = _paciente(django_user_model, "fan@test.com", "9009", apellido="Ríos")
+    _pro_user, profesional = _profesional(django_user_model, "pro.fans@test.com")
+    Seguimiento.objects.create(paciente=paciente, profesional=profesional)
+    cuerpo = client.get(reverse("perfil_publico", args=[profesional.pk])).content.decode()
+    assert "seguidores-dialog" in cuerpo
+    assert "seguidores-abrir" in cuerpo
+    assert "Ana Ríos" in cuerpo
+    assert "SECRETO-CLINICO-9009" not in cuerpo
+
+
+@pytest.mark.django_db
+def test_panel_profesional_abre_dialogo_de_seguidores(client, django_user_model):
+    _user, paciente = _paciente(django_user_model, "fan2@test.com", "9010", apellido="Mora")
+    pro_user, profesional = _profesional(django_user_model, "pro.panel.fans@test.com")
+    Seguimiento.objects.create(paciente=paciente, profesional=profesional)
+    client.force_login(pro_user)
+    cuerpo = client.get(reverse("perfil_profesional")).content.decode()
+    assert "seguidores-dialog" in cuerpo
+    assert "Ana Mora" in cuerpo
+    assert "SECRETO-CLINICO-9010" not in cuerpo

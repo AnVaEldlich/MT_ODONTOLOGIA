@@ -69,6 +69,12 @@ def marcar_leida(notificacion):
     return True
 
 
+def notificaciones_recientes(usuario, limite=6):
+    if usuario is None or not getattr(usuario, "is_authenticated", False):
+        return Notificacion.objects.none()
+    return Notificacion.objects.filter(usuario=usuario).order_by("-created_at")[:limite]
+
+
 def feed_paciente(paciente):
     """Tarjetas del inicio. Solo citas y avisos de esta persona, más contenido público."""
     ahora = timezone.now()
@@ -203,6 +209,14 @@ def seguir(*, paciente, profesional):
         seguimiento.delete()
         return False
     return True
+
+
+def lista_seguidores(profesional):
+    return list(
+        Seguimiento.objects.filter(profesional=profesional)
+        .select_related("paciente")
+        .order_by("-created_at")
+    )
 
 
 def tiene_cita_para_chat(paciente, profesional):

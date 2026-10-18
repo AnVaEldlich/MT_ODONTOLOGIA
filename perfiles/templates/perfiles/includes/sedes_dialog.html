@@ -1,0 +1,15 @@
+<dialog class="foto-dialog" id="sedes-dialog" aria-labelledby="sedes-titulo"{% if modal_abierto == "sedes" %} data-abrir-al-cargar="1"{% endif %}>
+    <form method="post" action="{% url 'elegir_sedes_rapido' %}" novalidate>
+        {% csrf_token %}
+        <div class="card-title-row">
+            <h2 id="sedes-titulo">Elegir sede</h2>
+            <button class="icon-btn" type="button" data-dialog-cerrar="sedes-dialog" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+        </div>
+        <p class="meta">Marca los centros donde atiendes. La sede principal es la que verán primero los pacientes.</p>
+        {% include "core/includes/fields.html" with form=form_sedes %}
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">{% include "core/includes/icon.html" with name="check" %}Guardar sedes</button>
+            <button class="btn btn-ghost" type="button" data-dialog-cerrar="sedes-dialog">Cancelar</button>
+        </div>
+    </form>
+</dialog>

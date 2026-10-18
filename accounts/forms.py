@@ -256,17 +256,50 @@ class ProfessionalRegisterForm(forms.Form):
 
 
 class ClinicCenterForm(forms.ModelForm):
+    direccion = forms.CharField(
+        label="Dirección",
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Calle y número", "autocomplete": "street-address"}),
+    )
+    departamento = forms.CharField(
+        label="Departamento",
+        max_length=80,
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Ej. Cundinamarca", "autocomplete": "address-level1"}),
+    )
+
     class Meta:
         model = ClinicCenter
         fields = ("clinic_name", "specialists_range", "city")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["clinic_name"].widget.attrs.update({
+            "placeholder": "Ej. Clínica Dental Avanzada",
+            "autocomplete": "organization",
+        })
         self.fields["specialists_range"].choices = [
-            ("", "--- Elegir ---"),
+            ("", "Seleccione una opción"),
             *self.fields["specialists_range"].choices,
         ]
-        self.fields["city"].widget.attrs["placeholder"] = "Introducir la ciudad"
+        self.fields["city"].widget.attrs.update({
+            "placeholder": "Ej. Bogotá",
+            "autocomplete": "address-level2",
+        })
+        self.order_fields(["clinic_name", "specialists_range", "city", "departamento", "direccion"])
+
+    def save(self, commit=True):
+        from clinica.services import publicar_centro_medico
+
+        centro, _sede = publicar_centro_medico(
+            clinic_name=self.cleaned_data["clinic_name"],
+            city=self.cleaned_data["city"],
+            specialists_range=self.cleaned_data["specialists_range"],
+            direccion=self.cleaned_data.get("direccion") or "",
+            departamento=self.cleaned_data.get("departamento") or "",
+        )
+        return centro
 
 
 class ProfesionalPerfilForm(forms.ModelForm):

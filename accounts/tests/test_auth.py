@@ -211,14 +211,23 @@ def test_authenticated_user_cannot_register_professional(client):
 
 @pytest.mark.django_db
 def test_formclinic_persists_clinic_center(client):
+    from clinica.models import Sede
+
     response = client.post(
         reverse("formclinic"),
         {
             "clinic_name": "Sonrisa Norte",
             "specialists_range": "1-5",
             "city": "Bogotá",
+            "departamento": "Cundinamarca",
+            "direccion": "Calle 100 #10-20",
         },
         follow=True,
     )
     assert response.status_code == 200
     assert ClinicCenter.objects.filter(clinic_name="Sonrisa Norte", city="Bogotá").exists()
+    sede = Sede.objects.get(nombre="Sonrisa Norte", ciudad="Bogotá")
+    assert sede.activa is True
+    assert sede.departamento == "Cundinamarca"
+    assert "Calle 100" in sede.direccion
+    assert "aparece como sede" in response.content.decode()

@@ -1,7 +1,7 @@
 from django.urls import NoReverseMatch, reverse
 
 from comunicacion.models import Notificacion
-from comunicacion.services import mensajes_sin_leer
+from comunicacion.services import mensajes_sin_leer, notificaciones_recientes
 
 from .roles import ROL_ADMINISTRADOR, dashboard_url_name, roles_de, user_role
 
@@ -10,12 +10,14 @@ def role(request):
     """Expone el rol, los avisos, los mensajes sin leer y la foto de la cabecera."""
     sin_leer = 0
     chat_sin_leer = 0
+    recientes = []
     avatar_foto = None
     avatar_iniciales = ""
     roles = roles_de(request.user)
     if request.user.is_authenticated:
         sin_leer = Notificacion.objects.filter(usuario=request.user, leida=False).count()
         chat_sin_leer = mensajes_sin_leer(request.user)
+        recientes = list(notificaciones_recientes(request.user))
         perfil = _perfil_visible(request.user)
         if perfil is not None:
             avatar_iniciales = perfil.iniciales()
@@ -27,6 +29,7 @@ def role(request):
         "roles": roles,
         "es_administrador": ROL_ADMINISTRADOR in roles,
         "notificaciones_sin_leer": sin_leer,
+        "notificaciones_recientes": recientes,
         "mensajes_sin_leer": chat_sin_leer,
         "avatar_foto": avatar_foto,
         "avatar_iniciales": avatar_iniciales,

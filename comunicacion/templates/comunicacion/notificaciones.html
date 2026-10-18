@@ -1,6 +1,6 @@
 {% extends "core/base.html" %}
 {% load static %}
-{% block title %}Avisos — MT Odontología{% endblock %}
+{% block title %}Notificaciones — MT Odontología{% endblock %}
 {% block body_class %}app-layout{% endblock %}
 {% block main_class %}page{% endblock %}
 {% block content %}
@@ -14,7 +14,7 @@
     {% endif %}
     <div>
         <div class="page-head">
-            <h1>Avisos</h1>
+            <h1>Notificaciones</h1>
             <p>Recordatorios de tus citas. No incluyen la historia clínica.</p>
         </div>
         {% if avisos %}
@@ -40,7 +40,7 @@
         </article>
         {% endfor %}
         {% else %}
-        <div class="card">{% include "core/includes/vacio.html" with titulo="No tienes avisos" texto="Te avisaremos cuando haya una cita por confirmar o un recordatorio." %}</div>
+        <div class="card">{% include "core/includes/vacio.html" with titulo="No tienes notificaciones" texto="Te avisaremos cuando haya una cita por confirmar o un recordatorio." %}</div>
         {% endif %}
     </div>
 </div>

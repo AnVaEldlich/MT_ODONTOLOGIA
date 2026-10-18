@@ -217,14 +217,62 @@ def test_telefono_invalido_se_rechaza(client, django_user_model):
 
 
 @pytest.mark.django_db
-def test_panel_y_navegacion_enlazan_la_edicion(client, django_user_model):
+def test_panel_abre_modales_de_sede_y_horarios(client, django_user_model):
     profesional = _profesional(django_user_model)
     client.force_login(profesional.user)
     cuerpo = client.get(reverse("perfil_profesional")).content.decode()
-    assert cuerpo.count(reverse("editar_perfil_profesional")) >= 2
+    assert cuerpo.count(reverse("editar_perfil_profesional")) >= 1
     assert "Elige dónde atiendes" in cuerpo
-    assert "Marca tus sedes en el perfil" in cuerpo
+    assert 'data-abre-dialog="sedes-dialog"' in cuerpo
+    assert 'data-abre-dialog="horarios-dialog"' in cuerpo
+    assert "sedes-dialog" in cuerpo
+    assert "horarios-dialog" in cuerpo
 
     AsignacionSede.objects.create(profesional=profesional, sede=_sede(), principal=True)
     cuerpo = client.get(reverse("perfil_profesional")).content.decode()
-    assert "Ya tienes sede." in cuerpo
+    assert "Elige dónde atiendes" not in cuerpo
+    assert "Publica tus horarios" in cuerpo
+
+
+@pytest.mark.django_db
+def test_elegir_sedes_desde_el_panel(client, django_user_model):
+    from accounts.models import ClinicCenter
+
+    profesional = _profesional(django_user_model)
+    ClinicCenter.objects.create(clinic_name="Centro Modal", city="Medellín", specialists_range="1-5")
+    client.force_login(profesional.user)
+
+    panel = client.get(reverse("perfil_profesional"))
+    assert "Centro Modal" in panel.content.decode()
+
+    sede = Sede.objects.get(nombre="Centro Modal", ciudad="Medellín")
+    respuesta = client.post(
+        reverse("elegir_sedes_rapido"),
+        {"sedes": [sede.pk], "sede_principal": sede.pk},
+        follow=True,
+    )
+    assert respuesta.request["PATH_INFO"] == reverse("perfil_profesional")
+    assert "Sedes guardadas" in respuesta.content.decode()
+    assert list(profesional.sedes_asignadas.values_list("sede_id", "principal")) == [(sede.pk, True)]
+
+
+@pytest.mark.django_db
+def test_publicar_horarios_desde_el_panel(client, django_user_model):
+    profesional = _profesional(django_user_model)
+    sede = _sede("Sede Rápida")
+    AsignacionSede.objects.create(profesional=profesional, sede=sede, principal=True)
+    client.force_login(profesional.user)
+
+    respuesta = client.post(
+        reverse("publicar_horarios_rapido"),
+        {
+            "sede": sede.pk,
+            "dias": ["0", "1"],
+            "hora_inicio": "09:00",
+            "hora_fin": "12:00",
+        },
+        follow=True,
+    )
+    assert respuesta.request["PATH_INFO"] == reverse("perfil_profesional")
+    assert "Horario publicado" in respuesta.content.decode()
+    assert Disponibilidad.objects.filter(profesional=profesional, sede=sede, activa=True).count() == 2

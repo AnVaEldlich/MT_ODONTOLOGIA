@@ -70,7 +70,7 @@ def test_publica_franja_en_su_sede(client, escenario):
         {
             "accion": "franja",
             "sede": escenario["propia"].pk,
-            "dia_semana": 1,
+            "dias": [1],
             "hora_inicio": "08:00",
             "hora_fin": "12:00",
         },
@@ -79,6 +79,23 @@ def test_publica_franja_en_su_sede(client, escenario):
     assert "Horario publicado" in respuesta.content.decode()
     franja = Disponibilidad.objects.get(profesional=escenario["profesional"])
     assert franja.sede == escenario["propia"]
+    assert franja.dia_semana == 1
+
+
+@pytest.mark.django_db
+def test_publica_la_misma_hora_en_varios_dias(client, escenario):
+    client.force_login(escenario["profesional"].user)
+    client.post(
+        reverse("disponibilidad"),
+        {
+            "accion": "franja",
+            "sede": escenario["propia"].pk,
+            "dias": [0, 1, 2, 3, 4],
+            "hora_inicio": "08:00",
+            "hora_fin": "12:00",
+        },
+    )
+    assert Disponibilidad.objects.filter(profesional=escenario["profesional"]).count() == 5
 
 
 @pytest.mark.django_db
@@ -89,7 +106,7 @@ def test_rechaza_sede_ajena_aunque_se_envie_el_id(client, escenario):
         {
             "accion": "franja",
             "sede": escenario["ajena"].pk,
-            "dia_semana": 1,
+            "dias": [1],
             "hora_inicio": "08:00",
             "hora_fin": "12:00",
         },
@@ -109,7 +126,7 @@ def test_rechaza_consultorio_de_otra_sede(client, escenario):
             "accion": "franja",
             "sede": escenario["propia"].pk,
             "consultorio": ajeno.pk,
-            "dia_semana": 1,
+            "dias": [1],
             "hora_inicio": "08:00",
             "hora_fin": "12:00",
         },
@@ -126,12 +143,12 @@ def test_sin_sedes_muestra_enlace_al_perfil_y_no_publica(client, django_user_mod
 
     cuerpo = client.get(reverse("disponibilidad")).content.decode()
     assert "Todavía no tienes sedes" in cuerpo
-    assert reverse("editar_perfil_profesional") in cuerpo
+    assert reverse("perfil_profesional") in cuerpo
     assert 'name="accion" value="franja"' not in cuerpo
 
     respuesta = client.post(
         reverse("disponibilidad"),
-        {"accion": "franja", "sede": Sede.objects.get(nombre="Sede Ajena").pk, "dia_semana": 1, "hora_inicio": "08:00", "hora_fin": "12:00"},
+        {"accion": "franja", "sede": Sede.objects.get(nombre="Sede Ajena").pk, "dias": [1], "hora_inicio": "08:00", "hora_fin": "12:00"},
         follow=True,
     )
     assert "Primero elige tus sedes en el perfil" in respuesta.content.decode()

@@ -23,6 +23,53 @@ def sedes_del_profesional(profesional):
     return Sede.objects.filter(activa=True, profesionales_asignados__profesional=profesional).distinct()
 
 
+def sincronizar_centros_a_sedes():
+    """Convierte los centros registrados (ClinicCenter) en sedes elegibles por el profesional."""
+    from accounts.models import ClinicCenter
+
+    for centro in ClinicCenter.objects.filter(is_active=True).iterator():
+        nombre = (centro.clinic_name or "").strip()[:150]
+        ciudad = (centro.city or "").strip()[:100]
+        if not nombre or not ciudad:
+            continue
+        Sede.objects.get_or_create(
+            nombre=nombre,
+            ciudad=ciudad,
+            defaults={
+                "direccion": f"Pendiente de completar — {ciudad}",
+                "departamento": "Por definir",
+                "activa": True,
+            },
+        )
+
+
+@transaction.atomic
+def publicar_centro_medico(*, clinic_name, city, specialists_range, direccion="", departamento=""):
+    """Guarda el interés del centro y publica una Sede para que los especialistas la elijan."""
+    from accounts.models import ClinicCenter
+
+    nombre = clinic_name.strip()[:150]
+    ciudad = city.strip()[:100]
+    centro = ClinicCenter.objects.create(
+        clinic_name=clinic_name.strip()[:255],
+        city=ciudad,
+        specialists_range=specialists_range,
+    )
+    sede, _created = Sede.objects.get_or_create(
+        nombre=nombre,
+        ciudad=ciudad,
+        defaults={
+            "direccion": (direccion or f"Pendiente de completar — {ciudad}").strip()[:255],
+            "departamento": (departamento or "Por definir").strip()[:80],
+            "activa": True,
+        },
+    )
+    if not sede.activa:
+        sede.activa = True
+        sede.save(update_fields=["activa"])
+    return centro, sede
+
+
 def sedes_con_horarios(profesional):
     """Ids de sede con franjas activas. No se quita una sede mientras tenga horarios publicados."""
     return set(
@@ -42,6 +89,27 @@ def asignar_especialidades(profesional, especialidades, codigo_principal):
     ).delete()
     for especialidad in especialidades:
         ProfesionalEspecialidad.objects.get_or_create(profesional=profesional, especialidad=especialidad)
+
+
+@transaction.atomic
+def publicar_franjas(profesional, sede, consultorio, dias, hora_inicio, hora_fin):
+    """Una franja por día elegido. Si ya existía igual y estaba apagada, vuelve a publicarse."""
+    creadas = []
+    for dia in dias:
+        franja, created = Disponibilidad.objects.get_or_create(
+            profesional=profesional,
+            sede=sede,
+            consultorio=consultorio,
+            dia_semana=int(dia),
+            hora_inicio=hora_inicio,
+            hora_fin=hora_fin,
+            defaults={"activa": True},
+        )
+        if not created and not franja.activa:
+            franja.activa = True
+            franja.save(update_fields=["activa"])
+        creadas.append(franja)
+    return creadas
 
 
 @transaction.atomic
