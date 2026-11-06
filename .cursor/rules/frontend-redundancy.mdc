@@ -15,6 +15,6 @@ Antes de copiar un bloque, busca si ya existe. Una segunda copia del mismo marku
 - Un comportamiento, un archivo. Si dos páginas lo necesitan, el script está en `core/static/js/` y ambas lo cargan en `extra_js`. No duplicar el listener.
 
 ```django
-{# ❌ <div class="empty"><p>No hay citas</p><a href="...">Agendar</a></div> #}
-{# ✅ {% include "core/includes/vacio.html" with tipo="cita" titulo="No hay citas" texto="Cuando reserves, aparecerán aquí." enlace="/citas/solicitar/" accion="Agendar cita" %} #}
+{# Mal: <div class="empty"><p>No hay citas</p><a href="...">Agendar</a></div> #}
+{# Bien: {% include "core/includes/vacio.html" with tipo="cita" titulo="No hay citas" texto="Cuando reserves, aparecerán aquí." enlace="/citas/solicitar/" accion="Agendar cita" %} #}
 ```

@@ -84,12 +84,15 @@ def feed_paciente(paciente):
         estado__in=[Cita.ESTADO_PENDIENTE, Cita.ESTADO_CONFIRMADA],
         fecha_hora__gte=ahora,
     ).order_by("fecha_hora")
+    historial = list(citas.order_by("-fecha_hora")[:30])
     ids_seguidos = set(
         Seguimiento.objects.filter(paciente=paciente).values_list("profesional_id", flat=True)
     )
     return {
         "proxima": proximas.first(),
-        "citas": citas.order_by("-fecha_hora")[:4],
+        "citas": historial[:4],
+        "citas_proximas": list(proximas[:20]),
+        "citas_historial": historial,
         "stats": {"proximas": proximas.count(), "total": citas.count()},
         "recordatorios": (
             paciente.user.notificaciones.filter(leida=False).order_by("-created_at")[:4]

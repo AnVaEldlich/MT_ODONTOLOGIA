@@ -1,0 +1,12 @@
+<dialog class="foto-dialog" id="seguidores-publicos-dialog" aria-labelledby="seguidores-publicos-titulo">
+    <div class="card-title-row">
+        <h2 id="seguidores-publicos-titulo">Seguidores</h2>
+        <button class="icon-btn" type="button" data-dialog-cerrar="seguidores-publicos-dialog" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+    </div>
+    <p class="stat-dialog-dato"><span class="num">{{ resumen.seguidores }}</span></p>
+    {% if resumen.seguidores %}
+    <p class="meta">Pacientes que siguen este perfil. Por privacidad no listamos nombres en la ficha pública.</p>
+    {% else %}
+    {% include "core/includes/vacio.html" with titulo="Aún no hay seguidores" texto="Cuando un paciente pulse Seguir, el contador subirá aquí." compacto=True %}
+    {% endif %}
+</dialog>

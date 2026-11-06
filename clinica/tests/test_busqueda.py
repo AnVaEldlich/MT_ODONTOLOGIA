@@ -43,9 +43,14 @@ def test_busqueda_lista_solo_verificados_y_filtra(client, django_user_model):
     assert "Filtros" in cuerpo
 
     perfil = client.get(reverse("perfil_publico", args=[visible.pk]))
+    cuerpo = perfil.content.decode()
     assert perfil.status_code == 200
-    assert "Reserva una hora" in perfil.content.decode()
-    assert "Ortodoncia" in perfil.content.decode()
+    assert "Reserva una hora" in cuerpo
+    assert "Ortodoncia" in cuerpo
+    assert "crumbs" not in cuerpo
+    assert 'id="atencion-dialog"' in cuerpo
+    assert 'id="opiniones-dialog"' in cuerpo
+    assert 'data-abre-dialog="atendidos-dialog"' in cuerpo
 
 
 @pytest.mark.django_db

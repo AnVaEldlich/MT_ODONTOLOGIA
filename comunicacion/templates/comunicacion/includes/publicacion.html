@@ -31,15 +31,20 @@
     {% for comentario in publicacion.comentarios.all %}
         {% if comentario.estado == 'publicado' or user_role == 'profesional' and publicacion.profesional.pk == request.user.profesional.pk or user_role == 'paciente' and comentario.paciente_id == request.user.paciente.pk %}
         <article class="comment">
-            <p>{{ comentario.texto }}</p>
-            <p class="meta">{{ comentario.paciente.first_name }} · <span class="badge {% if comentario.estado == 'publicado' %}ok{% elif comentario.estado == 'pendiente' %}warn{% else %}danger{% endif %} sin-punto">{{ comentario.get_estado_display }}</span></p>
-            {% if user_role == 'profesional' and publicacion.profesional_id == request.user.profesional.pk and comentario.estado == 'pendiente' %}
-            <form class="actions" method="post" action="{% url 'moderar_comentario' comentario.pk %}">
-                {% csrf_token %}
-                <button class="btn btn-ghost btn-sm" name="estado" value="publicado" type="submit">{% include "core/includes/icon.html" with name="check" %}Publicar</button>
-                <button class="btn btn-ghost btn-sm" name="estado" value="oculto" type="submit">{% include "core/includes/icon.html" with name="cerrar" %}Ocultar</button>
-            </form>
-            {% endif %}
+            <div class="who-row">
+                {% include "core/includes/avatar.html" with foto=comentario.paciente.foto iniciales=comentario.paciente.iniciales tamano="sm" alt="" %}
+                <div class="comment-body">
+                    <p>{{ comentario.texto }}</p>
+                    <p class="meta">{{ comentario.paciente.first_name }} · <span class="badge {% if comentario.estado == 'publicado' %}ok{% elif comentario.estado == 'pendiente' %}warn{% else %}danger{% endif %} sin-punto">{{ comentario.get_estado_display }}</span></p>
+                    {% if user_role == 'profesional' and publicacion.profesional_id == request.user.profesional.pk and comentario.estado == 'pendiente' %}
+                    <form class="actions" method="post" action="{% url 'moderar_comentario' comentario.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-ghost btn-sm" name="estado" value="publicado" type="submit">{% include "core/includes/icon.html" with name="check" %}Publicar</button>
+                        <button class="btn btn-ghost btn-sm" name="estado" value="oculto" type="submit">{% include "core/includes/icon.html" with name="cerrar" %}Ocultar</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
         </article>
         {% endif %}
     {% endfor %}
@@ -47,10 +52,15 @@
     <form class="comment-form" method="post" action="{% url 'comentar_publicacion' publicacion.pk %}">
         {% csrf_token %}
         <input type="hidden" name="siguiente" value="{{ siguiente|default:request.path }}">
-        <label for="comentario-{{ publicacion.pk }}">Comentar</label>
-        <div class="fila">
-            <textarea id="comentario-{{ publicacion.pk }}" name="texto" maxlength="280" rows="2" required placeholder="Tu comentario pasa por revisión antes de publicarse"></textarea>
-            <button class="btn btn-brand btn-sm" type="submit">{% include "core/includes/icon.html" with name="enviar" %}Enviar</button>
+        <div class="who-row">
+            {% include "core/includes/avatar.html" with foto=request.user.paciente.foto iniciales=request.user.paciente.iniciales tamano="sm" alt="" %}
+            <div class="comment-compose">
+                <label for="comentario-{{ publicacion.pk }}">Comentar</label>
+                <div class="fila">
+                    <textarea id="comentario-{{ publicacion.pk }}" name="texto" maxlength="280" rows="2" required placeholder="Tu comentario pasa por revisión antes de publicarse"></textarea>
+                    <button class="btn btn-brand btn-sm" type="submit">{% include "core/includes/icon.html" with name="enviar" %}Enviar</button>
+                </div>
+            </div>
         </div>
     </form>
     {% endif %}

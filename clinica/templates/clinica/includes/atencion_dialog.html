@@ -1,0 +1,18 @@
+<dialog class="foto-dialog" id="atencion-dialog" aria-labelledby="atencion-titulo">
+    <div class="card-title-row">
+        <h2 id="atencion-titulo">Dónde atiende</h2>
+        <button class="icon-btn" type="button" data-dialog-cerrar="atencion-dialog" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+    </div>
+    {% for sede in tarjeta.sedes %}
+    <div class="note">
+        <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="pin" clase="lg" %}</span>
+        <div>
+            <h3>{{ sede.nombre }}</h3>
+            <p>{{ sede.direccion }}, {{ sede.ciudad }}</p>
+            {% if sede.horario_atencion %}<p class="meta">{% include "core/includes/icon.html" with name="reloj" %} {{ sede.horario_atencion }}</p>{% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <p>{{ tarjeta.direccion }}</p>
+    {% endfor %}
+</dialog>

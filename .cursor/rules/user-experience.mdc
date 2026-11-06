@@ -15,9 +15,11 @@ Cada pantalla tiene un solo paso siguiente, en español, y devuelve al usuario d
 - El estado se lee en español (`Pendiente`, `Confirmada`, `Cancelada`) sin abrir otro menú.
 - Página nueva: extiende `core/base.html`, usa tokens de `base.css` y el mismo flujo en móvil.
 - Un botón principal por vista (`btn-primary`). Lo demás es `btn-ghost` o un enlace de salida.
+- Un botón no se desplaza al pasar el mouse. El hover cambia color, borde o sombra. Prohibido `translate` en `:hover` de botones, horarios y controles equivalentes.
+- Prohibido usar emojis en interfaz, mensajes, código, comentarios y documentación.
 - Un fallo del usuario se explica en la pantalla (`messages.error`). No un 500 ni un "Error" genérico.
 
 ```django
-{# ❌ <a href="{% url 'cancelar_cita' cita.pk %}">Cancelar</a> #}
-{# ✅ <form method="post" action="{% url 'cancelar_cita' cita.pk %}">{% csrf_token %}<button type="submit">Cancelar cita</button></form> #}
+{# Mal: <a href="{% url 'cancelar_cita' cita.pk %}">Cancelar</a> #}
+{# Bien: <form method="post" action="{% url 'cancelar_cita' cita.pk %}">{% csrf_token %}<button type="submit">Cancelar cita</button></form> #}
 ```

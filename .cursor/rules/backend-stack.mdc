@@ -15,6 +15,6 @@ Un solo backend: Django 5.2 sobre Python 3.10+. El navegador recibe HTML de plan
 - Prohibido sin un ADR aceptado en `docs/decisions/`: Django REST framework, FastAPI, GraphQL, Celery y un segundo servicio.
 
 ```python
-# ❌ cliente HTTP hacia otro backend propio
-# ✅ CitaForm + create_cita(...)
+# Mal: cliente HTTP hacia otro backend propio
+# Bien: CitaForm + create_cita(...)
 ```

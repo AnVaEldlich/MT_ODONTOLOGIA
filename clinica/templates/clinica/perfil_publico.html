@@ -3,7 +3,6 @@
 {% block title %}{{ tarjeta.nombre }} — MT Odontología{% endblock %}
 {% block content %}
 <div class="profile">
-    <p class="meta crumbs"><a href="{% url 'buscar_profesionales' %}">Especialistas</a> <span aria-hidden="true">/</span> {{ tarjeta.nombre }}</p>
     <div class="profile-grid">
         <div>
             <section class="card cover-card">
@@ -20,9 +19,7 @@
                         {% include "core/includes/stars.html" with opiniones=tarjeta.opiniones promedio=tarjeta.promedio estrellas=tarjeta.estrellas %}
                         <p class="chips">
                             {% for insignia in resumen.insignias %}
-                            {% if "seguidores" in insignia %}
-                            <button type="button" class="badge sin-punto badge-accion" data-abre-dialog="seguidores-dialog" aria-haspopup="dialog" aria-controls="seguidores-dialog">{{ insignia }}</button>
-                            {% elif insignia == "Perfil verificado" %}
+                            {% if insignia == "Perfil verificado" %}
                             <span class="badge ok sin-punto">{% include "core/includes/icon.html" with name="check-circulo" %}{{ insignia }}</span>
                             {% else %}
                             <span class="badge sin-punto">{{ insignia }}</span>
@@ -32,9 +29,15 @@
                     </div>
                 </div>
                 <div class="stats">
-                    <div class="stat"><div class="num">{{ resumen.atendidos }}</div><div class="label">Pacientes atendidos</div></div>
-                    <div class="stat"><div class="num">{% if resumen.promedio %}{{ resumen.promedio }}{% else %}—{% endif %}</div><div class="label">Calificación</div></div>
-                    <button type="button" class="stat stat-accion" id="seguidores-abrir" aria-haspopup="dialog" aria-controls="seguidores-dialog">
+                    <button type="button" class="stat stat-accion" data-abre-dialog="atendidos-dialog" aria-haspopup="dialog" aria-controls="atendidos-dialog">
+                        <div class="num">{{ resumen.atendidos }}</div>
+                        <div class="label">Pacientes atendidos</div>
+                    </button>
+                    <button type="button" class="stat stat-accion" data-abre-dialog="opiniones-dialog" aria-haspopup="dialog" aria-controls="opiniones-dialog">
+                        <div class="num">{% if resumen.promedio %}{{ resumen.promedio }}{% else %}—{% endif %}</div>
+                        <div class="label">Calificación</div>
+                    </button>
+                    <button type="button" class="stat stat-accion" data-abre-dialog="seguidores-publicos-dialog" aria-haspopup="dialog" aria-controls="seguidores-publicos-dialog">
                         <div class="num">{{ resumen.seguidores }}</div>
                         <div class="label">Seguidores</div>
                     </button>
@@ -56,12 +59,12 @@
                 <h2>Especialidades</h2>
                 <p class="chips">
                     {% for especialidad in tarjeta.especialidades %}
-                    <a class="badge sin-punto" href="{% url 'buscar_profesionales' %}?especialidad={{ especialidad.codigo }}">{{ especialidad.nombre }}</a>
+                    <span class="badge sin-punto">{{ especialidad.nombre }}</span>
                     {% endfor %}
                 </p>
                 {% endif %}
             </section>
-            <section class="card">
+            <section class="card card-accion" data-abre-dialog="atencion-dialog" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="atencion-dialog">
                 <h2>Dónde atiende</h2>
                 {% for sede in tarjeta.sedes %}
                 <div class="note">
@@ -75,9 +78,10 @@
                 {% empty %}
                 <p>{{ tarjeta.direccion }}</p>
                 {% endfor %}
+                <p class="meta card-accion-hint">{% include "core/includes/icon.html" with name="info" %} Toca para ver el detalle</p>
             </section>
             {% if tarjeta.servicios %}
-            <section class="card">
+            <section class="card card-accion" data-abre-dialog="servicios-dialog" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="servicios-dialog">
                 <h2>Servicios</h2>
                 <ul class="cita-list">
                     {% for servicio in tarjeta.servicios %}
@@ -90,6 +94,7 @@
                     </li>
                     {% endfor %}
                 </ul>
+                <p class="meta card-accion-hint">{% include "core/includes/icon.html" with name="info" %} Toca para ver el detalle</p>
             </section>
             {% endif %}
             <section id="publicaciones">
@@ -100,7 +105,7 @@
                 <div class="card">{% include "core/includes/vacio.html" with titulo="Todavía no publica notas" texto="Cuando comparta consejos o avisos, aparecerán aquí." compacto=True %}</div>
                 {% endfor %}
             </section>
-            <section class="card" id="opiniones">
+            <section class="card card-accion" data-abre-dialog="opiniones-dialog" tabindex="0" role="button" aria-haspopup="dialog" aria-controls="opiniones-dialog">
                 <h2>Opiniones</h2>
                 {% for resena in tarjeta.resenas %}
                 <article class="testimonio resena">
@@ -111,6 +116,7 @@
                 {% empty %}
                 {% include "core/includes/vacio.html" with titulo="Aún sin opiniones" texto="Las reseñas se publican después de una cita atendida." compacto=True %}
                 {% endfor %}
+                <p class="meta card-accion-hint">{% include "core/includes/icon.html" with name="info" %} Toca para ver el detalle</p>
             </section>
         </div>
         <aside class="card profile-book" aria-label="Reservar">
@@ -142,8 +148,12 @@
         </aside>
     </div>
 </div>
-{% include "perfiles/includes/seguidores_dialog.html" %}
+{% include "clinica/includes/atendidos_dialog.html" %}
+{% include "clinica/includes/seguidores_publicos_dialog.html" %}
+{% include "clinica/includes/atencion_dialog.html" %}
+{% include "clinica/includes/servicios_dialog.html" %}
+{% include "clinica/includes/opiniones_dialog.html" %}
 {% endblock %}
 {% block extra_js %}
-<script src="{% static 'js/seguidos.js' %}?v=2"></script>
+<script src="{% static 'js/seguidos.js' %}?v=4"></script>
 {% endblock %}

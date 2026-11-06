@@ -16,6 +16,6 @@ Hay datos de salud (alergias, medicamentos, historia dental). Tratarlos como sen
 - Un usuario solo ve y muta sus citas o las de su agenda. Filtrar por dueño en la query, no solo ocultar el botón.
 
 ```python
-# ❌ return redirect(request.GET["next"])
-# ✅ if url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+# Mal: return redirect(request.GET["next"])
+# Bien: if url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
 ```

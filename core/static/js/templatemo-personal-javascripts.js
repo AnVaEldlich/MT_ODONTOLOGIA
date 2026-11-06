@@ -70,12 +70,4 @@ Navbar / mobile menu live in navbar.js (loaded from base.html).
         }
     });
 
-    document.querySelectorAll(".skill-tag").forEach((tag) => {
-        tag.addEventListener("mouseenter", () => {
-            tag.style.transform = "translateY(-2px) scale(1.05)";
-        });
-        tag.addEventListener("mouseleave", () => {
-            tag.style.transform = "translateY(0) scale(1)";
-        });
-    });
 })();

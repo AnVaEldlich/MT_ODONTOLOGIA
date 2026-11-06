@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#0b7490" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0d171c" media="(prefers-color-scheme: dark)">
     <title>{% block title %}MT Odontología{% endblock %}</title>
-    <link rel="icon" href="{% static 'images/favicon.svg' %}" type="image/svg+xml">
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
     <link rel="preload" href="{% static 'fonts/inter-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <script>
@@ -27,10 +27,6 @@
 {% block navbar %}
 <header class="topbar" id="navbar">
     <div class="topbar-inner">
-        <a class="logo" href="{{ inicio_url }}">
-            <span class="logo-mark" aria-hidden="true">{% include "core/includes/icon.html" with name="diente" %}</span>
-            MT <span>Odontología</span>
-        </a>
         <div class="topbar-search">
             {% include "core/includes/finder.html" with prefix="nav" %}
         </div>
@@ -43,11 +39,9 @@
             {% endif %}
             {% if user_role == 'profesional' %}
             <a class="btn btn-primary btn-sm" href="{% url 'agenda_profesional' %}">{% include "core/includes/icon.html" with name="agenda" %}Agenda</a>
-            {% elif user_role == 'paciente' %}
-            <a class="btn btn-primary btn-sm" href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="calendario" %}Agendar cita</a>
             {% elif es_administrador %}
             <a class="btn btn-primary btn-sm" href="{% url 'nuevo_paciente_gestion' %}">{% include "core/includes/icon.html" with name="mas" %}Nuevo paciente</a>
-            {% else %}
+            {% elif not user.is_authenticated %}
             <a class="btn btn-primary btn-sm" href="{% url 'buscar_profesionales' %}">{% include "core/includes/icon.html" with name="calendario" %}Agendar cita</a>
             {% endif %}
             <button type="button" class="icon-btn tema-toggle" data-tema-toggle aria-label="Cambiar entre tema claro y oscuro" title="Tema claro / oscuro">
@@ -73,51 +67,54 @@
             <span></span><span></span><span></span>
         </button>
     </div>
-    <div class="mobile-menu" id="mobileMenu">
-        <ul class="mobile-nav-links">
-            {% if user_role == 'paciente' %}
-            <li><a href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="mas" %}Agendar cita</a></li>
-            {% elif user_role == 'profesional' %}
-            <li><a href="{% url 'mis_pacientes' %}">{% include "core/includes/icon.html" with name="usuarios" %}Mis pacientes</a></li>
-            {% if es_administrador %}<li><a href="{% url 'panel_administrador' %}">{% include "core/includes/icon.html" with name="escudo" %}Administración</a></li>{% endif %}
-            {% elif es_administrador %}
-            <li><a href="{% url 'password_change' %}">{% include "core/includes/icon.html" with name="tuerca" %}Cuenta</a></li>
-            {% else %}
-            <li><a href="{% url 'buscar_profesionales' %}">{% include "core/includes/icon.html" with name="buscar" %}Buscar especialista</a></li>
-            <li><a href="{% url 'login' %}">{% include "core/includes/icon.html" with name="usuario" %}Ingresar</a></li>
-            <li><a href="{% url 'register' %}">{% include "core/includes/icon.html" with name="mas" %}Crear cuenta</a></li>
-            <li><a href="{% url 'registro_pro' %}">{% include "core/includes/icon.html" with name="escudo" %}Soy especialista</a></li>
-            {% endif %}
-            <li>
-                <button type="button" data-tema-toggle>{% include "core/includes/icon.html" with name="luna" %}Tema claro / oscuro</button>
-            </li>
-            {% if user.is_authenticated %}
-            <li>
-                <form method="post" action="{% url 'logout' %}" class="nav-logout">
-                    {% csrf_token %}
-                    <button type="submit">{% include "core/includes/icon.html" with name="salir" %}Salir</button>
-                </form>
-            </li>
-            {% endif %}
-        </ul>
-    </div>
 </header>
+<button type="button" class="mobile-menu-backdrop" id="mobileMenuBackdrop" aria-label="Cerrar menú" hidden></button>
+<nav class="mobile-menu" id="mobileMenu" aria-label="Menú" hidden>
+    <p class="mobile-menu-title">Menú</p>
+    <ul class="mobile-nav-links">
+        {% if user_role == 'paciente' %}
+        <li><a href="{% url 'solicitar_cita' %}">{% include "core/includes/icon.html" with name="mas" %}Agendar cita</a></li>
+        {% elif user_role == 'profesional' %}
+        <li><a href="{% url 'mis_pacientes' %}">{% include "core/includes/icon.html" with name="usuarios" %}Mis pacientes</a></li>
+        {% if es_administrador %}<li><a href="{% url 'panel_administrador' %}">{% include "core/includes/icon.html" with name="escudo" %}Administración</a></li>{% endif %}
+        {% elif es_administrador %}
+        <li><a href="{% url 'password_change' %}">{% include "core/includes/icon.html" with name="tuerca" %}Cuenta</a></li>
+        {% else %}
+        <li><a href="{% url 'buscar_profesionales' %}">{% include "core/includes/icon.html" with name="buscar" %}Buscar especialista</a></li>
+        <li><a href="{% url 'login' %}">{% include "core/includes/icon.html" with name="usuario" %}Ingresar</a></li>
+        <li><a href="{% url 'register' %}">{% include "core/includes/icon.html" with name="mas" %}Crear cuenta</a></li>
+        <li><a href="{% url 'registro_pro' %}">{% include "core/includes/icon.html" with name="escudo" %}Soy especialista</a></li>
+        {% endif %}
+        <li>
+            <button type="button" data-tema-toggle>{% include "core/includes/icon.html" with name="luna" %}Tema claro / oscuro</button>
+        </li>
+        {% if user.is_authenticated %}
+        <li>
+            <form method="post" action="{% url 'logout' %}" class="nav-logout">
+                {% csrf_token %}
+                <button type="submit">{% include "core/includes/icon.html" with name="salir" %}Salir</button>
+            </form>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}
+
+{% block messages %}
+{% if messages %}
+<div class="site-messages" role="status" aria-live="polite">
+    {% for message in messages %}
+    <div class="alert {{ message.tags }}" {% if 'success' in message.tags or 'info' in message.tags %}data-auto-cerrar{% endif %}>
+        {% if 'error' in message.tags %}{% include "core/includes/icon.html" with name="alerta" %}{% elif 'success' in message.tags %}{% include "core/includes/icon.html" with name="check-circulo" %}{% else %}{% include "core/includes/icon.html" with name="info" %}{% endif %}
+        <span>{{ message }}</span>
+        <button type="button" class="alert-cerrar" aria-label="Cerrar aviso">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 {% endblock %}
 
 <main id="contenido" class="{% block main_class %}{% endblock %}">
-    {% block messages %}
-    {% if messages %}
-    <div class="site-messages" role="status">
-        {% for message in messages %}
-        <div class="alert {{ message.tags }}" {% if 'success' in message.tags or 'info' in message.tags %}data-auto-cerrar{% endif %}>
-            {% if 'error' in message.tags %}{% include "core/includes/icon.html" with name="alerta" %}{% elif 'success' in message.tags %}{% include "core/includes/icon.html" with name="check-circulo" %}{% else %}{% include "core/includes/icon.html" with name="info" %}{% endif %}
-            <span>{{ message }}</span>
-            <button type="button" class="alert-cerrar" aria-label="Cerrar aviso">{% include "core/includes/icon.html" with name="cerrar" %}</button>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    {% endblock %}
     {% block content %}{% endblock %}
 </main>
 
@@ -126,7 +123,7 @@
     <div class="footer-grid">
         <div class="footer-brand">
             <a class="logo" href="{{ inicio_url }}">
-                <span class="logo-mark" aria-hidden="true">{% include "core/includes/icon.html" with name="diente" %}</span>
+                {% include "core/includes/logo_mark.html" %}
                 MT <span>Odontología</span>
             </a>
             <p>Encuentra un especialista, compara opiniones y reserva una hora sin llamar.</p>
@@ -178,7 +175,7 @@
 </nav>
 {% endif %}
 <script src="{% static 'js/navbar.js' %}"></script>
-{% if user.is_authenticated %}<script src="{% static 'js/notificaciones.js' %}"></script>{% endif %}
+{% if user.is_authenticated %}<script src="{% static 'js/notificaciones.js' %}"></script><script src="{% static 'js/barra-scroll.js' %}"></script>{% endif %}
 {% block extra_js %}{% endblock %}
 </body>
 </html>

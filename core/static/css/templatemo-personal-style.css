@@ -83,7 +83,6 @@ https://templatemo.com/tm-593-personal-shape
 
 .footer-right a:hover {
     color: var(--text-light);
-    transform: translateY(-1px);
 }
 
 .footer-right a::after {
@@ -465,7 +464,6 @@ body {
 }
 
 .cta-button:hover {
-    transform: translateY(-3px);
     background: rgba(255, 255, 255, 0.25);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     border-color: rgba(255, 255, 255, 0.4);
@@ -660,7 +658,6 @@ section {
 .skill-tag:hover {
     background: var(--primary-color);
     color: var(--text-light);
-    transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
 
@@ -1081,7 +1078,6 @@ section {
 }
 
 .submit-btn:hover {
-    transform: translateY(-3px);
     box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
 }
 

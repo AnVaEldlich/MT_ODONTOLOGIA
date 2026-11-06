@@ -1,0 +1,18 @@
+<dialog class="foto-dialog" id="opiniones-dialog" aria-labelledby="opiniones-titulo">
+    <div class="card-title-row">
+        <h2 id="opiniones-titulo">Opiniones</h2>
+        <button class="icon-btn" type="button" data-dialog-cerrar="opiniones-dialog" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+    </div>
+    {% if resumen.promedio %}
+    <p class="meta">{% include "core/includes/stars.html" with opiniones=resumen.opiniones promedio=resumen.promedio estrellas=resumen.promedio %} {{ resumen.promedio }} · {{ resumen.opiniones }} {% if resumen.opiniones == 1 %}opinión{% else %}opiniones{% endif %}</p>
+    {% endif %}
+    {% for resena in tarjeta.resenas %}
+    <article class="testimonio resena">
+        {% include "core/includes/stars.html" with opiniones=1 promedio=resena.calificacion estrellas=resena.calificacion %}
+        <p>{{ resena.comentario }}</p>
+        <p class="meta">{{ resena.paciente.first_name }} · {{ resena.created_at|date:"d/m/Y" }}</p>
+    </article>
+    {% empty %}
+    {% include "core/includes/vacio.html" with titulo="Aún sin opiniones" texto="Las reseñas se publican después de una cita atendida." compacto=True %}
+    {% endfor %}
+</dialog>

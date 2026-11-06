@@ -10,25 +10,30 @@
     {% include "core/includes/portal_nav_profesional.html" %}
     {% endif %}
     <div>
-        <section class="card chat-panel" id="chat" data-conversacion="{{ conversacion.pk }}" data-usuario="{{ request.user.pk }}" data-ultimo="{{ ultimo_id }}" data-enviar="{% url 'chat_enviar' conversacion.pk %}" data-leer="{% url 'chat_mensajes' conversacion.pk %}">
+        <section class="card chat-panel" id="chat" data-conversacion="{{ conversacion.pk }}" data-usuario="{{ request.user.pk }}" data-otro="{% if user_role == 'paciente' %}{{ conversacion.profesional.user_id }}{% else %}{{ conversacion.paciente.user_id }}{% endif %}" data-ultimo="{{ ultimo_id }}" data-enviar="{% url 'chat_enviar' conversacion.pk %}" data-leer="{% url 'chat_mensajes' conversacion.pk %}">
             {{ avatares_chat|json_script:"chat-avatares" }}
             <div class="chat-head">
-                <div>
+                {% if user_role == 'paciente' %}
+                {% include "core/includes/avatar.html" with foto=conversacion.profesional.foto iniciales=conversacion.profesional.iniciales tamano="sm" alt="" %}
+                {% else %}
+                {% include "core/includes/avatar.html" with foto=conversacion.paciente.foto iniciales=conversacion.paciente.iniciales tamano="sm" alt="" %}
+                {% endif %}
+                <div class="chat-identidad">
                     <h1 class="chat-titulo">
                         {% if user_role == 'paciente' %}
                         {{ conversacion.profesional.get_full_name }}
                         {% else %}
                         {{ conversacion.paciente.first_name }} {{ conversacion.paciente.last_name }}
                         {% endif %}
+                        <span class="chat-punto" id="chat-punto" hidden aria-hidden="true"></span>
                     </h1>
-                    <p class="meta">{% if user_role == 'paciente' %}{{ conversacion.profesional.etiqueta_especialidad }}{% else %}Paciente{% endif %}</p>
+                    <p class="chat-activo" id="chat-activo" role="status" hidden>Activo ahora</p>
                 </div>
-                <span class="chat-estado" id="chat-estado" data-modo="conectando" role="status">Conectando…</span>
             </div>
             {% if not mensajes %}
             <p class="alert warning" id="chat-aviso">{% include "core/includes/icon.html" with name="alerta" %}<span>Este chat no es para urgencias médicas. Si necesitas atención inmediata, acude a un servicio de urgencias.</span></p>
             {% endif %}
-            <div class="chat-log" id="chat-log" aria-live="polite">
+            <div class="chat-log barra-auto" id="chat-log" aria-live="polite">
                 {% for mensaje in mensajes %}
                 <div class="bubble-row {% if mensaje.remitente_id == request.user.id %}propia{% else %}ajena{% endif %}">
                     {% if mensaje.remitente_id == conversacion.paciente.user_id %}

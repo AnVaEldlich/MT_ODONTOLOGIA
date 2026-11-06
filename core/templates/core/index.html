@@ -2,14 +2,18 @@
 {% load static %}
 
 {% block title %}MT Odontología · Encuentra especialista y agenda{% endblock %}
+{% block body_class %}page-home{% endblock %}
 
 {% block content %}
 <section class="hero" id="inicio">
     <div class="hero-grid">
-        <div>
-            <p class="kicker">{% include "core/includes/icon.html" with name="brillo" %}Clínica odontológica</p>
+        <div class="hero-copy">
+            <p class="logo logo-hero">
+                {% include "core/includes/logo_mark.html" %}
+                MT <span>Odontología</span>
+            </p>
             <h1>Encuentra a tu especialista y <em>reserva una hora</em>.</h1>
-            <p class="lede">Busca por especialidad o tratamiento y por ciudad. Eliges el horario que te sirve, sin llamar ni esperar.</p>
+            <p class="lede">Elige el horario que te sirve y confirma en minutos, sin llamar ni esperar.</p>
             <ul class="trust">
                 <li>{% include "core/includes/icon.html" with name="check-circulo" %}Perfiles verificados</li>
                 <li>{% include "core/includes/icon.html" with name="check-circulo" %}Reserva sin costo</li>
@@ -45,34 +49,6 @@
             {% include "core/includes/vacio.html" with titulo="Catálogo en preparación" texto="Las especialidades aparecerán cuando la clínica las publique." compacto=True %}
             {% endfor %}
         </div>
-    </div>
-</section>
-
-<section class="band" id="como-funciona">
-    <div class="wrap">
-        <div class="band-head">
-            <div>
-                <h2>Así de simple</h2>
-                <p class="intro">Tres pasos y la cita queda pedida. El especialista la confirma y te avisamos.</p>
-            </div>
-        </div>
-        <ol class="pasos">
-            <li class="paso">
-                <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="lupa-diente" clase="lg" %}</span>
-                <h3>Busca</h3>
-                <p>Filtra por especialidad, tratamiento o sede y compara opiniones reales de pacientes.</p>
-            </li>
-            <li class="paso">
-                <span class="icon-tile book" aria-hidden="true">{% include "core/includes/icon.html" with name="hora" clase="lg" %}</span>
-                <h3>Elige la hora</h3>
-                <p>Los horarios publicados se ven en la ficha. Toca uno y listo, sin llamadas.</p>
-            </li>
-            <li class="paso">
-                <span class="icon-tile warn" aria-hidden="true">{% include "core/includes/icon.html" with name="chat" clase="lg" %}</span>
-                <h3>Conversa y asiste</h3>
-                <p>Con la cita activa puedes escribirle al especialista y recibir recordatorios.</p>
-            </li>
-        </ol>
     </div>
 </section>
 
@@ -139,28 +115,24 @@
     <div class="wrap">
         <div class="band-head">
             <div>
-                <h2>Sedes</h2>
-                <p class="intro">Dirección y horario. El mapa abre en OpenStreetMap.</p>
+                <h2>Nuestras sedes</h2>
+                <p class="intro">Encuentra la sede más cercana, consulta su horario y agenda con el especialista que necesitas.</p>
             </div>
         </div>
-        <div class="card-grid two">
+        <div class="card-grid three">
             {% for item in sedes %}
-            <article class="card">
-                <div class="who-row">
-                    <span class="icon-tile" aria-hidden="true">{% include "core/includes/icon.html" with name="pin" clase="lg" %}</span>
-                    <div>
-                        <h3>{{ item.sede.nombre }}</h3>
-                        <p class="meta">{{ item.sede.direccion }} · {{ item.sede.ciudad }}, {{ item.sede.departamento }}</p>
-                    </div>
+            <article class="card sede-card">
+                <p class="sede-ciudad">{% include "core/includes/icon.html" with name="pin" %}{{ item.sede.ciudad }}</p>
+                <h3>{{ item.sede.nombre }}</h3>
+                <ul class="sede-datos">
+                    <li>{% include "core/includes/icon.html" with name="pin" %}<span>{% if item.sede.direccion %}{{ item.sede.direccion }}{% else %}[Dirección y barrio]{% endif %}</span></li>
+                    <li>{% include "core/includes/icon.html" with name="reloj" %}<span>{% if item.sede.horario_atencion %}{{ item.sede.horario_atencion }}{% else %}[Horario de atención]{% endif %}</span></li>
+                    <li>{% include "core/includes/icon.html" with name="telefono" %}<span>{% if item.sede.telefono %}{{ item.sede.telefono }}{% else %}[Teléfono]{% endif %}</span></li>
+                </ul>
+                <div class="sede-acciones">
+                    <a class="btn btn-primary btn-sm" href="{% url 'buscar_profesionales' %}?ciudad={{ item.sede.ciudad|urlencode }}">Ver especialistas</a>
+                    <a class="btn btn-ghost btn-sm" href="{{ item.mapa }}" rel="noopener noreferrer">Abrir mapa</a>
                 </div>
-                <div class="chips card-chips">
-                    {% if item.sede.telefono %}<span class="chip">{% include "core/includes/icon.html" with name="telefono" %}{{ item.sede.telefono }}</span>{% endif %}
-                    {% if item.sede.horario_atencion %}<span class="chip">{% include "core/includes/icon.html" with name="reloj" %}{{ item.sede.horario_atencion }}</span>{% endif %}
-                </div>
-                <p class="actions card-actions">
-                    <a class="btn btn-ghost btn-sm" href="{{ item.mapa }}" rel="noopener noreferrer">{% include "core/includes/icon.html" with name="mapa" %}Ver en el mapa</a>
-                    <a class="btn btn-brand btn-sm" href="{% url 'buscar_profesionales' %}?ciudad={{ item.sede.ciudad|urlencode }}">Especialistas en {{ item.sede.ciudad }}</a>
-                </p>
             </article>
             {% empty %}
             {% include "core/includes/vacio.html" with titulo="Sedes por publicar" texto="Las sedes se publicarán cuando el equipo las registre." compacto=True %}

@@ -22,8 +22,8 @@ Siempre `class="btn"` más una variante. Un `btn-primary` por vista.
 Tamaños: `btn-sm`, `btn-lg`. Ancho: `btn-block`. No uses `btn-book`, `btn-next`, `btn-prev`, `btn-login`, `btn-submit` ni `submit-btn` en pantallas nuevas: son alias de las cuatro variantes.
 
 ```django
-{# ❌ <a class="btn-book">Agendar cita</a> #}
-{# ✅ <a class="btn btn-primary" href="{% url 'solicitar_cita' %}">Agendar cita</a> #}
+{# Mal: <a class="btn-book">Agendar cita</a> #}
+{# Bien: <a class="btn btn-primary" href="{% url 'solicitar_cita' %}">Agendar cita</a> #}
 ```
 
 Esa acción vive en un solo sitio de la vista: navbar, cabecera de lista o estado vacío. No la repitas al lado.
