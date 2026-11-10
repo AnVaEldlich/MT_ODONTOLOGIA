@@ -1,0 +1,21 @@
+<dialog class="foto-dialog" id="servicios-dialog" aria-labelledby="servicios-titulo">
+    <div class="card-title-row">
+        <h2 id="servicios-titulo">Servicios</h2>
+        <button class="icon-btn" type="button" data-dialog-cerrar="servicios-dialog" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+    </div>
+    {% if tarjeta.servicios %}
+    <ul class="cita-list">
+        {% for servicio in tarjeta.servicios %}
+        <li>
+            <div>
+                <div class="when">{{ servicio.nombre }}</div>
+                <div class="who">{% include "core/includes/icon.html" with name="reloj" %} {{ servicio.duracion_minutos }} min</div>
+            </div>
+            {% if servicio.precio %}<span class="price">${{ servicio.precio|floatformat:0 }}</span>{% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    {% include "core/includes/vacio.html" with titulo="Sin servicios publicados" texto="Cuando el especialista publique su catálogo, lo verás aquí." compacto=True %}
+    {% endif %}
+</dialog>

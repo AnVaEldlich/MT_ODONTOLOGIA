@@ -1,0 +1,28 @@
+<dialog class="foto-dialog" id="citas-proximas-dialog" aria-labelledby="citas-proximas-titulo">
+    <div class="card-title-row">
+        <h2 id="citas-proximas-titulo">Citas próximas</h2>
+        <button class="icon-btn" type="button" id="citas-proximas-cerrar" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+    </div>
+    {% if citas_proximas %}
+    <ul class="cita-list seguidos-lista">
+        {% for cita in citas_proximas %}
+        <li>
+            <div class="who-row">
+                {% include "core/includes/avatar.html" with foto=cita.profesional.foto iniciales=cita.profesional.iniciales tamano="sm" alt="" %}
+                <div>
+                    <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
+                    <div class="who">{{ cita.profesional.get_full_name }} · {{ cita.profesional.etiqueta_especialidad }}</div>
+                    {% if cita.sede %}<div class="who">{% include "core/includes/icon.html" with name="pin" %} {{ cita.sede.nombre }}</div>{% endif %}
+                </div>
+            </div>
+            <p class="actions card-actions">
+                <span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span>
+                <a class="btn btn-ghost btn-sm" href="{% url 'mis_citas' %}">Ver en Mis citas</a>
+            </p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    {% include "core/includes/vacio.html" with tipo="cita" titulo="Todavía no tienes citas próximas" texto="Cuando reserves, aparecerán aquí." enlace="/especialistas/" accion="Buscar especialista" %}
+    {% endif %}
+</dialog>

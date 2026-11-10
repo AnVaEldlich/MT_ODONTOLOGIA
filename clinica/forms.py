@@ -111,7 +111,7 @@ class DisponibilidadForm(forms.ModelForm):
 class BloqueoForm(forms.ModelForm):
     class Meta:
         model = BloqueoHorario
-        fields = ("inicio", "fin", "motivo", "sede", "consultorio")
+        fields = ("inicio", "fin", "tipo", "motivo", "sede", "consultorio")
         widgets = {
             "inicio": forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
             "fin": forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),

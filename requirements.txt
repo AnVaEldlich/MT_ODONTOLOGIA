@@ -20,5 +20,9 @@ pytest==8.3.4
 pytest-django==4.9.0
 pytest-env==1.1.5
 
+# Desarrollo: recarga del navegador (solo activas con DEBUG=True; ver DEV_RELOAD)
+django-browser-reload==1.21.0
+django-livereload-server==0.5.1
+
 # Opcional: monitoreo (configurar SENTRY_DSN en .env)
 sentry-sdk==2.19.2

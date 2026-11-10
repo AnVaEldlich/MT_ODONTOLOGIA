@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from citas.models import Cita
 from clinica.models import Tratamiento
 
-from .models import DIENTES_FDI, HistoriaClinica, Odontograma
+from .models import DIENTES_FDI, HistoriaClinica, Odontograma, PlanTratamiento
 
 
 class HistoriaForm(forms.ModelForm):
@@ -63,6 +63,59 @@ class DienteForm(forms.Form):
         if codigo not in DIENTES_FDI:
             raise ValidationError("El código FDI no corresponde a un diente permanente.")
         return codigo
+
+
+class PlanTratamientoForm(forms.Form):
+    tratamiento = forms.ModelChoiceField(
+        label="Tratamiento",
+        queryset=Tratamiento.objects.filter(activo=True),
+    )
+    codigo_fdi = forms.IntegerField(label="Diente (FDI)", required=False)
+    precio = forms.DecimalField(label="Precio", required=False, min_value=0, decimal_places=2, max_digits=12)
+    nota = forms.CharField(label="Nota", required=False, max_length=180)
+
+    def clean_codigo_fdi(self):
+        codigo = self.cleaned_data.get("codigo_fdi")
+        if codigo is not None and codigo not in DIENTES_FDI:
+            raise ValidationError("El código FDI no corresponde a un diente permanente.")
+        return codigo
+
+
+class EstadoPlanForm(forms.Form):
+    item = forms.IntegerField()
+    estado = forms.ChoiceField(choices=PlanTratamiento.ESTADO_CHOICES)
+
+
+class CasoLaboratorioForm(forms.Form):
+    tipo = forms.ChoiceField(label="Tipo", choices=())
+    laboratorio = forms.CharField(label="Laboratorio", max_length=120)
+    codigo_fdi = forms.IntegerField(label="Diente (FDI)", required=False)
+    color = forms.CharField(label="Color", required=False, max_length=20)
+    precio = forms.DecimalField(label="Precio", required=False, min_value=0, decimal_places=2, max_digits=12)
+    nota = forms.CharField(label="Nota", required=False, max_length=180)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from .models import CasoLaboratorio
+
+        self.fields["tipo"].choices = CasoLaboratorio.TIPO_CHOICES
+
+    def clean_codigo_fdi(self):
+        codigo = self.cleaned_data.get("codigo_fdi")
+        if codigo is not None and codigo not in DIENTES_FDI:
+            raise ValidationError("El código FDI no corresponde a un diente permanente.")
+        return codigo
+
+
+class EstadoCasoForm(forms.Form):
+    caso = forms.IntegerField()
+    estado = forms.ChoiceField(choices=())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from .models import CasoLaboratorio
+
+        self.fields["estado"].choices = CasoLaboratorio.ESTADO_CHOICES
 
 
 class RecetaForm(forms.Form):

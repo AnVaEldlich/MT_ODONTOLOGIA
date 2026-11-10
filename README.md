@@ -61,6 +61,28 @@ python manage.py runserver
 
 La app queda en http://127.0.0.1:8000/.
 
+### Recarga al guardar (desarrollo)
+
+Con `DEBUG=True`, `runserver` ya usa **StatReloader**: al cambiar código Python reinicia el proceso. Para que plantillas, CSS y JS se vean **sin F5**, el proyecto trae:
+
+| `DEV_RELOAD` en `.env` | Qué hace |
+| --- | --- |
+| `browser-reload` (por defecto) | `django-browser-reload` con un solo `runserver` |
+| `livereload` | LiveReload clásico: en otra terminal `python manage.py livereload` y en esta `runserver` |
+| `both` | Los dos a la vez (a veces doble recarga) |
+| `off` | Solo StatReloader; recargas el navegador a mano |
+
+```bash
+# Modo recomendado (browser-reload)
+python manage.py runserver
+
+# Solo LiveReload (DEV_RELOAD=livereload)
+python manage.py livereload
+python manage.py runserver
+```
+
+En producción (`DEBUG=False`) no se cargan ni las apps ni los scripts de recarga.
+
 ## Arranque nuevo, con SQLite
 
 Sirve para mirar la interfaz sin MySQL. Es también lo que usa `pytest`.

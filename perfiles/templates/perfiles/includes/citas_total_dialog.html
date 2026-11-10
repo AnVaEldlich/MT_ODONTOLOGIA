@@ -1,0 +1,33 @@
+<dialog class="foto-dialog" id="citas-total-dialog" aria-labelledby="citas-total-titulo">
+    <div class="card-title-row">
+        <h2 id="citas-total-titulo">Citas en total</h2>
+        <button class="icon-btn" type="button" id="citas-total-cerrar" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+    </div>
+    {% if citas_historial %}
+    <ul class="cita-list seguidos-lista">
+        {% for cita in citas_historial %}
+        <li>
+            <div class="who-row">
+                {% include "core/includes/avatar.html" with foto=cita.profesional.foto iniciales=cita.profesional.iniciales tamano="sm" alt="" %}
+                <div>
+                    <div class="when">{{ cita.fecha_hora|date:"d/m/Y · H:i" }}</div>
+                    <div class="who">{{ cita.profesional.get_full_name }} · {{ cita.profesional.etiqueta_especialidad }}</div>
+                    {% if cita.sede %}<div class="who">{% include "core/includes/icon.html" with name="pin" %} {{ cita.sede.nombre }}</div>{% endif %}
+                </div>
+            </div>
+            <p class="actions card-actions">
+                <span class="badge {{ cita.estado }}">{{ cita.get_estado_display }}</span>
+            </p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% if stats.total > citas_historial|length %}
+    <p class="meta">Mostramos las {{ citas_historial|length }} más recientes. El historial completo está en Mis citas.</p>
+    {% endif %}
+    <div class="form-actions">
+        <a class="btn btn-primary btn-sm" href="{% url 'mis_citas' %}">Abrir Mis citas</a>
+    </div>
+    {% else %}
+    {% include "core/includes/vacio.html" with tipo="cita" titulo="Aún no tienes citas" texto="Busca un especialista y elige la hora que te sirva." enlace="/citas/solicitar/" accion="Agendar cita" %}
+    {% endif %}
+</dialog>

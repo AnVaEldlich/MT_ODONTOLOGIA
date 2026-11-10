@@ -17,6 +17,6 @@ Sistema server-rendered. Apps por dominio: `core`, `accounts`, `perfiles`, `cita
 - Frontend: plantillas Django y tokens de `base.css`. La única vía extra es HTMX + Alpine.js, y solo con el ADR 0001 en Accepted. Ver `.cursor/rules/frontend-stack.mdc`.
 
 ```text
-# ❌ citas/views.py con HTML y SQL suelto
-# ✅ citas/forms.py + citas/services.py + citas/templates/citas/
+# Mal: citas/views.py con HTML y SQL suelto
+# Bien: citas/forms.py + citas/services.py + citas/templates/citas/
 ```

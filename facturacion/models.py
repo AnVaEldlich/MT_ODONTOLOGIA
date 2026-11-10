@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.conf import settings
 from django.db import models
 from django.db.models import Sum
@@ -81,6 +83,13 @@ class Factura(models.Model):
     def __str__(self):
         return f"{self.numero} · {self.concepto}"
 
+    def recalcular_valor(self):
+        total = sum((item.subtotal for item in self.items.all()), Decimal("0"))
+        if self.items.exists():
+            self.valor = total
+            self.save(update_fields=["valor"])
+        return self.valor
+
     @property
     def total_pagado(self):
         return self.pagos.aggregate(total=Sum("valor"))["total"] or 0
@@ -88,6 +97,62 @@ class Factura(models.Model):
     @property
     def saldo(self):
         return self.valor - self.total_pagado
+
+
+class FacturaItem(models.Model):
+    factura = models.ForeignKey(
+        Factura,
+        on_delete=models.CASCADE,
+        related_name="items",
+        verbose_name="Factura",
+    )
+    descripcion = models.CharField(max_length=180, verbose_name="Descripción")
+    cantidad = models.PositiveSmallIntegerField(default=1, verbose_name="Cantidad")
+    precio_unitario = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Precio unitario")
+
+    class Meta:
+        verbose_name = "Ítem de factura"
+        verbose_name_plural = "Ítems de factura"
+        ordering = ["id"]
+
+    @property
+    def subtotal(self):
+        return self.cantidad * self.precio_unitario
+
+    def __str__(self):
+        return self.descripcion
+
+
+class Seguro(models.Model):
+    RANGO_PRINCIPAL = "principal"
+    RANGO_SECUNDARIO = "secundario"
+    RANGO_CHOICES = [
+        (RANGO_PRINCIPAL, "Principal"),
+        (RANGO_SECUNDARIO, "Secundario"),
+    ]
+
+    paciente = models.ForeignKey(
+        Paciente,
+        on_delete=models.CASCADE,
+        related_name="seguros",
+        verbose_name="Paciente",
+    )
+    rango = models.CharField(max_length=20, choices=RANGO_CHOICES, verbose_name="Rango")
+    aseguradora = models.CharField(max_length=120, verbose_name="Aseguradora")
+    numero_afiliado = models.CharField(max_length=40, blank=True, verbose_name="Número de afiliado")
+    copago = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Copago")
+    deducible = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Deducible")
+    tope_anual = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Tope anual")
+
+    class Meta:
+        verbose_name = "Seguro"
+        verbose_name_plural = "Seguros"
+        constraints = [
+            models.UniqueConstraint(fields=["paciente", "rango"], name="seguro_rango_unico"),
+        ]
+
+    def __str__(self):
+        return f"{self.get_rango_display()} · {self.aseguradora}"
 
 
 class Pago(models.Model):

@@ -1,0 +1,12 @@
+.agenda-grid { min-width: 40rem; }
+.agenda-grid td { vertical-align: top; min-width: 9rem; }
+.agenda-grid td[data-celda="bloqueo"] { background: var(--bg-muted); }
+.agenda-grid td[data-celda="descanso"] { background: var(--warn-bg); }
+.agenda-grid td[data-celda="almuerzo"] { background: var(--brand-soft); }
+.agenda-grid td[data-celda="cita"] { background: var(--brand-soft); }
+.agenda-grid tr.ahora th { box-shadow: inset 3px 0 0 var(--danger); }
+.agenda-paciente { margin: 0 0 0.2rem; font-weight: 700; }
+.agenda-acciones { margin-top: 0.35rem; }
+.agenda-acciones summary { cursor: pointer; color: var(--text-secondary); font-size: 0.82rem; }
+.agenda-grid .actions { margin-top: 0.35rem; }
+.agenda-grid .actions form { display: inline; }

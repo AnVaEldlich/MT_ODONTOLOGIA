@@ -8,6 +8,7 @@ from django.utils import timezone
 from accounts.models import Paciente, Profesional
 from accounts.roles import assign_paciente_group, assign_profesional_group
 from citas.models import Cita
+from comunicacion.consumers import _salas, entrar_sala, salir_sala
 from comunicacion.models import Conversacion, Mensaje, Publicacion, Seguimiento
 
 
@@ -111,6 +112,9 @@ def test_tercero_no_lee_ni_escribe(client, django_user_model):
     assert detalle.status_code == 200
     html = detalle.content.decode()
     assert "Hola desde la cita" in html
+    assert "En tiempo real" not in html
+    assert "Activo ahora" in html
+    assert f'data-otro="{dueno.pk}"' in html
     assert "no es para urgencias" not in html
     assert "bubble-row ajena" in html
     assert 'class="avatar sm"' in html
@@ -202,27 +206,40 @@ def test_perfil_abre_dialogo_de_especialistas_seguidos(client, django_user_model
     assert "seguidos-dialog" in cuerpo
     assert "Leo Vera" in cuerpo
     assert reverse("chat_con_profesional", args=[profesional.pk]) not in cuerpo
+    assert "citas-proximas-dialog" in cuerpo
+    assert "citas-total-dialog" in cuerpo
+    assert "citas-proximas-abrir" in cuerpo
+    assert "citas-total-abrir" in cuerpo
 
 
 @pytest.mark.django_db
-def test_ficha_publica_abre_dialogo_de_seguidores(client, django_user_model):
+def test_ficha_publica_muestra_chips_decorativos_sin_modal(client, django_user_model):
     _user, paciente = _paciente(django_user_model, "fan@test.com", "9009", apellido="Ríos")
     _pro_user, profesional = _profesional(django_user_model, "pro.fans@test.com")
     Seguimiento.objects.create(paciente=paciente, profesional=profesional)
     cuerpo = client.get(reverse("perfil_publico", args=[profesional.pk])).content.decode()
-    assert "seguidores-dialog" in cuerpo
-    assert "seguidores-abrir" in cuerpo
-    assert "Ana Ríos" in cuerpo
+    assert "seguidores-dialog" not in cuerpo
+    assert "seguidores-abrir" not in cuerpo
+    assert "badge-accion" not in cuerpo
+    assert "data-abre-dialog" not in cuerpo
+    assert "1 seguidor" in cuerpo
     assert "SECRETO-CLINICO-9009" not in cuerpo
 
 
-@pytest.mark.django_db
-def test_panel_profesional_abre_dialogo_de_seguidores(client, django_user_model):
-    _user, paciente = _paciente(django_user_model, "fan2@test.com", "9010", apellido="Mora")
-    pro_user, profesional = _profesional(django_user_model, "pro.panel.fans@test.com")
-    Seguimiento.objects.create(paciente=paciente, profesional=profesional)
-    client.force_login(pro_user)
-    cuerpo = client.get(reverse("perfil_profesional")).content.decode()
-    assert "seguidores-dialog" in cuerpo
-    assert "Ana Mora" in cuerpo
-    assert "SECRETO-CLINICO-9010" not in cuerpo
+def test_punto_verde_sigue_al_otro_participante():
+    _salas.clear()
+    primera, otros = entrar_sala(7, 1)
+    assert primera is True
+    assert otros == []
+
+    llega_otro, otros = entrar_sala(7, 2)
+    assert llega_otro is True
+    assert otros == [1]
+
+    otra_pestaña, _ = entrar_sala(7, 2)
+    assert otra_pestaña is False
+    assert salir_sala(7, 2) is False
+    assert salir_sala(7, 2) is True
+    assert salir_sala(7, 1) is True
+    assert salir_sala(7, 1) is False
+    assert _salas == {}

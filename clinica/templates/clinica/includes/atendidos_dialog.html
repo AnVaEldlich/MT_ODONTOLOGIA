@@ -1,0 +1,8 @@
+<dialog class="foto-dialog" id="atendidos-dialog" aria-labelledby="atendidos-titulo">
+    <div class="card-title-row">
+        <h2 id="atendidos-titulo">Pacientes atendidos</h2>
+        <button class="icon-btn" type="button" data-dialog-cerrar="atendidos-dialog" aria-label="Cerrar">{% include "core/includes/icon.html" with name="cerrar" %}</button>
+    </div>
+    <p class="stat-dialog-dato"><span class="num">{{ resumen.atendidos }}</span></p>
+    <p class="meta">Personas distintas con al menos una cita marcada como atendida. No mostramos nombres ni historia clínica.</p>
+</dialog>

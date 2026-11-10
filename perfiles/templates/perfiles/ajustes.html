@@ -1,0 +1,56 @@
+{% extends "core/base.html" %}
+{% load dinero static %}
+{% block title %}Ajustes de la clínica — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_administrador.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Ajustes</h1>
+            <p>Duración, precio y color del catálogo. El color usa los de la interfaz.</p>
+        </div>
+        <section class="card">
+            <h2>Tratamientos</h2>
+            {% for tratamiento in tratamientos %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="tratamiento">
+                <input type="hidden" name="pk" value="{{ tratamiento.pk }}">
+                <p><strong>{{ tratamiento.nombre }}</strong></p>
+                <label>Duración (minutos) <input type="number" name="duracion_minutos" min="15" max="240" value="{{ tratamiento.duracion_minutos }}" required></label>
+                <label>Precio <input type="number" name="precio" min="0" step="1" value="{{ tratamiento.precio }}" required></label>
+                <label>Color
+                    <select name="color">
+                        {% for codigo, etiqueta in colores %}
+                        <option value="{{ codigo }}" {% if tratamiento.color == codigo %}selected{% endif %}>{{ etiqueta }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <button class="btn btn-primary" type="submit">Guardar</button>
+            </form>
+            {% endfor %}
+        </section>
+        <section class="card">
+            <h2>Consultorios</h2>
+            {% for consultorio in consultorios %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="consultorio">
+                <input type="hidden" name="pk" value="{{ consultorio.pk }}">
+                <p><strong>{{ consultorio.nombre }}</strong> · {{ consultorio.sede.nombre }}</p>
+                <label>Color
+                    <select name="color">
+                        {% for codigo, etiqueta in colores %}
+                        <option value="{{ codigo }}" {% if consultorio.color == codigo %}selected{% endif %}>{{ etiqueta }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <button class="btn btn-ghost" type="submit">Guardar</button>
+            </form>
+            {% endfor %}
+        </section>
+    </div>
+</div>
+{% endblock %}

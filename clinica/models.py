@@ -98,6 +98,17 @@ class Consultorio(models.Model):
     nombre = models.CharField(max_length=80, verbose_name="Nombre")
     piso = models.CharField(max_length=20, blank=True, verbose_name="Piso")
     activo = models.BooleanField(default=True, verbose_name="Activo")
+    color = models.CharField(
+        max_length=12,
+        choices=[
+            ("brand", "Marca"),
+            ("ok", "Verde"),
+            ("warn", "Ámbar"),
+            ("danger", "Rojo"),
+        ],
+        default="brand",
+        verbose_name="Color",
+    )
 
     class Meta:
         verbose_name = "Consultorio"
@@ -166,6 +177,17 @@ class Tratamiento(models.Model):
         verbose_name="Precio de referencia",
     )
     activo = models.BooleanField(default=True, verbose_name="Activo")
+    color = models.CharField(
+        max_length=12,
+        choices=[
+            ("brand", "Marca"),
+            ("ok", "Verde"),
+            ("warn", "Ámbar"),
+            ("danger", "Rojo"),
+        ],
+        default="brand",
+        verbose_name="Color",
+    )
 
     class Meta:
         verbose_name = "Tratamiento"
@@ -268,6 +290,16 @@ class BloqueoHorario(models.Model):
     inicio = models.DateTimeField(verbose_name="Inicio")
     fin = models.DateTimeField(verbose_name="Fin")
     motivo = models.CharField(max_length=180, verbose_name="Motivo")
+    tipo = models.CharField(
+        max_length=20,
+        choices=[
+            ("bloqueo", "Bloqueo"),
+            ("descanso", "Descanso"),
+            ("almuerzo", "Almuerzo"),
+        ],
+        default="bloqueo",
+        verbose_name="Tipo",
+    )
 
     class Meta:
         verbose_name = "Bloqueo de horario"

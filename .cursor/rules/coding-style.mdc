@@ -11,15 +11,16 @@ alwaysApply: true
 - No añadir abstracciones de un solo uso. Tres líneas claras valen más que un helper especulativo.
 - Imports al inicio. Sin `import *`.
 - Comentarios solo para una restricción no obvia (dato clínico, rol, CSRF). No narrar el código.
+- Prohibido usar emojis en código, comentarios, mensajes y documentación.
 
 ```python
-# ❌
+# Mal
 def do(request):
     if request.user.is_authenticated:
         if user_role(request.user) == "paciente":
             ...
 
-# ✅
+# Bien
 @paciente_required
 def mis_citas(request):
     ...

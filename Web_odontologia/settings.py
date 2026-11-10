@@ -112,6 +112,26 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# Recarga del navegador en local. El StatReloader de runserver ya reinicia
+# el proceso ante cambios en .py; esto evita el F5 en plantillas y estáticos.
+# DEV_RELOAD: browser-reload | livereload | both | off
+_dev_reload = "off"
+if DEBUG and not _under_pytest:
+    _dev_reload = os.getenv("DEV_RELOAD", "browser-reload").strip().lower() or "browser-reload"
+    if _dev_reload not in ("browser-reload", "livereload", "both", "off"):
+        _dev_reload = "browser-reload"
+
+USE_BROWSER_RELOAD = _dev_reload in ("browser-reload", "both")
+USE_LIVERELOAD = _dev_reload in ("livereload", "both")
+
+if USE_BROWSER_RELOAD:
+    INSTALLED_APPS.append("django_browser_reload")
+    MIDDLEWARE.insert(0, "django_browser_reload.middleware.BrowserReloadMiddleware")
+
+if USE_LIVERELOAD:
+    INSTALLED_APPS.append("livereload")
+    MIDDLEWARE.append("livereload.middleware.LiveReloadScript")
+
 ROOT_URLCONF = "Web_odontologia.urls"
 
 TEMPLATES = [

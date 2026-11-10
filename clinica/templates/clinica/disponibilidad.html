@@ -68,7 +68,7 @@
                         <span class="icon-tile warn" aria-hidden="true">{% include "core/includes/icon.html" with name="cerrar" %}</span>
                         <div>
                             <div class="when">{{ bloqueo.inicio|date:"d/m/Y H:i" }} – {{ bloqueo.fin|date:"d/m/Y H:i" }}</div>
-                            <div class="who">{{ bloqueo.motivo }}</div>
+                            <div class="who">{{ bloqueo.get_tipo_display }} · {{ bloqueo.motivo }}</div>
                         </div>
                     </div>
                 </li>

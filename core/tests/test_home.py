@@ -3,6 +3,18 @@ from django.urls import reverse
 
 
 @pytest.mark.django_db
+def test_home_destaca_marca_y_mensaje_principal(client):
+    html = client.get(reverse("home")).content.decode()
+    assert "MT Odontología" in html
+    assert "Encuentra a tu especialista" in html
+    assert "Busca por especialidad o tratamiento" not in html
+    assert 'class="logo logo-hero"' in html
+    assert "/static/images/logo.png" in html or "images/logo.png" in html
+    assert "page-home" in html
+    assert reverse("buscar_profesionales") in html
+
+
+@pytest.mark.django_db
 def test_home_muestra_tratamientos_sin_filas(client):
     html = client.get(reverse("home")).content.decode()
     assert "Limpieza dental" in html
@@ -29,11 +41,10 @@ def test_home_oculta_tratamiento_inactivo(client):
 
 
 @pytest.mark.django_db
-def test_home_muestra_agendar_cita(client):
-    response = client.get(reverse("home"))
-    assert response.status_code == 200
-    assert "Agendar cita" in response.content.decode()
-    assert reverse("login") in response.content.decode()
+def test_home_no_muestra_cta_duplicados_en_hero(client):
+    html = client.get(reverse("home")).content.decode()
+    assert 'class="hero-cta"' not in html
+    assert reverse("login") in html
 
 
 @pytest.mark.django_db

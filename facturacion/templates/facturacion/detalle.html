@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load dinero %}
 {% load static %}
 {% block title %}Factura {{ factura.numero }} — MT Odontología{% endblock %}
 {% block body_class %}app-layout{% endblock %}
@@ -16,9 +17,24 @@
             <p>{{ factura.concepto }} · {{ factura.get_estado_display }}</p>
         </div>
         <section class="card">
-            <p><strong>Valor:</strong> ${{ factura.valor }}</p>
-            <p><strong>Pagado:</strong> ${{ factura.total_pagado }}</p>
-            <p><strong>Saldo:</strong> ${{ factura.saldo }}</p>
+            <h2>Ítems</h2>
+            {% if items %}
+            <ul class="cita-list">
+                {% for item in items %}
+                <li>
+                    <div>
+                        <div class="when">{{ item.descripcion }}</div>
+                        <div class="who">{{ item.cantidad }} × ${{ item.precio_unitario|pesos }} = ${{ item.subtotal|pesos }}</div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>{{ factura.concepto }}</p>
+            {% endif %}
+            <p><strong>Valor:</strong> ${{ factura.valor|pesos }}</p>
+            <p><strong>Pagado:</strong> ${{ factura.total_pagado|pesos }}</p>
+            <p><strong>Saldo:</strong> ${{ factura.saldo|pesos }}</p>
             {% if factura.paciente and user_role == 'profesional' %}
             <p><strong>Paciente:</strong> {{ factura.paciente.first_name }} {{ factura.paciente.last_name }}</p>
             {% endif %}
@@ -28,7 +44,7 @@
                 {% for pago in pagos %}
                 <li>
                     <div>
-                        <div class="when">${{ pago.valor }} · {{ pago.get_metodo_display }}</div>
+                        <div class="when">${{ pago.valor|pesos }} · {{ pago.get_metodo_display }}</div>
                         <div class="who">{{ pago.created_at|date:"d/m/Y H:i" }}{% if pago.referencia %} · {{ pago.referencia }}{% endif %}</div>
                     </div>
                 </li>
@@ -42,8 +58,18 @@
         <form class="card form-narrow" method="post" novalidate>
             {% csrf_token %}
             <h2>Registrar pago</h2>
+            <input type="hidden" name="accion" value="pago">
             {% include "core/includes/fields.html" %}
             <button class="btn btn-primary" type="submit">Guardar pago</button>
+        </form>
+        {% endif %}
+        {% if puede_editar and item_form %}
+        <form class="card form-narrow" method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="item">
+            <h2>Agregar ítem</h2>
+            {% include "core/includes/fields.html" with form=item_form %}
+            <button class="btn btn-ghost" type="submit">Agregar</button>
         </form>
         {% endif %}
     </div>

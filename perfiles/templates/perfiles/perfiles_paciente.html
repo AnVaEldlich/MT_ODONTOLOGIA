@@ -24,8 +24,14 @@
                 </div>
             </div>
             <div class="stats">
-                <div class="stat"><div class="num">{{ stats.proximas }}</div><div class="label">Citas próximas</div></div>
-                <div class="stat"><div class="num">{{ stats.total }}</div><div class="label">Citas en total</div></div>
+                <button type="button" class="stat stat-accion" id="citas-proximas-abrir" aria-haspopup="dialog" aria-controls="citas-proximas-dialog">
+                    <div class="num">{{ stats.proximas }}</div>
+                    <div class="label">Citas próximas</div>
+                </button>
+                <button type="button" class="stat stat-accion" id="citas-total-abrir" aria-haspopup="dialog" aria-controls="citas-total-dialog">
+                    <div class="num">{{ stats.total }}</div>
+                    <div class="label">Citas en total</div>
+                </button>
                 <button type="button" class="stat stat-accion" id="seguidos-abrir" aria-haspopup="dialog" aria-controls="seguidos-dialog">
                     <div class="num">{{ seguidos|length }}</div>
                     <div class="label">Especialistas que sigues</div>
@@ -117,9 +123,11 @@
 </div>
 {% url 'foto_paciente' as foto_url %}
 {% include "perfiles/includes/foto_dialog.html" with accion=foto_url %}
+{% include "perfiles/includes/citas_proximas_dialog.html" %}
+{% include "perfiles/includes/citas_total_dialog.html" %}
 {% include "perfiles/includes/seguidos_dialog.html" %}
 {% endblock %}
 {% block extra_js %}
 <script src="{% static 'js/foto.js' %}"></script>
-<script src="{% static 'js/seguidos.js' %}?v=2"></script>
+<script src="{% static 'js/seguidos.js' %}?v=4"></script>
 {% endblock %}

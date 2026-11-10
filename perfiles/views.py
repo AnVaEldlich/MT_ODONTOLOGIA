@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
+from decimal import Decimal, InvalidOperation
 from urllib.parse import urlencode
 
 from django.contrib import messages
+from django.db.models import Count, Sum
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
@@ -26,18 +28,35 @@ from accounts.services import (
 from citas.models import Cita
 from citas.services import profesional_atiende
 from clinica.forms import DisponibilidadForm, ElegirSedesForm
-from clinica.models import Disponibilidad
+from clinica.models import Consultorio, Disponibilidad, Tratamiento
 from clinica.services import asignar_sedes, publicar_franjas, sincronizar_centros_a_sedes
 from comunicacion.forms import PublicacionForm
 from comunicacion.services import feed_paciente, publicaciones_de, resumen_profesional, tiene_cita_para_chat
-from facturacion.forms import FacturaForm
-from facturacion.services import crear_factura
-from historia.forms import DienteForm, EvolucionForm, HistoriaForm, RecetaForm
-from historia.models import Odontograma
+from facturacion.forms import FacturaForm, SeguroForm
+from facturacion.models import Factura, Seguro
+from facturacion.services import crear_factura, facturar_plan, guardar_seguro
+from historia.forms import (
+    CasoLaboratorioForm,
+    DienteForm,
+    EstadoCasoForm,
+    EstadoPlanForm,
+    EvolucionForm,
+    HistoriaForm,
+    PlanTratamientoForm,
+    RecetaForm,
+)
+from historia.models import CasoLaboratorio, Odontograma, PlanTratamiento, SuperficieDiente
 from historia.services import (
+    cambiar_estado_caso,
+    crear_caso_laboratorio,
     crear_receta,
     dientes_del_paciente,
+    cambiar_estado_plan,
+    crear_item_plan,
     guardar_diente,
+    guardar_superficie,
+    planes_del_paciente,
+    totales_plan,
     guardar_historia,
     obtener_historia,
     registrar_consulta,
@@ -368,7 +387,7 @@ def _guardar_ficha(request, paciente, profesional):
             if form.is_valid():
                 guardar_historia(form.instance, form.cleaned_data, request=request)
                 messages.success(request, "Historia clínica actualizada.")
-                return redirect("ficha_paciente", paciente_id=paciente.pk)
+                return _volver_ficha(paciente, accion)
         elif accion == "evolucion":
             form = EvolucionForm(request.POST, paciente=paciente, profesional=profesional)
             if form.is_valid():
@@ -381,8 +400,24 @@ def _guardar_ficha(request, paciente, profesional):
                     request=request,
                 )
                 messages.success(request, "Evolución registrada.")
-                return redirect("ficha_paciente", paciente_id=paciente.pk)
+                return _volver_ficha(paciente, accion)
         elif accion == "diente":
+            superficie = (request.POST.get("superficie") or "").strip()
+            if superficie:
+                try:
+                    codigo = int(request.POST.get("codigo_fdi") or 0)
+                except (TypeError, ValueError):
+                    codigo = 0
+                guardar_superficie(
+                    profesional=profesional,
+                    paciente=paciente,
+                    codigo_fdi=codigo,
+                    superficie=superficie,
+                    estado=request.POST.get("estado") or "",
+                    request=request,
+                )
+                messages.success(request, "Superficie actualizada.")
+                return _volver_ficha(paciente, accion)
             form = DienteForm(request.POST)
             if form.is_valid():
                 guardar_diente(
@@ -394,13 +429,68 @@ def _guardar_ficha(request, paciente, profesional):
                     request=request,
                 )
                 messages.success(request, "Odontograma actualizado.")
-                return redirect("ficha_paciente", paciente_id=paciente.pk)
+                return _volver_ficha(paciente, accion)
+        elif accion == "plan":
+            form = PlanTratamientoForm(request.POST)
+            if form.is_valid():
+                crear_item_plan(
+                    profesional=profesional,
+                    paciente=paciente,
+                    tratamiento=form.cleaned_data["tratamiento"],
+                    codigo_fdi=form.cleaned_data.get("codigo_fdi"),
+                    precio=form.cleaned_data.get("precio"),
+                    nota=form.cleaned_data.get("nota") or "",
+                    request=request,
+                )
+                messages.success(request, "El tratamiento quedó en el plan.")
+                return _volver_ficha(paciente, accion)
+        elif accion == "plan_estado":
+            form = EstadoPlanForm(request.POST)
+            if form.is_valid():
+                item = get_object_or_404(PlanTratamiento, pk=form.cleaned_data["item"], paciente=paciente)
+                cambiar_estado_plan(
+                    item,
+                    form.cleaned_data["estado"],
+                    profesional=profesional,
+                    request=request,
+                )
+                messages.success(request, "Estado del plan actualizado.")
+                return _volver_ficha(paciente, accion)
+        elif accion == "facturar_plan":
+            item = get_object_or_404(PlanTratamiento, pk=request.POST.get("item"), paciente=paciente)
+            factura = facturar_plan(item, profesional=profesional)
+            messages.success(request, f"Factura {factura.numero} emitida.")
+            return redirect("detalle_factura_profesional", pk=factura.pk)
+        elif accion == "laboratorio":
+            form = CasoLaboratorioForm(request.POST)
+            if form.is_valid():
+                crear_caso_laboratorio(
+                    profesional=profesional,
+                    paciente=paciente,
+                    request=request,
+                    **form.cleaned_data,
+                )
+                messages.success(request, "Caso de laboratorio registrado.")
+                return _volver_ficha(paciente, accion)
+        elif accion == "caso_estado":
+            form = EstadoCasoForm(request.POST)
+            if form.is_valid():
+                caso = get_object_or_404(CasoLaboratorio, pk=form.cleaned_data["caso"], paciente=paciente)
+                cambiar_estado_caso(caso, form.cleaned_data["estado"], profesional=profesional, request=request)
+                messages.success(request, "Estado del laboratorio actualizado.")
+                return _volver_ficha(paciente, accion)
+        elif accion == "seguro":
+            form = SeguroForm(request.POST)
+            if form.is_valid():
+                guardar_seguro(profesional=profesional, paciente=paciente, **form.cleaned_data)
+                messages.success(request, "Seguro guardado.")
+                return _volver_ficha(paciente, accion)
         elif accion == "receta":
             form = RecetaForm(request.POST, paciente=paciente, profesional=profesional)
             if form.is_valid():
                 crear_receta(profesional=profesional, paciente=paciente, request=request, **form.cleaned_data)
                 messages.success(request, "Receta guardada.")
-                return redirect("ficha_paciente", paciente_id=paciente.pk)
+                return _volver_ficha(paciente, accion)
         elif accion == "factura":
             form = FacturaForm(request.POST)
             if form.is_valid():
@@ -415,10 +505,10 @@ def _guardar_ficha(request, paciente, profesional):
                 return redirect("detalle_factura_profesional", pk=factura.pk)
         else:
             messages.error(request, "No reconocimos esa acción.")
-            return redirect("ficha_paciente", paciente_id=paciente.pk)
+            return _volver_ficha(paciente, "resumen")
     except ValidationError as exc:
         messages.error(request, " ".join(exc.messages))
-        return redirect("ficha_paciente", paciente_id=paciente.pk)
+        return _volver_ficha(paciente, accion)
 
     messages.error(request, "Revisa los datos del formulario.")
     return _render_ficha(request, paciente, profesional, accion=accion, form_invalido=form)
@@ -452,6 +542,10 @@ def _render_ficha(request, paciente, profesional, accion=None, form_invalido=Non
             "evolucion_form": form_invalido if accion == "evolucion" else EvolucionForm(
                 paciente=paciente, profesional=profesional
             ),
+            "planes": planes_del_paciente(paciente),
+            "totales_plan": totales_plan(paciente),
+            "estados_plan": PlanTratamiento.ESTADO_CHOICES,
+            "plan_form": form_invalido if accion == "plan" else PlanTratamientoForm(),
             "diente_form": form_invalido if accion == "diente" else DienteForm(
                 initial={
                     "codigo_fdi": diente["codigo"] if diente else None,
@@ -464,5 +558,135 @@ def _render_ficha(request, paciente, profesional, accion=None, form_invalido=Non
             ),
             "factura_form": form_invalido if accion == "factura" else FacturaForm(),
             "estados_diente": Odontograma.ESTADO_CHOICES,
+            "superficies": SuperficieDiente.SUPERFICIE_CHOICES,
+            "casos": paciente.casos_laboratorio.select_related("tratamiento"),
+            "estados_caso": CasoLaboratorio.ESTADO_CHOICES,
+            "caso_form": form_invalido if accion == "laboratorio" else CasoLaboratorioForm(),
+            "seguros": paciente.seguros.all(),
+            "seguro_form": form_invalido if accion == "seguro" else SeguroForm(),
+            "seccion": _seccion_de(request.GET.get("seccion") if accion is None else accion),
         },
     )
+
+
+SECCIONES_FICHA = {
+    "resumen": "resumen",
+    "odontograma": "odontograma",
+    "plan": "plan",
+    "cobro": "cobro",
+    "historia": "resumen",
+    "evolucion": "resumen",
+    "diente": "odontograma",
+    "plan_estado": "plan",
+    "facturar_plan": "plan",
+    "laboratorio": "laboratorio",
+    "caso_estado": "laboratorio",
+    "seguro": "cobro",
+    "receta": "cobro",
+    "factura": "cobro",
+}
+
+
+def _seccion_de(valor):
+    return SECCIONES_FICHA.get(valor or "", "resumen")
+
+
+COLORES_CATALOGO = (
+    ("brand", "Marca"),
+    ("ok", "Verde"),
+    ("warn", "Ámbar"),
+    ("danger", "Rojo"),
+)
+
+
+@profesional_required
+def informes_profesional(request):
+    profesional = request.user.profesional
+    hoy = timezone.localdate()
+    citas = (
+        Cita.objects.filter(profesional=profesional, fecha_hora__year=hoy.year, fecha_hora__month=hoy.month)
+        .values("estado")
+        .annotate(total=Count("id"))
+        .order_by("estado")
+    )
+    etiquetas_cita = dict(Cita.ESTADO_CHOICES)
+    facturado = (
+        Factura.objects.filter(
+            profesional=profesional,
+            created_at__year=hoy.year,
+            created_at__month=hoy.month,
+        )
+        .exclude(estado=Factura.ESTADO_ANULADA)
+        .aggregate(total=Sum("valor"))["total"]
+        or Decimal("0")
+    )
+    planes = (
+        PlanTratamiento.objects.filter(
+            profesional=profesional,
+            created_at__year=hoy.year,
+            created_at__month=hoy.month,
+        )
+        .values("estado")
+        .annotate(total=Count("id"))
+        .order_by("estado")
+    )
+    etiquetas_plan = dict(PlanTratamiento.ESTADO_CHOICES)
+    return render(
+        request,
+        "perfiles/informes.html",
+        {
+            "mes": hoy.strftime("%m/%Y"),
+            "citas": [{"etiqueta": etiquetas_cita.get(fila["estado"], fila["estado"]), "total": fila["total"]} for fila in citas],
+            "facturado": facturado,
+            "planes": [{"etiqueta": etiquetas_plan.get(fila["estado"], fila["estado"]), "total": fila["total"]} for fila in planes],
+        },
+    )
+
+
+@rol_requerido("administrador")
+def ajustes_clinica(request):
+    if request.method == "POST":
+        colores = {codigo for codigo, _etiqueta in COLORES_CATALOGO}
+        color = request.POST.get("color") or ""
+        if color not in colores:
+            messages.error(request, "Ese color no está en la paleta.")
+            return redirect("ajustes_clinica")
+        if request.POST.get("tipo") == "tratamiento":
+            tratamiento = get_object_or_404(Tratamiento, pk=request.POST.get("pk"))
+            try:
+                duracion = int(request.POST.get("duracion_minutos") or 0)
+                precio = Decimal(request.POST.get("precio") or "0")
+            except (TypeError, ValueError, InvalidOperation):
+                messages.error(request, "Duración o precio inválidos.")
+                return redirect("ajustes_clinica")
+            if duracion < 15 or duracion > 240 or precio < 0:
+                messages.error(request, "Revisa la duración y el precio.")
+                return redirect("ajustes_clinica")
+            tratamiento.duracion_minutos = duracion
+            tratamiento.precio = precio
+            tratamiento.color = color
+            tratamiento.save(update_fields=["duracion_minutos", "precio", "color"])
+            messages.success(request, "Tratamiento actualizado.")
+        elif request.POST.get("tipo") == "consultorio":
+            consultorio = get_object_or_404(Consultorio, pk=request.POST.get("pk"))
+            consultorio.color = color
+            consultorio.save(update_fields=["color"])
+            messages.success(request, "Consultorio actualizado.")
+        return redirect("ajustes_clinica")
+    return render(
+        request,
+        "perfiles/ajustes.html",
+        {
+            "tratamientos": Tratamiento.objects.filter(activo=True).order_by("nombre"),
+            "consultorios": Consultorio.objects.filter(activo=True).select_related("sede").order_by("sede__nombre", "nombre"),
+            "colores": COLORES_CATALOGO,
+        },
+    )
+
+
+def _volver_ficha(paciente, accion):
+    seccion = _seccion_de(accion)
+    destino = reverse("ficha_paciente", args=[paciente.pk])
+    if seccion == "resumen":
+        return redirect(destino)
+    return redirect(f"{destino}?seccion={seccion}")

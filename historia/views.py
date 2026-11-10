@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from perfiles.decorators import paciente_required
 
-from .services import dientes_del_paciente, obtener_historia
+from .services import dientes_del_paciente, obtener_historia, planes_del_paciente, totales_plan
 
 
 @paciente_required
@@ -13,7 +13,13 @@ def mi_historia(request):
     return render(
         request,
         "historia/historia.html",
-        {"paciente": paciente, "historia": historia, "evoluciones": evoluciones},
+        {
+            "paciente": paciente,
+            "historia": historia,
+            "evoluciones": evoluciones,
+            "planes": planes_del_paciente(paciente),
+            "totales_plan": totales_plan(paciente),
+        },
     )
 
 

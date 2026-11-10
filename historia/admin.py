@@ -1,6 +1,15 @@
 from django.contrib import admin
 
-from .models import Evolucion, HistoriaClinica, Odontograma, Receta, RecetaItem
+from .models import (
+    CasoLaboratorio,
+    Evolucion,
+    HistoriaClinica,
+    Odontograma,
+    PlanTratamiento,
+    Receta,
+    RecetaItem,
+    SuperficieDiente,
+)
 
 
 class SoloLecturaMixin:
@@ -55,6 +64,25 @@ class OdontogramaAdmin(SoloLecturaMixin, admin.ModelAdmin):
 class RecetaItemInline(admin.TabularInline):
     model = RecetaItem
     extra = 0
+
+
+@admin.register(SuperficieDiente)
+class SuperficieDienteAdmin(SoloLecturaMixin, admin.ModelAdmin):
+    list_display = ("historia", "codigo_fdi", "superficie", "estado")
+    readonly_fields = [campo.name for campo in SuperficieDiente._meta.fields]
+
+
+@admin.register(CasoLaboratorio)
+class CasoLaboratorioAdmin(SoloLecturaMixin, admin.ModelAdmin):
+    list_display = ("paciente", "tipo", "laboratorio", "estado")
+    readonly_fields = [campo.name for campo in CasoLaboratorio._meta.fields]
+
+
+@admin.register(PlanTratamiento)
+class PlanTratamientoAdmin(SoloLecturaMixin, admin.ModelAdmin):
+    list_display = ("paciente", "tratamiento", "codigo_fdi", "estado", "precio")
+    list_filter = ("estado",)
+    readonly_fields = [campo.name for campo in PlanTratamiento._meta.fields]
 
 
 @admin.register(Receta)

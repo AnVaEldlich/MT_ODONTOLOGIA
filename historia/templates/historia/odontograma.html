@@ -14,7 +14,7 @@
         <section class="card">
             <div class="boca" aria-label="Odontograma en notación FDI">
                 <div class="arc">
-                    {% for pieza in filas.0 %}<span class="diente {{ pieza.estado }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}">{{ pieza.codigo }}</span>{% endfor %}
+                    {% for pieza in filas.0 %}<span class="diente {{ pieza.estado }}" title="{{ pieza.caras }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}{% if pieza.caras %}. Superficies {{ pieza.caras }}{% endif %}">{{ pieza.codigo }}</span>{% endfor %}
                     <span class="separador" aria-hidden="true"></span>
                     {% for pieza in filas.1 %}<span class="diente {{ pieza.estado }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}">{{ pieza.codigo }}</span>{% endfor %}
                 </div>

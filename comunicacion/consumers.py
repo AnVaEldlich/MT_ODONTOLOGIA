@@ -6,6 +6,30 @@ from django.core.exceptions import ValidationError
 
 from .services import enviar_mensaje, marcar_leidos, obtener_conversacion, serializar_mensaje
 
+# Una sala cuenta los sockets abiertos de cada participante. El punto verde
+# depende de que el otro usuario tenga al menos una conexión, no de esta pantalla.
+_salas = {}
+
+
+def entrar_sala(conversacion_id, user_id):
+    sala = _salas.setdefault(conversacion_id, {})
+    sala[user_id] = sala.get(user_id, 0) + 1
+    otros = [uid for uid in sala if uid != user_id]
+    return sala[user_id] == 1, otros
+
+
+def salir_sala(conversacion_id, user_id):
+    sala = _salas.get(conversacion_id)
+    if not sala or user_id not in sala:
+        return False
+    sala[user_id] -= 1
+    if sala[user_id] > 0:
+        return False
+    del sala[user_id]
+    if not sala:
+        _salas.pop(conversacion_id, None)
+    return True
+
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -16,10 +40,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
         self.grupo = f"chat_{self.conversacion_id}"
+        self.user_id = user.pk
         await self.channel_layer.group_add(self.grupo, self.channel_name)
+        primera, otros = entrar_sala(self.conversacion_id, self.user_id)
+        self.en_sala = True
         await self.accept()
+        await self.send(text_data=json.dumps({"conectados": otros}))
+        if primera:
+            await self.channel_layer.group_send(
+                self.grupo,
+                {"type": "chat.presencia", "usuario_id": self.user_id, "conectado": True},
+            )
 
     async def disconnect(self, code):
+        if getattr(self, "en_sala", False) and salir_sala(self.conversacion_id, self.user_id):
+            await self.channel_layer.group_send(
+                self.grupo,
+                {"type": "chat.presencia", "usuario_id": self.user_id, "conectado": False},
+            )
         if hasattr(self, "grupo"):
             await self.channel_layer.group_discard(self.grupo, self.channel_name)
 
@@ -55,6 +93,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def chat_leido(self, event):
         await self.send(text_data=json.dumps({"leido_por": event["lector_id"]}))
+
+    async def chat_presencia(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "presencia": {
+                        "usuario_id": event["usuario_id"],
+                        "conectado": event["conectado"],
+                    }
+                }
+            )
+        )
 
 
 def _enviar(user, conversacion_id, texto):

@@ -17,6 +17,6 @@ Cada cambio vive en la app dueña del caso de uso. `accounts` autentica, `perfil
 - Un cambio de producto cierra el corte: regla, pantalla, mensaje y prueba. No dejar la regla solo en la vista.
 
 ```python
-# ❌ cita.estado = "confirmada"; cita.save()
-# ✅ confirm_cita(cita)
+# Mal: cita.estado = "confirmada"; cita.save()
+# Bien: confirm_cita(cita)
 ```

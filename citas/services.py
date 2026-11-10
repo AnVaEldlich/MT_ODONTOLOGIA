@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -8,7 +8,7 @@ from django.db.utils import NotSupportedError
 from django.urls import reverse
 from django.utils import timezone
 
-from clinica.models import BloqueoHorario, Disponibilidad
+from clinica.models import BloqueoHorario, Consultorio, Disponibilidad
 from comunicacion.services import notificar
 
 from .models import Cita
@@ -346,3 +346,129 @@ def _send_cita_email(cita, subject):
         recipient_list=[recipient],
         fail_silently=True,
     )
+
+
+PASO_CONSULTORIO = timedelta(minutes=15)
+JORNADA_LIBRE = (time(8, 0), time(18, 0))
+
+
+def cuadricula_consultorios(profesional, fecha):
+    """Columnas de consultorio y franjas de 15 minutos para un día."""
+    inicio_dia = timezone.make_aware(datetime.combine(fecha, time.min))
+    fin_dia = inicio_dia + timedelta(days=1)
+    sedes = profesional.sedes_asignadas.values_list("sede_id", flat=True)
+    consultorios = Consultorio.objects.filter(sede_id__in=sedes, activo=True).select_related("sede")
+    columnas = [
+        {"id": item.pk, "nombre": item.nombre, "sede": item.sede.nombre}
+        for item in consultorios
+    ]
+    columnas.append({"id": None, "nombre": "Sin consultorio", "sede": ""})
+    citas = list(
+        profesional.citas.select_related("paciente", "consultorio", "tratamiento")
+        .filter(fecha_hora__gte=inicio_dia, fecha_hora__lt=fin_dia)
+        .exclude(estado=Cita.ESTADO_CANCELADA)
+        .order_by("fecha_hora")
+    )
+    bloqueos = list(
+        BloqueoHorario.objects.filter(
+            profesional=profesional,
+            inicio__lt=fin_dia,
+            fin__gt=inicio_dia,
+        )
+    )
+    filas = []
+    for hora in _franjas_del_dia(profesional, fecha):
+        slot_ini = timezone.make_aware(datetime.combine(fecha, hora))
+        slot_fin = slot_ini + PASO_CONSULTORIO
+        celdas = []
+        for columna in columnas:
+            cita = _cita_en_franja(citas, columna["id"], slot_ini, slot_fin)
+            bloqueo = None if cita else _bloqueo_en_franja(bloqueos, columna["id"], slot_ini, slot_fin)
+            if cita:
+                tipo = "cita"
+            elif bloqueo:
+                tipo = bloqueo.tipo or "bloqueo"
+            else:
+                tipo = "libre"
+            celdas.append(
+                {
+                    "tipo": tipo,
+                    "cita": cita,
+                    "bloqueo": bloqueo,
+                    "inicio": bool(cita and slot_ini <= cita.fecha_hora < slot_fin),
+                    "columna_id": columna["id"],
+                }
+            )
+        ahora = timezone.localtime()
+        filas.append({
+            "hora": hora,
+            "celdas": celdas,
+            "ahora": fecha == ahora.date() and slot_ini <= ahora < slot_fin,
+        })
+    return columnas, filas
+
+
+def _franjas_del_dia(profesional, fecha):
+    publicadas = Disponibilidad.objects.filter(
+        profesional=profesional,
+        dia_semana=fecha.weekday(),
+        activa=True,
+    )
+    if publicadas.exists():
+        abre = min(item.hora_inicio for item in publicadas)
+        cierra = max(item.hora_fin for item in publicadas)
+    else:
+        abre, cierra = JORNADA_LIBRE
+    cursor = datetime.combine(fecha, abre)
+    limite = datetime.combine(fecha, cierra)
+    franjas = []
+    while cursor + PASO_CONSULTORIO <= limite:
+        franjas.append(cursor.time())
+        cursor += PASO_CONSULTORIO
+    return franjas
+
+
+def _cita_en_franja(citas, consultorio_id, slot_ini, slot_fin):
+    for cita in citas:
+        if cita.consultorio_id != consultorio_id:
+            continue
+        if cita.fecha_hora < slot_fin and cita.calcular_fin() > slot_ini:
+            return cita
+    return None
+
+
+def anotar_espera(*, profesional, paciente, tratamiento=None, duracion_minutos=30, nota=""):
+    if not profesional_atiende(profesional, paciente):
+        raise ValidationError("Solo puedes anotar en espera a un paciente de tu agenda.")
+    from .models import ListaEspera
+
+    return ListaEspera.objects.create(
+        profesional=profesional,
+        paciente=paciente,
+        tratamiento=tratamiento,
+        duracion_minutos=duracion_minutos or 30,
+        nota=nota or "",
+    )
+
+
+def anotar_cita_por_hacer(*, profesional, paciente, desde, tratamiento=None, nota=""):
+    if not profesional_atiende(profesional, paciente):
+        raise ValidationError("Solo puedes dejar citas por hacer de un paciente de tu agenda.")
+    from .models import CitaPorHacer
+
+    return CitaPorHacer.objects.create(
+        profesional=profesional,
+        paciente=paciente,
+        tratamiento=tratamiento,
+        desde=desde,
+        nota=nota or "",
+    )
+
+
+def _bloqueo_en_franja(bloqueos, consultorio_id, slot_ini, slot_fin):
+    for bloqueo in bloqueos:
+        if bloqueo.consultorio_id not in (None, consultorio_id):
+            continue
+        if bloqueo.inicio < slot_fin and bloqueo.fin > slot_ini:
+            return bloqueo
+    return None

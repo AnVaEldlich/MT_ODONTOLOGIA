@@ -96,21 +96,23 @@
         });
     }
 
-    const estado = document.getElementById("chat-estado");
+    const punto = document.getElementById("chat-punto");
+    const activo = document.getElementById("chat-activo");
+    const otro = String(panel.dataset.otro || "");
 
-    function mostrarEstado(modo, texto) {
-        if (!estado) {
+    function marcarPresencia(conectado) {
+        if (!punto || !activo) {
             return;
         }
-        estado.dataset.modo = modo;
-        estado.textContent = texto;
+        punto.hidden = !conectado;
+        activo.hidden = !conectado;
     }
 
     function sondear() {
         if (sondeo) {
             return;
         }
-        mostrarEstado("sondeo", "Actualizando cada pocos segundos");
+        marcarPresencia(false);
         sondeo = window.setInterval(function () {
             fetch(panel.dataset.leer + "?despues=" + encodeURIComponent(ultimo) + "&leer=1", {
                 headers: { Accept: "application/json" },
@@ -142,12 +144,17 @@
             if (datos.leido_por && String(datos.leido_por) !== usuario) {
                 marcarLeidos();
             }
+            if (Array.isArray(datos.conectados)) {
+                marcarPresencia(datos.conectados.map(String).includes(otro));
+            }
+            if (datos.presencia && String(datos.presencia.usuario_id) === otro) {
+                marcarPresencia(Boolean(datos.presencia.conectado));
+            }
             if (datos.error) {
                 window.alert(datos.error);
             }
         };
         socket.onopen = function () {
-            mostrarEstado("vivo", "En tiempo real");
             socket.send(JSON.stringify({ accion: "leer" }));
         };
         socket.onerror = function () {
@@ -155,6 +162,7 @@
         };
         socket.onclose = function () {
             socket = null;
+            marcarPresencia(false);
             sondear();
         };
     }

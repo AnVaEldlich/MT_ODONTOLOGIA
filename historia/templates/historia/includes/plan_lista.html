@@ -1,0 +1,44 @@
+{% load dinero %}
+{% if planes %}
+<ul class="cita-list">
+    {% for item in planes %}
+    <li>
+        <div>
+            <div class="when">{{ item.tratamiento.nombre }}{% if item.codigo_fdi %} · diente {{ item.codigo_fdi }}{% endif %}</div>
+            <div class="who">{{ item.get_estado_display }} · ${{ item.precio|pesos }}</div>
+            {% if item.nota %}<p>{{ item.nota }}</p>{% endif %}
+        </div>
+        {% if editable %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="plan_estado">
+            <input type="hidden" name="item" value="{{ item.pk }}">
+            <label class="meta" for="estado-plan-{{ item.pk }}">Estado</label>
+            <select id="estado-plan-{{ item.pk }}" name="estado">
+                {% for codigo, etiqueta in estados_plan %}
+                <option value="{{ codigo }}" {% if item.estado == codigo %}selected{% endif %}>{{ etiqueta }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-ghost btn-sm" type="submit">Actualizar</button>
+        </form>
+        {% if item.estado == "aceptado" %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="facturar_plan">
+            <input type="hidden" name="item" value="{{ item.pk }}">
+            <button class="btn btn-primary btn-sm" type="submit">Facturar</button>
+        </form>
+        {% endif %}
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+<p class="meta">
+    Propuesto ${{ totales_plan.propuesto|pesos }} ·
+    Aceptado ${{ totales_plan.aceptado|pesos }} ·
+    Realizado ${{ totales_plan.realizado|pesos }} ·
+    Rechazado ${{ totales_plan.rechazado|pesos }}
+</p>
+{% else %}
+<p>Todavía no hay un plan de tratamiento.</p>
+{% endif %}

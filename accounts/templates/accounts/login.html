@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block title %}Iniciar sesión — MT Odontología{% endblock %}
 {% block body_class %}auth-layout{% endblock %}
 {% block messages %}{% endblock %}
@@ -16,7 +17,7 @@
     </aside>
     <form class="login-container" action="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}" method="post">
         {% csrf_token %}
-        <div class="auth-brand" aria-hidden="true"><span class="logo-mark">{% include "core/includes/icon.html" with name="diente" %}</span></div>
+        <div class="auth-brand" aria-hidden="true">{% include "core/includes/logo_mark.html" %}</div>
         <div class="welcome-text">
             <h1>Ingresar</h1>
             <p>Usa el correo de tu cuenta de paciente o de especialista.</p>
@@ -34,7 +35,20 @@
         </div>
         <div class="field{% if form.password.errors %} has-error{% endif %}">
             <label for="{{ form.password.id_for_label }}">Contraseña</label>
-            {{ form.password }}
+            <div class="password-wrapper">
+                {{ form.password }}
+                <button
+                    type="button"
+                    class="password-toggle"
+                    data-password-toggle
+                    aria-label="Mostrar contraseña"
+                    aria-pressed="false"
+                    aria-controls="{{ form.password.id_for_label }}"
+                >
+                    <svg class="icon i-ojo" aria-hidden="true" focusable="false"><use href="#i-ojo"/></svg>
+                    <svg class="icon i-ojo-oculto" aria-hidden="true" focusable="false" hidden><use href="#i-ojo-oculto"/></svg>
+                </button>
+            </div>
             {% if form.password.errors %}<p class="err">{{ form.password.errors.0 }}</p>{% endif %}
         </div>
         <button class="btn btn-brand btn-block btn-lg" type="submit">Ingresar</button>
@@ -43,4 +57,7 @@
         <p class="register-link"><a href="{% url 'registro_pro' %}">Soy especialista</a></p>
     </form>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'accounts/js/password_toggle.js' %}"></script>
 {% endblock %}

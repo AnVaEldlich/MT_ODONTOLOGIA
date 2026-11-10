@@ -176,6 +176,193 @@ class Odontograma(models.Model):
         return f"Diente {self.codigo_fdi} · {self.get_estado_display()}"
 
 
+class SuperficieDiente(models.Model):
+    SUPERFICIE_MESIAL = "M"
+    SUPERFICIE_OCLUSAL = "O"
+    SUPERFICIE_DISTAL = "D"
+    SUPERFICIE_VESTIBULAR = "V"
+    SUPERFICIE_LINGUAL = "L"
+    SUPERFICIE_CHOICES = [
+        (SUPERFICIE_MESIAL, "Mesial"),
+        (SUPERFICIE_OCLUSAL, "Oclusal"),
+        (SUPERFICIE_DISTAL, "Distal"),
+        (SUPERFICIE_VESTIBULAR, "Vestibular"),
+        (SUPERFICIE_LINGUAL, "Lingual"),
+    ]
+
+    historia = models.ForeignKey(
+        HistoriaClinica,
+        on_delete=models.CASCADE,
+        related_name="superficies",
+        verbose_name="Historia clínica",
+    )
+    codigo_fdi = models.PositiveSmallIntegerField(verbose_name="Diente (FDI)")
+    superficie = models.CharField(max_length=1, choices=SUPERFICIE_CHOICES, verbose_name="Superficie")
+    estado = models.CharField(max_length=20, choices=Odontograma.ESTADO_CHOICES, verbose_name="Estado")
+    actualizado_por = models.ForeignKey(
+        Profesional,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="superficies_actualizadas",
+        verbose_name="Actualizado por",
+    )
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Última actualización")
+
+    class Meta:
+        verbose_name = "Superficie del diente"
+        verbose_name_plural = "Superficies del diente"
+        ordering = ["codigo_fdi", "superficie"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["historia", "codigo_fdi", "superficie"],
+                name="superficie_diente_unica",
+            ),
+        ]
+
+    def clean(self):
+        if self.codigo_fdi not in DIENTES_FDI:
+            raise ValidationError({"codigo_fdi": "El código FDI no corresponde a un diente permanente."})
+
+    def __str__(self):
+        return f"{self.codigo_fdi}{self.superficie} · {self.get_estado_display()}"
+
+
+class PlanTratamiento(models.Model):
+    ESTADO_PROPUESTO = "propuesto"
+    ESTADO_ACEPTADO = "aceptado"
+    ESTADO_REALIZADO = "realizado"
+    ESTADO_RECHAZADO = "rechazado"
+    ESTADO_CHOICES = [
+        (ESTADO_PROPUESTO, "Propuesto"),
+        (ESTADO_ACEPTADO, "Aceptado"),
+        (ESTADO_REALIZADO, "Realizado"),
+        (ESTADO_RECHAZADO, "Rechazado"),
+    ]
+
+    paciente = models.ForeignKey(
+        Paciente,
+        on_delete=models.CASCADE,
+        related_name="planes",
+        verbose_name="Paciente",
+    )
+    profesional = models.ForeignKey(
+        Profesional,
+        on_delete=models.PROTECT,
+        related_name="planes",
+        verbose_name="Profesional",
+    )
+    tratamiento = models.ForeignKey(
+        "clinica.Tratamiento",
+        on_delete=models.PROTECT,
+        related_name="planes",
+        verbose_name="Tratamiento",
+    )
+    codigo_fdi = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Diente (FDI)",
+    )
+    precio = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Precio")
+    estado = models.CharField(
+        max_length=20,
+        choices=ESTADO_CHOICES,
+        default=ESTADO_PROPUESTO,
+        verbose_name="Estado",
+    )
+    nota = models.CharField(max_length=180, blank=True, verbose_name="Nota")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha")
+
+    class Meta:
+        verbose_name = "Ítem del plan de tratamiento"
+        verbose_name_plural = "Ítems del plan de tratamiento"
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["paciente", "estado"], name="plan_paciente_estado"),
+        ]
+
+    def clean(self):
+        if self.codigo_fdi is not None and self.codigo_fdi not in DIENTES_FDI:
+            raise ValidationError({"codigo_fdi": "El código FDI no corresponde a un diente permanente."})
+
+    def __str__(self):
+        diente = f" · {self.codigo_fdi}" if self.codigo_fdi else ""
+        return f"{self.tratamiento}{diente} · {self.get_estado_display()}"
+
+
+class CasoLaboratorio(models.Model):
+    TIPO_CORONA = "corona"
+    TIPO_PUENTE = "puente"
+    TIPO_PROTESIS = "protesis"
+    TIPO_ALINEADOR = "alineador"
+    TIPO_GUARDA = "guarda"
+    TIPO_CHOICES = [
+        (TIPO_CORONA, "Corona"),
+        (TIPO_PUENTE, "Puente"),
+        (TIPO_PROTESIS, "Prótesis"),
+        (TIPO_ALINEADOR, "Alineador"),
+        (TIPO_GUARDA, "Guarda"),
+    ]
+    ESTADO_ENVIADO = "enviado"
+    ESTADO_LABORATORIO = "en_laboratorio"
+    ESTADO_RECIBIDO = "recibido"
+    ESTADO_CEMENTADO = "cementado"
+    ESTADO_CANCELADO = "cancelado"
+    ESTADO_CHOICES = [
+        (ESTADO_ENVIADO, "Enviado"),
+        (ESTADO_LABORATORIO, "En laboratorio"),
+        (ESTADO_RECIBIDO, "Recibido"),
+        (ESTADO_CEMENTADO, "Cementado"),
+        (ESTADO_CANCELADO, "Cancelado"),
+    ]
+
+    paciente = models.ForeignKey(
+        Paciente,
+        on_delete=models.CASCADE,
+        related_name="casos_laboratorio",
+        verbose_name="Paciente",
+    )
+    profesional = models.ForeignKey(
+        Profesional,
+        on_delete=models.PROTECT,
+        related_name="casos_laboratorio",
+        verbose_name="Profesional",
+    )
+    tratamiento = models.ForeignKey(
+        "clinica.Tratamiento",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="casos_laboratorio",
+        verbose_name="Tratamiento",
+    )
+    codigo_fdi = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Diente (FDI)")
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, verbose_name="Tipo")
+    laboratorio = models.CharField(max_length=120, verbose_name="Laboratorio")
+    color = models.CharField(max_length=20, blank=True, verbose_name="Color")
+    precio = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Precio")
+    estado = models.CharField(
+        max_length=20,
+        choices=ESTADO_CHOICES,
+        default=ESTADO_ENVIADO,
+        verbose_name="Estado",
+    )
+    nota = models.CharField(max_length=180, blank=True, verbose_name="Nota")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha")
+
+    class Meta:
+        verbose_name = "Caso de laboratorio"
+        verbose_name_plural = "Casos de laboratorio"
+        ordering = ["-created_at"]
+
+    def clean(self):
+        if self.codigo_fdi is not None and self.codigo_fdi not in DIENTES_FDI:
+            raise ValidationError({"codigo_fdi": "El código FDI no corresponde a un diente permanente."})
+
+    def __str__(self):
+        return f"{self.get_tipo_display()} · {self.laboratorio}"
+
+
 class Receta(models.Model):
     paciente = models.ForeignKey(
         Paciente,

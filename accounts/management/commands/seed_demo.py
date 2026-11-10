@@ -27,7 +27,7 @@ from clinica.services import asignar_especialidad_principal
 from comunicacion.models import Comentario, MeGusta, Mensaje, Notificacion, Publicacion, Resena, Seguimiento
 from comunicacion.services import abrir_conversacion, enviar_mensaje
 from facturacion.models import Factura, Pago
-from historia.models import Odontograma, Receta, RecetaItem
+from historia.models import Odontograma, PlanTratamiento, Receta, RecetaItem
 from historia.services import abrir_historia, obtener_historia, registrar_evolucion
 
 DEMO_PASSWORD = "demo1234"
@@ -360,6 +360,21 @@ class Command(BaseCommand):
                 historia=historia,
                 codigo_fdi=codigo,
                 defaults={"estado": estado, "nota": nota, "actualizado_por": ana},
+            )
+        for nota, estado, codigo, tratamiento in (
+            ("DEMO: limpieza aceptada. Texto ficticio.", PlanTratamiento.ESTADO_ACEPTADO, 36, "limpieza"),
+            ("DEMO: control propuesto. Texto ficticio.", PlanTratamiento.ESTADO_PROPUESTO, 16, "ortodoncia"),
+        ):
+            PlanTratamiento.objects.get_or_create(
+                paciente=sofia,
+                nota=nota,
+                defaults={
+                    "profesional": ana,
+                    "tratamiento": tratamientos[tratamiento],
+                    "codigo_fdi": codigo,
+                    "precio": tratamientos[tratamiento].precio,
+                    "estado": estado,
+                },
             )
         receta, created = Receta.objects.get_or_create(
             paciente=sofia,
