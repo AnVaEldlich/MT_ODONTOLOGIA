@@ -13,8 +13,10 @@ urlpatterns = [
     path("profesional/horarios/", views.publicar_horarios_rapido, name="publicar_horarios_rapido"),
     path("profesional/foto/", views.actualizar_foto_profesional, name="foto_profesional"),
     path("profesional/pacientes/", views.mis_pacientes, name="mis_pacientes"),
+    path("profesional/informes/", views.informes_profesional, name="informes_profesional"),
     path("profesional/pacientes/<int:paciente_id>/", views.ficha_paciente, name="ficha_paciente"),
     path("administrador/", views.panel_administrador, name="panel_administrador"),
+    path("administrador/ajustes/", views.ajustes_clinica, name="ajustes_clinica"),
     path("administrador/profesionales/", views.profesionales_gestion, name="profesionales_gestion"),
     path(
         "administrador/profesionales/<int:pk>/verificar/",

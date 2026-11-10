@@ -1,5 +1,5 @@
 {% extends "core/base.html" %}
-{% load static %}
+{% load static dinero %}
 {% block title %}Ficha de {{ paciente.first_name }} — MT Odontología{% endblock %}
 {% block body_class %}app-layout{% endblock %}
 {% block main_class %}page{% endblock %}
@@ -17,6 +17,14 @@
             <p><a class="btn btn-ghost btn-sm" href="{% url 'chat_con_paciente' paciente.pk %}">Escribir en el chat</a></p>
             {% endif %}
         </div>
+        <nav class="segmented ficha-secciones" aria-label="Secciones de la ficha">
+            <a href="{% url 'ficha_paciente' paciente.pk %}" {% if seccion == "resumen" %}aria-current="true"{% endif %}>Resumen</a>
+            <a href="{% url 'ficha_paciente' paciente.pk %}?seccion=odontograma" {% if seccion == "odontograma" %}aria-current="true"{% endif %}>Odontograma</a>
+            <a href="{% url 'ficha_paciente' paciente.pk %}?seccion=plan" {% if seccion == "plan" %}aria-current="true"{% endif %}>Plan</a>
+            <a href="{% url 'ficha_paciente' paciente.pk %}?seccion=laboratorio" {% if seccion == "laboratorio" %}aria-current="true"{% endif %}>Laboratorio</a>
+            <a href="{% url 'ficha_paciente' paciente.pk %}?seccion=cobro" {% if seccion == "cobro" %}aria-current="true"{% endif %}>Recetas y cobro</a>
+        </nav>
+        {% if seccion == "resumen" %}
         <section class="card">
             <h2>Alertas de la historia</h2>
             <div class="chips">
@@ -74,31 +82,95 @@
                 <button class="btn btn-primary" type="submit">Registrar evolución</button>
             </form>
         </section>
+        {% elif seccion == "odontograma" %}
         <section class="card">
             <h2>Odontograma</h2>
-            <p class="meta">Elige un diente y guarda su estado. El paciente lo ve en solo lectura.</p>
-            <div class="boca" aria-label="Odontograma en notación FDI">
-                <div class="arc">
-                    {% for pieza in filas.0 %}<a class="diente {{ pieza.estado }}" href="?diente={{ pieza.codigo }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}" {% if diente and diente.codigo == pieza.codigo %}aria-current="true"{% endif %}>{{ pieza.codigo }}</a>{% endfor %}
-                    <span class="separador" aria-hidden="true"></span>
-                    {% for pieza in filas.1 %}<a class="diente {{ pieza.estado }}" href="?diente={{ pieza.codigo }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}" {% if diente and diente.codigo == pieza.codigo %}aria-current="true"{% endif %}>{{ pieza.codigo }}</a>{% endfor %}
-                </div>
-                <div class="arc">
-                    {% for pieza in filas.2 %}<a class="diente {{ pieza.estado }}" href="?diente={{ pieza.codigo }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}" {% if diente and diente.codigo == pieza.codigo %}aria-current="true"{% endif %}>{{ pieza.codigo }}</a>{% endfor %}
-                    <span class="separador" aria-hidden="true"></span>
-                    {% for pieza in filas.3 %}<a class="diente {{ pieza.estado }}" href="?diente={{ pieza.codigo }}" aria-label="Diente {{ pieza.codigo }}, {{ pieza.etiqueta }}" {% if diente and diente.codigo == pieza.codigo %}aria-current="true"{% endif %}>{{ pieza.codigo }}</a>{% endfor %}
-                </div>
-            </div>
-            {% if diente %}
-            <form method="post" novalidate>
+            <p class="meta">Elige un estado y pulsa el diente. El paciente lo ve en solo lectura.</p>
+            <form method="post">
                 {% csrf_token %}
                 <input type="hidden" name="accion" value="diente">
-                {% include "core/includes/fields.html" with form=diente_form %}
-                <button class="btn btn-primary" type="submit">Guardar diente {{ diente.codigo }}</button>
+                <fieldset class="chips">
+                    <legend class="meta">Superficie (vacío marca el diente completo)</legend>
+                    <label class="chip"><input type="radio" name="superficie" value="" checked> Diente</label>
+                    {% for codigo, etiqueta in superficies %}
+                    <label class="chip"><input type="radio" name="superficie" value="{{ codigo }}"> {{ etiqueta }}</label>
+                    {% endfor %}
+                </fieldset>
+                <fieldset class="chips">
+                    <legend class="meta">Estado que se va a marcar</legend>
+                    {% for codigo, etiqueta in estados_diente %}
+                    <label class="chip"><input type="radio" name="estado" value="{{ codigo }}" {% if forloop.first %}checked{% endif %} required> {{ etiqueta }}</label>
+                    {% endfor %}
+                </fieldset>
+                <div class="boca" aria-label="Odontograma en notación FDI">
+                    <div class="arc">
+                        {% for pieza in filas.0 %}<button class="diente {{ pieza.estado }}" type="submit" name="codigo_fdi" value="{{ pieza.codigo }}" title="{{ pieza.caras }}" aria-label="Marcar diente {{ pieza.codigo }}, ahora {{ pieza.etiqueta }}{% if pieza.caras %}. Superficies {{ pieza.caras }}{% endif %}">{{ pieza.codigo }}</button>{% endfor %}
+                        <span class="separador" aria-hidden="true"></span>
+                        {% for pieza in filas.1 %}<button class="diente {{ pieza.estado }}" type="submit" name="codigo_fdi" value="{{ pieza.codigo }}" aria-label="Marcar diente {{ pieza.codigo }}, ahora {{ pieza.etiqueta }}">{{ pieza.codigo }}</button>{% endfor %}
+                    </div>
+                    <div class="arc">
+                        {% for pieza in filas.2 %}<button class="diente {{ pieza.estado }}" type="submit" name="codigo_fdi" value="{{ pieza.codigo }}" aria-label="Marcar diente {{ pieza.codigo }}, ahora {{ pieza.etiqueta }}">{{ pieza.codigo }}</button>{% endfor %}
+                        <span class="separador" aria-hidden="true"></span>
+                        {% for pieza in filas.3 %}<button class="diente {{ pieza.estado }}" type="submit" name="codigo_fdi" value="{{ pieza.codigo }}" aria-label="Marcar diente {{ pieza.codigo }}, ahora {{ pieza.etiqueta }}">{{ pieza.codigo }}</button>{% endfor %}
+                    </div>
+                </div>
             </form>
-            {% else %}
-            <p>Selecciona un diente para editarlo.</p>
-            {% endif %}
+        </section>
+        {% elif seccion == "plan" %}
+        <section class="card">
+            <h2>Plan de tratamiento</h2>
+            {% include "historia/includes/plan_lista.html" with editable=True %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="plan">
+                {% include "core/includes/fields.html" with form=plan_form %}
+                <button class="btn btn-primary" type="submit">Agregar al plan</button>
+            </form>
+        </section>
+        {% elif seccion == "laboratorio" %}
+        <section class="card">
+            <h2>Casos de laboratorio</h2>
+            {% for caso in casos %}
+            <article>
+                <p><strong>{{ caso.get_tipo_display }}</strong> · {{ caso.laboratorio }} · {{ caso.get_estado_display }}{% if caso.codigo_fdi %} · diente {{ caso.codigo_fdi }}{% endif %}{% if caso.color %} · {{ caso.color }}{% endif %}</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="accion" value="caso_estado">
+                    <input type="hidden" name="caso" value="{{ caso.pk }}">
+                    <label>Estado
+                        <select name="estado">
+                            {% for codigo, etiqueta in estados_caso %}
+                            <option value="{{ codigo }}" {% if caso.estado == codigo %}selected{% endif %}>{{ etiqueta }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <button class="btn btn-ghost" type="submit">Actualizar</button>
+                </form>
+            </article>
+            {% empty %}
+            <p>No hay casos enviados al laboratorio.</p>
+            {% endfor %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="laboratorio">
+                {% include "core/includes/fields.html" with form=caso_form %}
+                <button class="btn btn-primary" type="submit">Registrar caso</button>
+            </form>
+        </section>
+        {% else %}
+        <section class="card">
+            <h2>Seguro</h2>
+            {% for seguro in seguros %}
+            <p>{{ seguro.get_rango_display }} · {{ seguro.aseguradora }}{% if seguro.numero_afiliado %} · afiliado {{ seguro.numero_afiliado }}{% endif %} · copago ${{ seguro.copago|pesos }}</p>
+            {% empty %}
+            <p>Sin seguro registrado. La EPS del perfil sigue visible en el resumen.</p>
+            {% endfor %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="seguro">
+                {% include "core/includes/fields.html" with form=seguro_form %}
+                <button class="btn btn-primary" type="submit">Guardar seguro</button>
+            </form>
         </section>
         <section class="card">
             <h2>Recetas</h2>
@@ -130,6 +202,7 @@
                 <button class="btn btn-primary" type="submit">Emitir factura</button>
             </form>
         </section>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -161,3 +161,25 @@ class PasoSedeForm(forms.Form):
         if sede_id:
             consultorios = consultorios.filter(sede_id=sede_id)
         self.fields["consultorio"].queryset = consultorios
+
+
+class EsperaForm(forms.Form):
+    paciente = forms.ModelChoiceField(label="Paciente", queryset=None)
+    tratamiento = forms.ModelChoiceField(label="Tratamiento", queryset=Tratamiento.objects.filter(activo=True), required=False)
+    duracion_minutos = forms.IntegerField(label="Duración (minutos)", min_value=15, max_value=240, initial=30)
+    nota = forms.CharField(label="Nota", required=False, max_length=180)
+
+    def __init__(self, *args, pacientes, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["paciente"].queryset = pacientes
+
+
+class CitaPorHacerForm(forms.Form):
+    paciente = forms.ModelChoiceField(label="Paciente", queryset=None)
+    tratamiento = forms.ModelChoiceField(label="Tratamiento", queryset=Tratamiento.objects.filter(activo=True), required=False)
+    desde = forms.DateField(label="Hacerla desde", widget=forms.DateInput(attrs={"type": "date"}))
+    nota = forms.CharField(label="Nota", required=False, max_length=180)
+
+    def __init__(self, *args, pacientes, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["paciente"].queryset = pacientes

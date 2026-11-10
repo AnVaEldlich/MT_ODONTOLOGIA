@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
 {% load static %}
 {% block title %}Agenda — MT Odontología{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'citas/css/agenda.css' %}">{% endblock %}
 {% block body_class %}app-layout{% endblock %}
 {% block main_class %}page{% endblock %}
 {% block content %}
@@ -8,7 +9,7 @@
     {% include "core/includes/portal_nav_profesional.html" %}
     <div>
         <div class="page-head">
-            <h1>{% if vista == "dia" %}Agenda del día{% else %}Agenda de la semana{% endif %}</h1>
+            <h1>{% if vista == "semana" %}Agenda de la semana{% else %}Agenda del día{% endif %}</h1>
             <p>{{ profesional.get_full_name }} · {{ inicio|date:"d/m/Y" }}</p>
         </div>
         <div class="card-title-row toolbar">
@@ -20,10 +21,58 @@
             <div class="segmented" role="group" aria-label="Vista">
                 <a {% if vista == 'dia' %}aria-current="true"{% endif %} href="{% url 'agenda_profesional' %}?vista=dia&fecha={{ fecha|date:'Y-m-d' }}">Día</a>
                 <a {% if vista == 'semana' %}aria-current="true"{% endif %} href="{% url 'agenda_profesional' %}?vista=semana&fecha={{ fecha|date:'Y-m-d' }}">Semana</a>
+                <a {% if vista == 'consultorios' %}aria-current="true"{% endif %} href="{% url 'agenda_profesional' %}?vista=consultorios&fecha={{ fecha|date:'Y-m-d' }}">Consultorios</a>
             </div>
         </div>
         <section class="card scroll-x">
-            {% if citas %}
+            {% if vista == "consultorios" %}
+            <table class="table agenda-grid">
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        {% for columna in columnas %}
+                        <th>{{ columna.nombre }}{% if columna.sede %}<br><span class="meta">{{ columna.sede }}</span>{% endif %}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fila in filas_dia %}
+                    <tr {% if fila.ahora %}class="ahora"{% endif %}>
+                        <th scope="row">{{ fila.hora|time:"H:i" }}</th>
+                        {% for celda in fila.celdas %}
+                        <td data-hora="{{ fila.hora|time:'H:i' }}" data-consultorio="{% if celda.columna_id %}{{ celda.columna_id }}{% else %}sin{% endif %}" data-celda="{{ celda.tipo }}">
+                            {% if celda.tipo == "cita" and celda.inicio %}
+                            <p class="agenda-paciente"><a href="{% url 'ficha_paciente' celda.cita.paciente_id %}">{{ celda.cita.paciente.first_name }} {{ celda.cita.paciente.last_name }}</a></p>
+                            <p class="meta">{% if celda.cita.tratamiento %}{{ celda.cita.tratamiento.nombre }} · {% endif %}{{ celda.cita.duracion_minutos }} min</p>
+                            <p><span class="badge {{ celda.cita.estado }}">{{ celda.cita.get_estado_display }}</span></p>
+                            <details class="agenda-acciones">
+                            <summary>Acciones</summary>
+                            <div class="actions">
+                                {% if celda.cita.estado == 'pendiente' %}
+                                <form method="post" action="{% url 'confirmar_cita' celda.cita.pk %}">{% csrf_token %}<button class="btn btn-primary btn-sm" type="submit">Confirmar</button></form>
+                                {% endif %}
+                                {% if celda.cita.estado == 'confirmada' %}
+                                <form method="post" action="{% url 'atender_cita' celda.cita.pk %}">{% csrf_token %}<button class="btn btn-ghost btn-sm" type="submit">Marcar atendida</button></form>
+                                <form method="post" action="{% url 'inasistencia_cita' celda.cita.pk %}">{% csrf_token %}<button class="btn btn-ghost btn-sm" type="submit">No asistió</button></form>
+                                {% endif %}
+                                {% if celda.cita.estado == 'pendiente' or celda.cita.estado == 'confirmada' %}
+                                <a class="btn btn-ghost btn-sm" href="{% url 'reprogramar_cita' celda.cita.pk %}">Reprogramar</a>
+                                <form method="post" action="{% url 'cancelar_cita' celda.cita.pk %}">{% csrf_token %}<button class="btn btn-danger btn-sm" type="submit">Cancelar</button></form>
+                                {% endif %}
+                            </div>
+                            </details>
+                            {% elif celda.tipo == "cita" %}
+                            <p class="meta">Continúa</p>
+                            {% elif celda.tipo == "bloqueo" or celda.tipo == "descanso" or celda.tipo == "almuerzo" %}
+                            <p class="meta">{{ celda.bloqueo.get_tipo_display }}{% if celda.bloqueo.motivo %} · {{ celda.bloqueo.motivo }}{% endif %}</p>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% elif citas %}
             <table class="table">
                 <thead>
                     <tr><th>Hora</th><th>Paciente</th><th>Detalle</th><th>Estado</th><th>Acciones</th></tr>

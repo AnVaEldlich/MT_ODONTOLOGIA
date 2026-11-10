@@ -1,0 +1,36 @@
+{% extends "core/base.html" %}
+{% load dinero static %}
+{% block title %}Informes — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_profesional.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Tu mes</h1>
+            <p>{{ mes }} · solo tus citas, cobros y planes.</p>
+        </div>
+        <section class="card">
+            <h2>Citas</h2>
+            {% for fila in citas %}
+            <p>{{ fila.etiqueta }}: {{ fila.total }}</p>
+            {% empty %}
+            <p>No hay citas este mes.</p>
+            {% endfor %}
+        </section>
+        <section class="card">
+            <h2>Facturación</h2>
+            <p>Emitido: ${{ facturado|pesos }}</p>
+        </section>
+        <section class="card">
+            <h2>Planes de tratamiento</h2>
+            {% for fila in planes %}
+            <p>{{ fila.etiqueta }}: {{ fila.total }}</p>
+            {% empty %}
+            <p>No hay ítems de plan este mes.</p>
+            {% endfor %}
+        </section>
+    </div>
+</div>
+{% endblock %}

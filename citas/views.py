@@ -11,21 +11,27 @@ from django.views.decorators.http import require_POST
 
 from accounts.models import Profesional
 from accounts.roles import user_role
+from accounts.services import pacientes_de_profesional
 from clinica.models import Consultorio, Disponibilidad, Sede, Tratamiento
 from perfiles.decorators import paciente_required, profesional_required
 
-from .forms import CitaForm, PasoSedeForm, PasoServicioForm, ReprogramarForm
-from .models import Cita
+from .forms import CitaForm, CitaPorHacerForm, EsperaForm, PasoSedeForm, PasoServicioForm, ReprogramarForm
+from .models import Cita, CitaPorHacer, ListaEspera
 from .services import (
+    anotar_cita_por_hacer,
+    anotar_espera,
     atender_cita,
     cancel_cita,
     confirm_cita,
     create_cita,
+    cuadricula_consultorios,
     horas_disponibles,
     marcar_inasistencia,
     motivo_rechazo,
     reprogramar_cita,
 )
+
+VISTAS_AGENDA = ("dia", "semana", "consultorios")
 
 BORRADOR = "cita_borrador"
 
@@ -101,9 +107,12 @@ def cancelar_cita(request, pk):
 @profesional_required
 def agenda_profesional(request):
     profesional = request.user.profesional
-    vista = request.GET.get("vista") if request.GET.get("vista") in ("dia", "semana") else "semana"
+    vista = request.GET.get("vista") if request.GET.get("vista") in VISTAS_AGENDA else "semana"
     fecha = parse_date(request.GET.get("fecha") or "") or timezone.localdate()
     inicio, fin, anterior, siguiente = _rango_agenda(vista, fecha)
+    columnas, filas_dia = ([], [])
+    if vista == "consultorios":
+        columnas, filas_dia = cuadricula_consultorios(profesional, fecha)
     citas = (
         profesional.citas.select_related("paciente", "consultorio", "tratamiento", "sede")
         .filter(fecha_hora__gte=inicio, fecha_hora__lt=fin)
@@ -127,6 +136,8 @@ def agenda_profesional(request):
             "anterior": anterior,
             "siguiente": siguiente,
             "inicio": inicio,
+            "columnas": columnas,
+            "filas_dia": filas_dia,
         },
     )
 
@@ -148,8 +159,8 @@ def atender_cita_view(request, pk):
     cita = get_object_or_404(Cita, pk=pk, profesional=request.user.profesional)
     if atender_cita(cita):
         messages.success(request, "La cita quedó marcada como atendida.")
-    else:
-        messages.error(request, "Esa cita no se puede marcar como atendida.")
+        return redirect(f"{reverse('ficha_paciente', args=[cita.paciente_id])}?seccion=resumen")
+    messages.error(request, "Esa cita no se puede marcar como atendida.")
     return redirect("agenda_profesional")
 
 
@@ -395,8 +406,67 @@ def _parse_fecha_hora(valor):
     return fecha_hora
 
 
+@profesional_required
+def lista_espera(request):
+    profesional = request.user.profesional
+    pacientes = pacientes_de_profesional(profesional)
+    accion = request.POST.get("accion") if request.method == "POST" else ""
+    espera_form = EsperaForm(request.POST if accion == "espera" else None, pacientes=pacientes)
+    recall_form = CitaPorHacerForm(request.POST if accion == "recall" else None, pacientes=pacientes)
+    if accion == "espera" and espera_form.is_valid():
+        try:
+            anotar_espera(
+                profesional=profesional,
+                paciente=espera_form.cleaned_data["paciente"],
+                tratamiento=espera_form.cleaned_data["tratamiento"],
+                duracion_minutos=espera_form.cleaned_data["duracion_minutos"],
+                nota=espera_form.cleaned_data.get("nota") or "",
+            )
+        except ValidationError as exc:
+            espera_form.add_error(None, exc.messages)
+        else:
+            messages.success(request, "Paciente anotado en la lista de espera.")
+            return redirect("lista_espera")
+    if accion == "recall" and recall_form.is_valid():
+        try:
+            anotar_cita_por_hacer(
+                profesional=profesional,
+                paciente=recall_form.cleaned_data["paciente"],
+                desde=recall_form.cleaned_data["desde"],
+                tratamiento=recall_form.cleaned_data["tratamiento"],
+                nota=recall_form.cleaned_data.get("nota") or "",
+            )
+        except ValidationError as exc:
+            recall_form.add_error(None, exc.messages)
+        else:
+            messages.success(request, "Cita por hacer registrada.")
+            return redirect("lista_espera")
+    if accion == "cerrar" and request.method == "POST":
+        pendiente = get_object_or_404(
+            CitaPorHacer,
+            pk=request.POST.get("recall"),
+            profesional=profesional,
+        )
+        pendiente.estado = CitaPorHacer.ESTADO_AGENDADA
+        pendiente.save(update_fields=["estado"])
+        messages.success(request, "Cita por hacer marcada como agendada.")
+        return redirect("lista_espera")
+    return render(
+        request,
+        "citas/espera.html",
+        {
+            "espera": ListaEspera.objects.filter(profesional=profesional).select_related("paciente", "tratamiento"),
+            "recalls": CitaPorHacer.objects.filter(
+                profesional=profesional, estado=CitaPorHacer.ESTADO_ABIERTA
+            ).select_related("paciente", "tratamiento"),
+            "espera_form": espera_form,
+            "recall_form": recall_form,
+        },
+    )
+
+
 def _rango_agenda(vista, fecha):
-    if vista == "dia":
+    if vista in ("dia", "consultorios"):
         inicio = timezone.make_aware(datetime.combine(fecha, datetime.min.time()))
         return inicio, inicio + timedelta(days=1), fecha - timedelta(days=1), fecha + timedelta(days=1)
     lunes = fecha - timedelta(days=fecha.weekday())

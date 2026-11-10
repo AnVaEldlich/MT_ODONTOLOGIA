@@ -8,15 +8,19 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from perfiles.decorators import paciente_required, profesional_required
 
-from .forms import PagoForm
+from .forms import ItemFacturaForm, PagoForm
 from .models import Factura
-from .services import registrar_pago
+from .services import agregar_item_factura, registrar_pago
 
 
 @paciente_required
 def mis_facturas(request):
     facturas = _con_saldo(Factura.objects.filter(paciente=request.user.paciente))
-    return render(request, "facturacion/facturas.html", {"facturas": facturas})
+    return render(
+        request,
+        "facturacion/facturas.html",
+        {"facturas": facturas, "seguros": request.user.paciente.seguros.all()},
+    )
 
 
 @paciente_required
@@ -30,7 +34,14 @@ def detalle_factura(request, pk):
     return render(
         request,
         "facturacion/detalle.html",
-        {"factura": factura, "pagos": pagos, "puede_cobrar": False, "form": None},
+        {
+            "factura": factura,
+            "items": factura.items.all(),
+            "pagos": pagos,
+            "puede_cobrar": False,
+            "form": None,
+            "item_form": None,
+        },
     )
 
 
@@ -41,8 +52,22 @@ def detalle_factura_profesional(request, pk):
         pk=pk,
         profesional=request.user.profesional,
     )
-    form = PagoForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
+    accion = request.POST.get("accion") if request.method == "POST" else ""
+    form = PagoForm(request.POST if accion == "pago" else None)
+    item_form = ItemFacturaForm(request.POST if accion == "item" else None)
+    if accion == "item" and item_form.is_valid():
+        try:
+            agregar_item_factura(
+                factura=factura,
+                profesional=request.user.profesional,
+                **item_form.cleaned_data,
+            )
+        except ValidationError as exc:
+            item_form.add_error(None, exc.messages)
+        else:
+            messages.success(request, "Ítem agregado.")
+            return redirect("detalle_factura_profesional", pk=factura.pk)
+    if accion == "pago" and form.is_valid():
         try:
             registrar_pago(
                 factura=factura,
@@ -61,9 +86,12 @@ def detalle_factura_profesional(request, pk):
         "facturacion/detalle.html",
         {
             "factura": factura,
+            "items": factura.items.all(),
             "pagos": factura.pagos.all(),
             "puede_cobrar": factura.estado != Factura.ESTADO_ANULADA and factura.saldo > 0,
+            "puede_editar": factura.estado == Factura.ESTADO_EMITIDA,
             "form": form,
+            "item_form": item_form,
         },
     )
 

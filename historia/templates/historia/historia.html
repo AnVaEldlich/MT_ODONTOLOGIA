@@ -33,6 +33,11 @@
             {% endif %}
         </section>
         <section class="card">
+            <h2>Plan de tratamiento</h2>
+            <p class="meta">Solo lectura. Lo propone tu especialista.</p>
+            {% include "historia/includes/plan_lista.html" %}
+        </section>
+        <section class="card">
             <h2>Evolución</h2>
             {% if evoluciones %}
             <ul class="cita-list">

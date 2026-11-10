@@ -1,0 +1,50 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Lista de espera — MT Odontología{% endblock %}
+{% block body_class %}app-layout{% endblock %}
+{% block main_class %}page{% endblock %}
+{% block content %}
+<div class="portal">
+    {% include "core/includes/portal_nav_profesional.html" %}
+    <div>
+        <div class="page-head">
+            <h1>Espera y citas por hacer</h1>
+            <p>Solo pacientes que ya atendiste o que tienen cita contigo.</p>
+        </div>
+        <section class="card">
+            <h2>Lista de espera</h2>
+            {% for fila in espera %}
+            <p>{{ fila.paciente.first_name }} {{ fila.paciente.last_name }} · {{ fila.duracion_minutos }} min{% if fila.tratamiento %} · {{ fila.tratamiento.nombre }}{% endif %}{% if fila.nota %} · {{ fila.nota }}{% endif %}</p>
+            {% empty %}
+            <p>Nadie está en espera.</p>
+            {% endfor %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="espera">
+                {% include "core/includes/fields.html" with form=espera_form %}
+                <button class="btn btn-primary" type="submit">Anotar en espera</button>
+            </form>
+        </section>
+        <section class="card">
+            <h2>Citas por hacer</h2>
+            {% for fila in recalls %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="cerrar">
+                <input type="hidden" name="recall" value="{{ fila.pk }}">
+                <p>{{ fila.paciente.first_name }} {{ fila.paciente.last_name }} · desde {{ fila.desde|date:"d/m/Y" }}{% if fila.tratamiento %} · {{ fila.tratamiento.nombre }}{% endif %}</p>
+                <button class="btn btn-ghost" type="submit">Marcar agendada</button>
+            </form>
+            {% empty %}
+            <p>No hay citas pendientes de agendar.</p>
+            {% endfor %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="recall">
+                {% include "core/includes/fields.html" with form=recall_form %}
+                <button class="btn btn-primary" type="submit">Dejar cita por hacer</button>
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}

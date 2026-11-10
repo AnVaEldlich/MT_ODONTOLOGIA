@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load dinero %}
 {% load static %}
 {% block title %}Facturas — MT Odontología{% endblock %}
 {% block body_class %}app-layout{% endblock %}
@@ -11,6 +12,14 @@
             <h1>Facturas y pagos</h1>
             <p>Solo ves los cobros de tu cuenta.</p>
         </div>
+        <section class="card">
+            <h2>Seguros</h2>
+            {% for seguro in seguros %}
+            <p>{{ seguro.get_rango_display }} · {{ seguro.aseguradora }}{% if seguro.numero_afiliado %} · {{ seguro.numero_afiliado }}{% endif %}</p>
+            {% empty %}
+            <p>Tu profesional todavía no registró un seguro.</p>
+            {% endfor %}
+        </section>
         {% if facturas %}
         <div class="card scroll-x">
             <table class="table">
@@ -22,8 +31,8 @@
                     <tr>
                         <td data-label="Número"><a href="{% url 'detalle_factura' factura.pk %}">{{ factura.numero }}</a></td>
                         <td data-label="Concepto">{{ factura.concepto }}</td>
-                        <td data-label="Valor">${{ factura.valor }}</td>
-                        <td data-label="Saldo">${{ factura.saldo_calculado }}</td>
+                        <td data-label="Valor">${{ factura.valor|pesos }}</td>
+                        <td data-label="Saldo">${{ factura.saldo_calculado|pesos }}</td>
                         <td data-label="Estado">{{ factura.get_estado_display }}</td>
                     </tr>
                     {% endfor %}

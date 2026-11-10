@@ -61,11 +61,15 @@
             </div>
             <a href="{% url 'buscar_profesionales' %}">Ver todos {% include "core/includes/icon.html" with name="flecha" %}</a>
         </div>
-        {% for tarjeta in tarjetas %}
-        {% include "clinica/includes/pro_card.html" %}
-        {% empty %}
+        {% if tarjetas %}
+        <div class="pro-rail" tabindex="0" aria-label="Especialistas verificados">
+            {% for tarjeta in tarjetas %}
+            {% include "clinica/includes/pro_card.html" %}
+            {% endfor %}
+        </div>
+        {% else %}
         <div class="card">{% include "core/includes/vacio.html" with tipo="busqueda" titulo="Aún no hay especialistas publicados" texto="Cuando el equipo complete sus perfiles, aparecerán aquí." %}</div>
-        {% endfor %}
+        {% endif %}
     </div>
 </section>
 
